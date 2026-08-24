@@ -1,0 +1,10 @@
+benchmark,iterations_per_trial,trials,median_ns_per_operation,min_ns_per_operation,max_ns_per_operation,claim_ceiling
+binary_add_gate_model_16,10000,7,2041.060,1790.810,2211.520,One managed implementation on the manifest host; not hardware latency
+binary_multiply_gate_model_8,1000,7,11933.200,10267.900,14362.300,One managed implementation on the manifest host; not hardware latency
+prime_compose_dense_16x8,2000,7,19586.350,17268.650,23285.550,One managed implementation on the manifest host; not hardware latency
+prime_gcd_dense_16x8,1000,7,12180.700,10122.800,15089.600,One managed implementation on the manifest host; not hardware latency
+prime_encode_trial_basis16,5000,7,9162.100,7555.000,11143.780,One managed implementation on the manifest host; not hardware latency
+prime_reconstruct_dense_16x8,5000,7,6438.300,6001.820,8301.940,One managed implementation on the manifest host; not hardware latency
+prime_add_refactor_12_18,5000,7,18403.560,16524.780,19404.640,One managed implementation on the manifest host; not hardware latency
+host_bigint_add_256x203_bits,100000,7,109.216,104.032,137.198,One managed implementation on the manifest host; not hardware latency
+host_bigint_multiply_256x203_bits,50000,7,244.764,227.338,305.090,One managed implementation on the manifest host; not hardware latency

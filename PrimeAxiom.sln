@@ -1,0 +1,30 @@
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PrimeAxiom.Core", "src\PrimeAxiom.Core\PrimeAxiom.Core.csproj", "{E13664EE-61F2-4A8A-A37C-B1B0EEC4662D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PrimeAxiom.Cli", "src\PrimeAxiom.Cli\PrimeAxiom.Cli.csproj", "{84F217A8-B6B2-4E34-A4EF-D3C7A20F5306}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PrimeAxiom.Tests", "tests\PrimeAxiom.Tests\PrimeAxiom.Tests.csproj", "{1A8CC04A-BBC4-4A10-AE1C-F780C469D6B1}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{E13664EE-61F2-4A8A-A37C-B1B0EEC4662D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E13664EE-61F2-4A8A-A37C-B1B0EEC4662D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E13664EE-61F2-4A8A-A37C-B1B0EEC4662D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E13664EE-61F2-4A8A-A37C-B1B0EEC4662D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{84F217A8-B6B2-4E34-A4EF-D3C7A20F5306}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{84F217A8-B6B2-4E34-A4EF-D3C7A20F5306}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{84F217A8-B6B2-4E34-A4EF-D3C7A20F5306}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{84F217A8-B6B2-4E34-A4EF-D3C7A20F5306}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1A8CC04A-BBC4-4A10-AE1C-F780C469D6B1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1A8CC04A-BBC4-4A10-AE1C-F780C469D6B1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1A8CC04A-BBC4-4A10-AE1C-F780C469D6B1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1A8CC04A-BBC4-4A10-AE1C-F780C469D6B1}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal

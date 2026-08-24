@@ -1,0 +1,14 @@
+{
+  "StatusCeiling": "PASS means exact only for the enumerated and seeded domains below.",
+  "CheckCount": 26764,
+  "Failures": [],
+  "Domain": {
+    "GateTruthRows": 4,
+    "BinaryWidth": 4,
+    "BinaryOrderedPairs": 256,
+    "PrimeRoundTripRange": "1..128",
+    "PrimeOrderedPairRange": "1..64 x 1..64",
+    "RandomSeed": 99536896,
+    "RandomTrials": 5000
+  }
+}

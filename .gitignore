@@ -1,0 +1,17 @@
+# Build products
+**/bin/
+**/obj/
+TestResults/
+coverage/
+
+# Local research scratch and supplied-source extracts
+.artifacts/
+
+# IDE and OS state
+.vs/
+.idea/
+.vscode/
+*.user
+*.suo
+.DS_Store
+Thumbs.db

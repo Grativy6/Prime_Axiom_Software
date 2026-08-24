@@ -1,0 +1,49 @@
+name: build-000-ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+
+      - name: Install pinned .NET SDK
+        uses: actions/setup-dotnet@v4
+        with:
+          global-json-file: global.json
+          cache: true
+          cache-dependency-path: '**/packages.lock.json'
+
+      - name: Restore locked dependency graph
+        run: dotnet restore PrimeAxiom.sln --locked-mode
+
+      - name: Verify formatting
+        run: dotnet format PrimeAxiom.sln --verify-no-changes --no-restore
+
+      - name: Build
+        run: dotnet build PrimeAxiom.sln --configuration Release --no-restore
+
+      - name: Test
+        run: dotnet test PrimeAxiom.sln --configuration Release --no-build --logger trx --results-directory TestResults
+
+      - name: Regenerate deterministic evidence without timing noise
+        run: dotnet run --project src/PrimeAxiom.Cli --configuration Release --no-build -- experiment --output artifacts/build000-ci --skip-benchmarks
+
+      - name: Upload receipts
+        uses: actions/upload-artifact@v4
+        with:
+          name: build000-ci-receipts
+          path: |
+            TestResults
+            artifacts/build000-ci
+          if-no-files-found: error

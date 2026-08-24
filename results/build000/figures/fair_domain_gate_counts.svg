@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="560" viewBox="0 0 960 560" role="img" aria-labelledby="title desc">
+<title id="title">Matched-domain logical NAND evaluation costs</title>
+<desc id="desc">Log scale comparison of a gate-modeled binary multiplier and dense prime-coordinate composition when each must represent every input through the stated bound.</desc>
+<rect width="960" height="560" fill="#fbfaf7"/>
+<text x="90" y="30" font-family="Segoe UI, sans-serif" font-size="20" font-weight="600" fill="#18212b">Matched-domain logical work (log scale)</text>
+<line x1="90" y1="470.0" x2="920" y2="470.0" stroke="#d9dde2"/>
+<text x="78" y="475.0" text-anchor="end" font-family="Consolas, monospace" font-size="12" fill="#4a5561">10^2</text>
+<line x1="90" y1="336.7" x2="920" y2="336.7" stroke="#d9dde2"/>
+<text x="78" y="341.7" text-anchor="end" font-family="Consolas, monospace" font-size="12" fill="#4a5561">10^3</text>
+<line x1="90" y1="203.3" x2="920" y2="203.3" stroke="#d9dde2"/>
+<text x="78" y="208.3" text-anchor="end" font-family="Consolas, monospace" font-size="12" fill="#4a5561">10^4</text>
+<line x1="90" y1="70.0" x2="920" y2="70.0" stroke="#d9dde2"/>
+<text x="78" y="75.0" text-anchor="end" font-family="Consolas, monospace" font-size="12" fill="#4a5561">10^5</text>
+<polyline points="90.0,349.6 193.8,328.5 297.5,310.6 401.2,295.2 505.0,281.5 608.8,269.3 712.5,258.3 816.2,248.2 920.0,238.9" fill="none" stroke="#276fbf" stroke-width="3"/>
+<polyline points="90.0,393.5 193.8,358.2 297.5,329.5 401.2,298.0 505.0,253.4 608.8,219.5 712.5,186.3 816.2,152.4 920.0,117.6" fill="none" stroke="#c84b31" stroke-width="3"/>
+<text x="90.0" y="495" transform="rotate(45 90.0 495)" font-family="Consolas, monospace" font-size="11" fill="#4a5561">16</text>
+<text x="193.8" y="495" transform="rotate(45 193.8 495)" font-family="Consolas, monospace" font-size="11" fill="#4a5561">32</text>
+<text x="297.5" y="495" transform="rotate(45 297.5 495)" font-family="Consolas, monospace" font-size="11" fill="#4a5561">64</text>
+<text x="401.2" y="495" transform="rotate(45 401.2 495)" font-family="Consolas, monospace" font-size="11" fill="#4a5561">128</text>
+<text x="505.0" y="495" transform="rotate(45 505.0 495)" font-family="Consolas, monospace" font-size="11" fill="#4a5561">256</text>
+<text x="608.8" y="495" transform="rotate(45 608.8 495)" font-family="Consolas, monospace" font-size="11" fill="#4a5561">512</text>
+<text x="712.5" y="495" transform="rotate(45 712.5 495)" font-family="Consolas, monospace" font-size="11" fill="#4a5561">1024</text>
+<text x="816.2" y="495" transform="rotate(45 816.2 495)" font-family="Consolas, monospace" font-size="11" fill="#4a5561">2048</text>
+<text x="920.0" y="495" transform="rotate(45 920.0 495)" font-family="Consolas, monospace" font-size="11" fill="#4a5561">4096</text>
+<line x1="600" y1="32" x2="630" y2="32" stroke="#276fbf" stroke-width="3"/><text x="638" y="37" font-family="Segoe UI, sans-serif" font-size="13">binary shift-add model</text>
+<line x1="600" y1="52" x2="630" y2="52" stroke="#c84b31" stroke-width="3"/><text x="638" y="57" font-family="Segoe UI, sans-serif" font-size="13">dense coordinate compose</text>
+<text x="480" y="545" text-anchor="middle" font-family="Segoe UI, sans-serif" font-size="13" fill="#35414c">maximum supported input magnitude (basis contains every prime through bound)</text>
+</svg>

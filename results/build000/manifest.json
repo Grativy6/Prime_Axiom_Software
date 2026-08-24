@@ -1,0 +1,50 @@
+{
+  "Schema": "prime-axiom-build000-experiment-manifest-v2",
+  "CanonicalReproductionCommand": "dotnet run --project src/PrimeAxiom.Cli --configuration Release --no-build -- experiment --output results/build000",
+  "ActualInvocationArguments": [
+    "experiment",
+    "--output",
+    "results/build000"
+  ],
+  "BuildConfiguration": "Release",
+  "DeterministicSeed": 99536896,
+  "RandomStreams": {
+    "CorrectnessComposition": {
+      "Seed": 99536896,
+      "Trials": 5000,
+      "Distribution": "independent uniform integer operands with 1 \u003C= value \u003C 128"
+    },
+    "FactorResident": {
+      "Seed": 99516894,
+      "Pairs": 64,
+      "Distribution": "eight independent exponent lanes per operand; each exponent uniform in {0,1,2,3}"
+    },
+    "AdditionDisruption": {
+      "Seed": 99539677,
+      "Pairs": 256,
+      "Distribution": "independent uniform integer operands with 1 \u003C= value \u003C= 256"
+    }
+  },
+  "IncludedWallClockBenchmarks": true,
+  "ClaimStatus": "BOUNDED_PASS",
+  "ClaimCeiling": "Exact only for declared finite checks; timings describe this managed build and host.",
+  "Framework": ".NET 8.0.29",
+  "OperatingSystem": "Microsoft Windows 10.0.19045",
+  "ProcessArchitecture": "X64",
+  "Processor": "AMD64 Family 23 Model 8 Stepping 2, AuthenticAMD",
+  "LogicalProcessors": 12,
+  "CoreAssembly": "PrimeAxiom.Core.dll",
+  "CoreAssemblySha256": "F6CF856B15F35C14B04FD2105F3CCE0C4EF72773507D1C9D1B61C71B59821792",
+  "CliAssembly": "PrimeAxiom.Cli.dll",
+  "CliAssemblySha256": "8B28A0F4987A036F9052D6A9799B64AFE440CA3449E7253160E33AC3292D8700",
+  "Files": [
+    "correctness.json",
+    "fair_domain_costs.csv",
+    "representation_cases.csv",
+    "resident_multiplication_workloads.csv",
+    "addition_disruption.csv",
+    "operation_preimages.csv",
+    "figures/fair_domain_gate_counts.svg",
+    "microbenchmarks.csv"
+  ]
+}

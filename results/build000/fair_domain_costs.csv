@@ -1,0 +1,10 @@
+max_input,binary_input_bits,binary_multiplier_nands,binary_multiplier_depth,prime_lanes,prime_exponent_bits,prime_dense_payload_bits,prime_compose_nands,prime_compose_depth,basis_self_description_bits,sparse_one_factor_bits
+16,5,800,69,6,4,24,375,25,18,10
+32,6,1152,83,11,4,44,690,27,43,12
+64,7,1568,97,18,4,72,1131,29,85,14
+128,8,2048,111,31,4,124,1950,29,176,14
+256,9,2592,125,54,5,270,4209,35,360,17
+512,10,3200,139,97,5,485,7563,37,747,19
+1024,11,3872,153,172,5,860,13413,39,1497,21
+2048,12,4608,167,309,5,1545,24099,41,3004,23
+4096,13,5408,181,564,5,2820,43989,43,6064,25
