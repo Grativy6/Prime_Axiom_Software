@@ -1,4 +1,8 @@
 # Frozen evidence anchors are byte-addressed and must survive platform checkout.
+/BUILD_000_REPORT.md text eol=lf
+/BUILD_001_REPORT.md text eol=lf
 /research/build001_experiment_plan.md text eol=lf
 /research/build002_experiment_plan.md text eol=lf
+/results/build000/** text eol=lf
+/results/build001/** text eol=lf
 /results/build002/** text eol=lf
