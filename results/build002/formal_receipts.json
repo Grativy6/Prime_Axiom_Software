@@ -1,0 +1,88 @@
+{
+  "schema": "prime-axiom-build002-formal-receipts-v1",
+  "protocol": "PAH-BUILD002-CONF0001",
+  "scope": "FULL_W4_W6_W8",
+  "status": "PASS",
+  "complete": true,
+  "sourceSummarySha256": "9228A81882128F4FD5A9F9BA466D1385DB5B5B829EAC01242BB09F0CD4E81B90",
+  "caseCount": 15,
+  "passedCaseCount": 15,
+  "failedCaseCount": 0,
+  "cases": [
+    {
+      "case": "formal_binary_w4",
+      "status": "PASS",
+      "detail": "SUCCESS_MARKER_MISSING"
+    },
+    {
+      "case": "formal_binexp_w4",
+      "status": "PASS",
+      "detail": "SUCCESS_MARKER_MISSING"
+    },
+    {
+      "case": "formal_checked_w4",
+      "status": "PASS",
+      "detail": "SUCCESS_MARKER_MISSING"
+    },
+    {
+      "case": "formal_sidecar_w4",
+      "status": "PASS",
+      "detail": "SUCCESS_MARKER_MISSING"
+    },
+    {
+      "case": "formal_therm_w4",
+      "status": "PASS",
+      "detail": "SUCCESS_MARKER_MISSING"
+    },
+    {
+      "case": "formal_binary_w6",
+      "status": "PASS",
+      "detail": "SUCCESS_MARKER_MISSING"
+    },
+    {
+      "case": "formal_binexp_w6",
+      "status": "PASS",
+      "detail": "SUCCESS_MARKER_MISSING"
+    },
+    {
+      "case": "formal_checked_w6",
+      "status": "PASS",
+      "detail": "SUCCESS_MARKER_MISSING"
+    },
+    {
+      "case": "formal_sidecar_w6",
+      "status": "PASS",
+      "detail": "SUCCESS_MARKER_MISSING"
+    },
+    {
+      "case": "formal_therm_w6",
+      "status": "PASS",
+      "detail": "SUCCESS_MARKER_MISSING"
+    },
+    {
+      "case": "formal_binary_w8",
+      "status": "PASS",
+      "detail": "SUCCESS_MARKER_MISSING"
+    },
+    {
+      "case": "formal_binexp_w8",
+      "status": "PASS",
+      "detail": "SUCCESS_MARKER_MISSING"
+    },
+    {
+      "case": "formal_checked_w8",
+      "status": "PASS",
+      "detail": "SUCCESS_MARKER_MISSING"
+    },
+    {
+      "case": "formal_sidecar_w8",
+      "status": "PASS",
+      "detail": "SUCCESS_MARKER_MISSING"
+    },
+    {
+      "case": "formal_therm_w8",
+      "status": "PASS",
+      "detail": "SUCCESS_MARKER_MISSING"
+    }
+  ]
+}

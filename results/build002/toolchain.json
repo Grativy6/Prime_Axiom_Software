@@ -1,0 +1,22 @@
+{
+  "schema": "prime-axiom-build002-toolchain-evidence-v1",
+  "protocol": "PAH-BUILD002-CONF0001",
+  "status": "TOOLCHAIN_VERIFIED",
+  "complete": true,
+  "release": "2026-08-24",
+  "platform": "windows-x64",
+  "asset": "oss-cad-suite-windows-x64-20260824.tgz",
+  "archiveBytes": "595298533",
+  "archiveSha256": "95d3cf2a59d1617f2363ee9370bb3577799f33a07e9c66e126ddeb68e8e5814c",
+  "archiveStatus": "HASH_VERIFIED",
+  "toolVersions": {
+    "iverilog": "Icarus Verilog version 14.0 (devel) (s20260301-391-g64f13540a-dirty)",
+    "sby": "SBY v0.68",
+    "verilator": "Verilator 5.051 devel rev v5.050-251-g477b48fb3 (mod)",
+    "vvp": "Icarus Verilog runtime version 14.0 (devel) (s20260301-391-g64f13540a-dirty)",
+    "yosys": "Yosys 0.68\u002B120 (git sha1 a34d3baae-dirty, Release, GNU [REDACTED_PATH] 15.2.1)",
+    "yosys-smtbmc": "yosys-smtbmc-script.py [options] \u003Cyosys_smt2_output\u003E",
+    "z3": "Z3 version 4.15.5 - 64 bit"
+  },
+  "sourceBootstrapSha256": "6B78A5C143D541028148ABF3A00649327602638FE13FB1A0D219EB746C6DD989"
+}

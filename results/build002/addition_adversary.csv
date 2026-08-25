@@ -1,0 +1,97 @@
+protocol_id,width,left,right,sum,prime,left_valuation,right_valuation,preserved_lower_bound,exact_sum_valuation,exact_without_refresh,sidecar_status,notes
+PAH-BUILD002-CONF0001,4,3,2,5,2,0,1,0,0,true,VALID_FALSE_LOWER_BOUNDS_ONLY,E-W4-0: unequal 2-adic valuations
+PAH-BUILD002-CONF0001,4,3,2,5,3,1,0,0,0,true,VALID_FALSE_LOWER_BOUNDS_ONLY,E-W4-0: unequal 2-adic valuations
+PAH-BUILD002-CONF0001,4,3,2,5,5,0,0,0,1,false,VALID_FALSE_LOWER_BOUNDS_ONLY,E-W4-0: unequal 2-adic valuations
+PAH-BUILD002-CONF0001,4,3,2,5,7,0,0,0,0,false,VALID_FALSE_LOWER_BOUNDS_ONLY,E-W4-0: unequal 2-adic valuations
+PAH-BUILD002-CONF0001,4,2,2,4,2,1,1,1,2,false,VALID_FALSE_LOWER_BOUNDS_ONLY,E-W4-1: equal valuation with extra cancellation
+PAH-BUILD002-CONF0001,4,2,2,4,3,0,0,0,0,false,VALID_FALSE_LOWER_BOUNDS_ONLY,E-W4-1: equal valuation with extra cancellation
+PAH-BUILD002-CONF0001,4,2,2,4,5,0,0,0,0,false,VALID_FALSE_LOWER_BOUNDS_ONLY,E-W4-1: equal valuation with extra cancellation
+PAH-BUILD002-CONF0001,4,2,2,4,7,0,0,0,0,false,VALID_FALSE_LOWER_BOUNDS_ONLY,E-W4-1: equal valuation with extra cancellation
+PAH-BUILD002-CONF0001,4,5,2,7,2,0,1,0,0,true,VALID_FALSE_LOWER_BOUNDS_ONLY,E-W4-2: coprime sum
+PAH-BUILD002-CONF0001,4,5,2,7,3,0,0,0,0,false,VALID_FALSE_LOWER_BOUNDS_ONLY,E-W4-2: coprime sum
+PAH-BUILD002-CONF0001,4,5,2,7,5,1,0,0,0,true,VALID_FALSE_LOWER_BOUNDS_ONLY,E-W4-2: coprime sum
+PAH-BUILD002-CONF0001,4,5,2,7,7,0,0,0,1,false,VALID_FALSE_LOWER_BOUNDS_ONLY,E-W4-2: coprime sum
+PAH-BUILD002-CONF0001,4,0,1,1,2,0,0,0,0,true,VALID_EXACT_ALL_S4,E-W4-3: explicit zero crosses into nonzero state; zero is controlled by the explicit tag and valuation column 0 is only a tabular sentinel
+PAH-BUILD002-CONF0001,4,0,1,1,3,0,0,0,0,true,VALID_EXACT_ALL_S4,E-W4-3: explicit zero crosses into nonzero state; zero is controlled by the explicit tag and valuation column 0 is only a tabular sentinel
+PAH-BUILD002-CONF0001,4,0,1,1,5,0,0,0,0,true,VALID_EXACT_ALL_S4,E-W4-3: explicit zero crosses into nonzero state; zero is controlled by the explicit tag and valuation column 0 is only a tabular sentinel
+PAH-BUILD002-CONF0001,4,0,1,1,7,0,0,0,0,true,VALID_EXACT_ALL_S4,E-W4-3: explicit zero crosses into nonzero state; zero is controlled by the explicit tag and valuation column 0 is only a tabular sentinel
+PAH-BUILD002-CONF0001,4,7,1,8,2,0,0,0,3,false,VALID_FALSE_LOWER_BOUNDS_ONLY,E-W4-4: final W-bit overflow
+PAH-BUILD002-CONF0001,4,7,1,8,3,0,0,0,0,false,VALID_FALSE_LOWER_BOUNDS_ONLY,E-W4-4: final W-bit overflow
+PAH-BUILD002-CONF0001,4,7,1,8,5,0,0,0,0,false,VALID_FALSE_LOWER_BOUNDS_ONLY,E-W4-4: final W-bit overflow
+PAH-BUILD002-CONF0001,4,7,1,8,7,1,0,0,0,true,VALID_FALSE_LOWER_BOUNDS_ONLY,E-W4-4: final W-bit overflow
+PAH-BUILD002-CONF0001,4,3,11,14,2,0,0,0,1,false,VALID_FALSE_LOWER_BOUNDS_ONLY,E-W4-5: unsupported prime introduced by addition
+PAH-BUILD002-CONF0001,4,3,11,14,3,1,0,0,0,true,VALID_FALSE_LOWER_BOUNDS_ONLY,E-W4-5: unsupported prime introduced by addition
+PAH-BUILD002-CONF0001,4,3,11,14,5,0,0,0,0,false,VALID_FALSE_LOWER_BOUNDS_ONLY,E-W4-5: unsupported prime introduced by addition
+PAH-BUILD002-CONF0001,4,3,11,14,7,0,0,0,1,false,VALID_FALSE_LOWER_BOUNDS_ONLY,E-W4-5: unsupported prime introduced by addition
+PAH-BUILD002-CONF0001,4,2,6,8,2,1,1,1,3,false,VALID_FALSE_LOWER_BOUNDS_ONLY,E-W4-6: equal valuation can gain additional powers
+PAH-BUILD002-CONF0001,4,2,6,8,3,0,1,0,0,true,VALID_FALSE_LOWER_BOUNDS_ONLY,E-W4-6: equal valuation can gain additional powers
+PAH-BUILD002-CONF0001,4,2,6,8,5,0,0,0,0,false,VALID_FALSE_LOWER_BOUNDS_ONLY,E-W4-6: equal valuation can gain additional powers
+PAH-BUILD002-CONF0001,4,2,6,8,7,0,0,0,0,false,VALID_FALSE_LOWER_BOUNDS_ONLY,E-W4-6: equal valuation can gain additional powers
+PAH-BUILD002-CONF0001,4,1,6,7,2,0,1,0,0,true,VALID_FALSE_LOWER_BOUNDS_ONLY,E-W4-7: addition produces outside-basis structure
+PAH-BUILD002-CONF0001,4,1,6,7,3,0,1,0,0,true,VALID_FALSE_LOWER_BOUNDS_ONLY,E-W4-7: addition produces outside-basis structure
+PAH-BUILD002-CONF0001,4,1,6,7,5,0,0,0,0,false,VALID_FALSE_LOWER_BOUNDS_ONLY,E-W4-7: addition produces outside-basis structure
+PAH-BUILD002-CONF0001,4,1,6,7,7,0,0,0,1,false,VALID_FALSE_LOWER_BOUNDS_ONLY,E-W4-7: addition produces outside-basis structure
+PAH-BUILD002-CONF0001,6,3,2,5,2,0,1,0,0,true,VALID_FALSE_LOWER_BOUNDS_ONLY,E-W6-0: unequal 2-adic valuations
+PAH-BUILD002-CONF0001,6,3,2,5,3,1,0,0,0,true,VALID_FALSE_LOWER_BOUNDS_ONLY,E-W6-0: unequal 2-adic valuations
+PAH-BUILD002-CONF0001,6,3,2,5,5,0,0,0,1,false,VALID_FALSE_LOWER_BOUNDS_ONLY,E-W6-0: unequal 2-adic valuations
+PAH-BUILD002-CONF0001,6,3,2,5,7,0,0,0,0,false,VALID_FALSE_LOWER_BOUNDS_ONLY,E-W6-0: unequal 2-adic valuations
+PAH-BUILD002-CONF0001,6,2,2,4,2,1,1,1,2,false,VALID_FALSE_LOWER_BOUNDS_ONLY,E-W6-1: equal valuation with extra cancellation
+PAH-BUILD002-CONF0001,6,2,2,4,3,0,0,0,0,false,VALID_FALSE_LOWER_BOUNDS_ONLY,E-W6-1: equal valuation with extra cancellation
+PAH-BUILD002-CONF0001,6,2,2,4,5,0,0,0,0,false,VALID_FALSE_LOWER_BOUNDS_ONLY,E-W6-1: equal valuation with extra cancellation
+PAH-BUILD002-CONF0001,6,2,2,4,7,0,0,0,0,false,VALID_FALSE_LOWER_BOUNDS_ONLY,E-W6-1: equal valuation with extra cancellation
+PAH-BUILD002-CONF0001,6,5,2,7,2,0,1,0,0,true,VALID_FALSE_LOWER_BOUNDS_ONLY,E-W6-2: coprime sum
+PAH-BUILD002-CONF0001,6,5,2,7,3,0,0,0,0,false,VALID_FALSE_LOWER_BOUNDS_ONLY,E-W6-2: coprime sum
+PAH-BUILD002-CONF0001,6,5,2,7,5,1,0,0,0,true,VALID_FALSE_LOWER_BOUNDS_ONLY,E-W6-2: coprime sum
+PAH-BUILD002-CONF0001,6,5,2,7,7,0,0,0,1,false,VALID_FALSE_LOWER_BOUNDS_ONLY,E-W6-2: coprime sum
+PAH-BUILD002-CONF0001,6,0,1,1,2,0,0,0,0,true,VALID_EXACT_ALL_S4,E-W6-3: explicit zero crosses into nonzero state; zero is controlled by the explicit tag and valuation column 0 is only a tabular sentinel
+PAH-BUILD002-CONF0001,6,0,1,1,3,0,0,0,0,true,VALID_EXACT_ALL_S4,E-W6-3: explicit zero crosses into nonzero state; zero is controlled by the explicit tag and valuation column 0 is only a tabular sentinel
+PAH-BUILD002-CONF0001,6,0,1,1,5,0,0,0,0,true,VALID_EXACT_ALL_S4,E-W6-3: explicit zero crosses into nonzero state; zero is controlled by the explicit tag and valuation column 0 is only a tabular sentinel
+PAH-BUILD002-CONF0001,6,0,1,1,7,0,0,0,0,true,VALID_EXACT_ALL_S4,E-W6-3: explicit zero crosses into nonzero state; zero is controlled by the explicit tag and valuation column 0 is only a tabular sentinel
+PAH-BUILD002-CONF0001,6,7,25,32,2,0,0,0,5,false,VALID_FALSE_LOWER_BOUNDS_ONLY,E-W6-4: final W-bit overflow
+PAH-BUILD002-CONF0001,6,7,25,32,3,0,0,0,0,false,VALID_FALSE_LOWER_BOUNDS_ONLY,E-W6-4: final W-bit overflow
+PAH-BUILD002-CONF0001,6,7,25,32,5,0,2,0,0,true,VALID_FALSE_LOWER_BOUNDS_ONLY,E-W6-4: final W-bit overflow
+PAH-BUILD002-CONF0001,6,7,25,32,7,1,0,0,0,true,VALID_FALSE_LOWER_BOUNDS_ONLY,E-W6-4: final W-bit overflow
+PAH-BUILD002-CONF0001,6,3,11,14,2,0,0,0,1,false,VALID_FALSE_LOWER_BOUNDS_ONLY,E-W6-5: unsupported prime introduced by addition
+PAH-BUILD002-CONF0001,6,3,11,14,3,1,0,0,0,true,VALID_FALSE_LOWER_BOUNDS_ONLY,E-W6-5: unsupported prime introduced by addition
+PAH-BUILD002-CONF0001,6,3,11,14,5,0,0,0,0,false,VALID_FALSE_LOWER_BOUNDS_ONLY,E-W6-5: unsupported prime introduced by addition
+PAH-BUILD002-CONF0001,6,3,11,14,7,0,0,0,1,false,VALID_FALSE_LOWER_BOUNDS_ONLY,E-W6-5: unsupported prime introduced by addition
+PAH-BUILD002-CONF0001,6,2,6,8,2,1,1,1,3,false,VALID_FALSE_LOWER_BOUNDS_ONLY,E-W6-6: equal valuation can gain additional powers
+PAH-BUILD002-CONF0001,6,2,6,8,3,0,1,0,0,true,VALID_FALSE_LOWER_BOUNDS_ONLY,E-W6-6: equal valuation can gain additional powers
+PAH-BUILD002-CONF0001,6,2,6,8,5,0,0,0,0,false,VALID_FALSE_LOWER_BOUNDS_ONLY,E-W6-6: equal valuation can gain additional powers
+PAH-BUILD002-CONF0001,6,2,6,8,7,0,0,0,0,false,VALID_FALSE_LOWER_BOUNDS_ONLY,E-W6-6: equal valuation can gain additional powers
+PAH-BUILD002-CONF0001,6,7,6,13,2,0,1,0,0,true,VALID_FALSE_LOWER_BOUNDS_ONLY,E-W6-7: addition produces outside-basis structure
+PAH-BUILD002-CONF0001,6,7,6,13,3,0,1,0,0,true,VALID_FALSE_LOWER_BOUNDS_ONLY,E-W6-7: addition produces outside-basis structure
+PAH-BUILD002-CONF0001,6,7,6,13,5,0,0,0,0,false,VALID_FALSE_LOWER_BOUNDS_ONLY,E-W6-7: addition produces outside-basis structure
+PAH-BUILD002-CONF0001,6,7,6,13,7,1,0,0,0,true,VALID_FALSE_LOWER_BOUNDS_ONLY,E-W6-7: addition produces outside-basis structure
+PAH-BUILD002-CONF0001,8,3,2,5,2,0,1,0,0,true,VALID_FALSE_LOWER_BOUNDS_ONLY,E-W8-0: unequal 2-adic valuations
+PAH-BUILD002-CONF0001,8,3,2,5,3,1,0,0,0,true,VALID_FALSE_LOWER_BOUNDS_ONLY,E-W8-0: unequal 2-adic valuations
+PAH-BUILD002-CONF0001,8,3,2,5,5,0,0,0,1,false,VALID_FALSE_LOWER_BOUNDS_ONLY,E-W8-0: unequal 2-adic valuations
+PAH-BUILD002-CONF0001,8,3,2,5,7,0,0,0,0,false,VALID_FALSE_LOWER_BOUNDS_ONLY,E-W8-0: unequal 2-adic valuations
+PAH-BUILD002-CONF0001,8,2,2,4,2,1,1,1,2,false,VALID_FALSE_LOWER_BOUNDS_ONLY,E-W8-1: equal valuation with extra cancellation
+PAH-BUILD002-CONF0001,8,2,2,4,3,0,0,0,0,false,VALID_FALSE_LOWER_BOUNDS_ONLY,E-W8-1: equal valuation with extra cancellation
+PAH-BUILD002-CONF0001,8,2,2,4,5,0,0,0,0,false,VALID_FALSE_LOWER_BOUNDS_ONLY,E-W8-1: equal valuation with extra cancellation
+PAH-BUILD002-CONF0001,8,2,2,4,7,0,0,0,0,false,VALID_FALSE_LOWER_BOUNDS_ONLY,E-W8-1: equal valuation with extra cancellation
+PAH-BUILD002-CONF0001,8,5,2,7,2,0,1,0,0,true,VALID_FALSE_LOWER_BOUNDS_ONLY,E-W8-2: coprime sum
+PAH-BUILD002-CONF0001,8,5,2,7,3,0,0,0,0,false,VALID_FALSE_LOWER_BOUNDS_ONLY,E-W8-2: coprime sum
+PAH-BUILD002-CONF0001,8,5,2,7,5,1,0,0,0,true,VALID_FALSE_LOWER_BOUNDS_ONLY,E-W8-2: coprime sum
+PAH-BUILD002-CONF0001,8,5,2,7,7,0,0,0,1,false,VALID_FALSE_LOWER_BOUNDS_ONLY,E-W8-2: coprime sum
+PAH-BUILD002-CONF0001,8,0,1,1,2,0,0,0,0,true,VALID_EXACT_ALL_S4,E-W8-3: explicit zero crosses into nonzero state; zero is controlled by the explicit tag and valuation column 0 is only a tabular sentinel
+PAH-BUILD002-CONF0001,8,0,1,1,3,0,0,0,0,true,VALID_EXACT_ALL_S4,E-W8-3: explicit zero crosses into nonzero state; zero is controlled by the explicit tag and valuation column 0 is only a tabular sentinel
+PAH-BUILD002-CONF0001,8,0,1,1,5,0,0,0,0,true,VALID_EXACT_ALL_S4,E-W8-3: explicit zero crosses into nonzero state; zero is controlled by the explicit tag and valuation column 0 is only a tabular sentinel
+PAH-BUILD002-CONF0001,8,0,1,1,7,0,0,0,0,true,VALID_EXACT_ALL_S4,E-W8-3: explicit zero crosses into nonzero state; zero is controlled by the explicit tag and valuation column 0 is only a tabular sentinel
+PAH-BUILD002-CONF0001,8,7,121,128,2,0,0,0,7,false,VALID_FALSE_LOWER_BOUNDS_ONLY,E-W8-4: final W-bit overflow
+PAH-BUILD002-CONF0001,8,7,121,128,3,0,0,0,0,false,VALID_FALSE_LOWER_BOUNDS_ONLY,E-W8-4: final W-bit overflow
+PAH-BUILD002-CONF0001,8,7,121,128,5,0,0,0,0,false,VALID_FALSE_LOWER_BOUNDS_ONLY,E-W8-4: final W-bit overflow
+PAH-BUILD002-CONF0001,8,7,121,128,7,1,0,0,0,true,VALID_FALSE_LOWER_BOUNDS_ONLY,E-W8-4: final W-bit overflow
+PAH-BUILD002-CONF0001,8,3,11,14,2,0,0,0,1,false,VALID_FALSE_LOWER_BOUNDS_ONLY,E-W8-5: unsupported prime introduced by addition
+PAH-BUILD002-CONF0001,8,3,11,14,3,1,0,0,0,true,VALID_FALSE_LOWER_BOUNDS_ONLY,E-W8-5: unsupported prime introduced by addition
+PAH-BUILD002-CONF0001,8,3,11,14,5,0,0,0,0,false,VALID_FALSE_LOWER_BOUNDS_ONLY,E-W8-5: unsupported prime introduced by addition
+PAH-BUILD002-CONF0001,8,3,11,14,7,0,0,0,1,false,VALID_FALSE_LOWER_BOUNDS_ONLY,E-W8-5: unsupported prime introduced by addition
+PAH-BUILD002-CONF0001,8,2,6,8,2,1,1,1,3,false,VALID_FALSE_LOWER_BOUNDS_ONLY,E-W8-6: equal valuation can gain additional powers
+PAH-BUILD002-CONF0001,8,2,6,8,3,0,1,0,0,true,VALID_FALSE_LOWER_BOUNDS_ONLY,E-W8-6: equal valuation can gain additional powers
+PAH-BUILD002-CONF0001,8,2,6,8,5,0,0,0,0,false,VALID_FALSE_LOWER_BOUNDS_ONLY,E-W8-6: equal valuation can gain additional powers
+PAH-BUILD002-CONF0001,8,2,6,8,7,0,0,0,0,false,VALID_FALSE_LOWER_BOUNDS_ONLY,E-W8-6: equal valuation can gain additional powers
+PAH-BUILD002-CONF0001,8,7,6,13,2,0,1,0,0,true,VALID_FALSE_LOWER_BOUNDS_ONLY,E-W8-7: addition produces outside-basis structure
+PAH-BUILD002-CONF0001,8,7,6,13,3,0,1,0,0,true,VALID_FALSE_LOWER_BOUNDS_ONLY,E-W8-7: addition produces outside-basis structure
+PAH-BUILD002-CONF0001,8,7,6,13,5,0,0,0,0,false,VALID_FALSE_LOWER_BOUNDS_ONLY,E-W8-7: addition produces outside-basis structure
+PAH-BUILD002-CONF0001,8,7,6,13,7,1,0,0,0,true,VALID_FALSE_LOWER_BOUNDS_ONLY,E-W8-7: addition produces outside-basis structure

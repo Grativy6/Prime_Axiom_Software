@@ -1,0 +1,52 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1100" height="500" viewBox="0 0 1100 500">
+<rect width="1100" height="500" fill="#fbfaf7"/>
+<text x="40" y="34" font-family="sans-serif" font-size="22" fill="#20252b">Representation state-bit geometry</text>
+<text x="40" y="57" font-family="sans-serif" font-size="13" fill="#59636e">Analytic exact geometry; this is not a dynamic cost or general arithmetic score.</text>
+<rect x="45" y="239" width="48" height="126" fill="#76558f"/>
+<text x="69" y="234" text-anchor="middle" font-family="sans-serif" font-size="10">11</text>
+<text transform="translate(67,385) rotate(55)" font-family="sans-serif" font-size="8">W4 BEXP</text>
+<rect x="113" y="227" width="48" height="138" fill="#76558f"/>
+<text x="137" y="222" text-anchor="middle" font-family="sans-serif" font-size="10">12</text>
+<text transform="translate(135,385) rotate(55)" font-family="sans-serif" font-size="8">W4 SIDECAR</text>
+<rect x="181" y="319" width="48" height="46" fill="#76558f"/>
+<text x="205" y="314" text-anchor="middle" font-family="sans-serif" font-size="10">4</text>
+<text transform="translate(203,385) rotate(55)" font-family="sans-serif" font-size="8">W4 BIN</text>
+<rect x="249" y="308" width="48" height="57" fill="#76558f"/>
+<text x="273" y="303" text-anchor="middle" font-family="sans-serif" font-size="10">5</text>
+<text transform="translate(271,385) rotate(55)" font-family="sans-serif" font-size="8">W4 PRES</text>
+<rect x="317" y="227" width="48" height="138" fill="#76558f"/>
+<text x="341" y="222" text-anchor="middle" font-family="sans-serif" font-size="10">12</text>
+<text transform="translate(339,385) rotate(55)" font-family="sans-serif" font-size="8">W4 THERM</text>
+<rect x="385" y="204" width="48" height="161" fill="#76558f"/>
+<text x="409" y="199" text-anchor="middle" font-family="sans-serif" font-size="10">14</text>
+<text transform="translate(407,385) rotate(55)" font-family="sans-serif" font-size="8">W6 BEXP</text>
+<rect x="453" y="146" width="48" height="219" fill="#76558f"/>
+<text x="477" y="141" text-anchor="middle" font-family="sans-serif" font-size="10">19</text>
+<text transform="translate(475,385) rotate(55)" font-family="sans-serif" font-size="8">W6 SIDECAR</text>
+<rect x="521" y="296" width="48" height="69" fill="#76558f"/>
+<text x="545" y="291" text-anchor="middle" font-family="sans-serif" font-size="10">6</text>
+<text transform="translate(543,385) rotate(55)" font-family="sans-serif" font-size="8">W6 BIN</text>
+<rect x="589" y="308" width="48" height="57" fill="#76558f"/>
+<text x="613" y="303" text-anchor="middle" font-family="sans-serif" font-size="10">5</text>
+<text transform="translate(611,385) rotate(55)" font-family="sans-serif" font-size="8">W6 PRES</text>
+<rect x="657" y="169" width="48" height="196" fill="#76558f"/>
+<text x="681" y="164" text-anchor="middle" font-family="sans-serif" font-size="10">17</text>
+<text transform="translate(679,385) rotate(55)" font-family="sans-serif" font-size="8">W6 THERM</text>
+<rect x="725" y="192" width="48" height="173" fill="#76558f"/>
+<text x="749" y="187" text-anchor="middle" font-family="sans-serif" font-size="10">15</text>
+<text transform="translate(747,385) rotate(55)" font-family="sans-serif" font-size="8">W8 BEXP</text>
+<rect x="793" y="65" width="48" height="300" fill="#76558f"/>
+<text x="817" y="60" text-anchor="middle" font-family="sans-serif" font-size="10">26</text>
+<text transform="translate(815,385) rotate(55)" font-family="sans-serif" font-size="8">W8 SIDECAR</text>
+<rect x="861" y="273" width="48" height="92" fill="#76558f"/>
+<text x="885" y="268" text-anchor="middle" font-family="sans-serif" font-size="10">8</text>
+<text transform="translate(883,385) rotate(55)" font-family="sans-serif" font-size="8">W8 BIN</text>
+<rect x="929" y="308" width="48" height="57" fill="#76558f"/>
+<text x="953" y="303" text-anchor="middle" font-family="sans-serif" font-size="10">5</text>
+<text transform="translate(951,385) rotate(55)" font-family="sans-serif" font-size="8">W8 PRES</text>
+<rect x="997" y="112" width="48" height="253" fill="#76558f"/>
+<text x="1021" y="107" text-anchor="middle" font-family="sans-serif" font-size="10">22</text>
+<text transform="translate(1019,385) rotate(55)" font-family="sans-serif" font-size="8">W8 THERM</text>
+<line x1="35" y1="365" x2="1075" y2="365" stroke="#20252b"/>
+<text x="40" y="480" font-family="sans-serif" font-size="11" fill="#59636e">Source: representation_search.csv. Payload coverage and lossiness remain separate columns.</text>
+</svg>

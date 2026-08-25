@@ -1,0 +1,156 @@
+{
+  "protocolId": "PAH-BUILD002-CONF0001",
+  "classification": "NO_HARDWARE_ADVANTAGE",
+  "widths": [
+    4,
+    6,
+    8
+  ],
+  "coverage": [
+    {
+      "experiment": "A",
+      "status": "COMPLETE_BOUNDED",
+      "widths": [
+        4,
+        6,
+        8
+      ],
+      "rowCount": 45,
+      "integratedRows": 0,
+      "notMeasuredCostCells": 114,
+      "notes": "Binary multiply, binary-exponent compose, thermometer compose, and explicit adapters are separated by phase and contract."
+    },
+    {
+      "experiment": "B",
+      "status": "COMPLETE_BOUNDED",
+      "widths": [
+        4,
+        6,
+        8
+      ],
+      "rowCount": 240,
+      "integratedRows": 144,
+      "notMeasuredCostCells": 216,
+      "notes": "Eight frozen 32-step traces per width use integrated persistent binary and structural machines under all three output obligations."
+    },
+    {
+      "experiment": "C",
+      "status": "COMPLETE_BOUNDED",
+      "widths": [
+        4,
+        6,
+        8
+      ],
+      "rowCount": 24,
+      "integratedRows": 6,
+      "notMeasuredCostCells": 24,
+      "notes": "Full binary GCD/LCM semantics, S4 meet/join/divides, adapters, and exact-sidecar query hardware are bounded separately."
+    },
+    {
+      "experiment": "D",
+      "status": "COMPLETE_BOUNDED",
+      "widths": [
+        4,
+        6,
+        8
+      ],
+      "rowCount": 54,
+      "integratedRows": 0,
+      "notMeasuredCostCells": 162,
+      "notes": "Eight rational cases plus denominator-zero per width distinguish fully reduced binary results from bounded catalog projections."
+    },
+    {
+      "experiment": "E",
+      "status": "COMPLETE_BOUNDED",
+      "widths": [
+        4,
+        6,
+        8
+      ],
+      "rowCount": 165,
+      "integratedRows": 165,
+      "notMeasuredCostCells": 0,
+      "notes": "Eight mixed-addition traces per width run integrated sidecar hardware with delayed and eager refresh policies."
+    },
+    {
+      "experiment": "F",
+      "status": "COMPLETE_BOUNDED",
+      "widths": [
+        4,
+        6,
+        8
+      ],
+      "rowCount": 63,
+      "integratedRows": 63,
+      "notMeasuredCostCells": 0,
+      "notes": "All three frozen hostile trace families per width run integrated hardware; unsupported cofactors remain in authoritative magnitude."
+    },
+    {
+      "experiment": "R",
+      "status": "COMPLETE_BOUNDED",
+      "widths": [
+        4,
+        6,
+        8
+      ],
+      "rowCount": 18,
+      "integratedRows": 0,
+      "notMeasuredCostCells": 54,
+      "notes": "Binary exponent, thermometer, presence, and exact-sidecar representations and implemented adapters retain distinct evidence classes."
+    }
+  ],
+  "inheritedEvidence": {
+    "complete": true,
+    "build000ManifestSha256": "2F9ECD3DA3C2887EAA3E836D543FCCD7C0FF2139DD737FFA68475A9A5BE0935D",
+    "build001ManifestSha256": "E7A1FCF41C9E34253D398C250FDBB10D340755BF5CF07D8CDE79696C3CC48E14",
+    "build001ReportSha256": "806EF56F13025D2837BF2A1D915D692A06DDB0DCC7195AB4F7CF5887B23473F6"
+  },
+  "correctness": {
+    "status": "BOUNDED_PASS",
+    "checkCount": 656810,
+    "failureCount": 0,
+    "zeroSkippedRequired": true,
+    "notes": "The generated arithmetic receipt has no skip mechanism; repository test and CI receipts independently require zero skipped tests."
+  },
+  "operationClassesComplete": true,
+  "hdl": {
+    "status": "COMPLETE_VERIFIED",
+    "complete": true,
+    "verificationCaseCount": 260,
+    "formalCaseCount": 15,
+    "synthesisRowCount": 150,
+    "warningCountsMeasured": 150,
+    "warningCountsNotMeasured": 0,
+    "sourceHashes": {
+      "verification": "9228A81882128F4FD5A9F9BA466D1385DB5B5B829EAC01242BB09F0CD4E81B90",
+      "synthesis": "98D141AEE19E1E741EBEC2B3D4E4DD31899FCB78FCF25FCF9DA5B41A8A93AA4D",
+      "toolchain": "6B78A5C143D541028148ABF3A00649327602638FE13FB1A0D219EB746C6DD989"
+    }
+  },
+  "decisionEarned": true,
+  "decisionRules": {
+    "alternativeArithmeticUnitCandidate": {
+      "satisfied": false,
+      "reason": "The only integrated mixed-operation experimental machine is the exact sidecar. It is statically larger than the matched binary machine at W6 and W8 and therefore cannot Pareto-dominate E in both regimes."
+    },
+    "primeStructuralCoprocessorCandidate": {
+      "satisfied": false,
+      "reason": "The exact sidecar is larger than the full binary divide/query context at W6 and W8 before any 32-operation dynamic cost is charged; its static overhead cannot reach frozen Pareto break-even."
+    },
+    "warmStateSpecializedAdvantage": {
+      "satisfied": false,
+      "reason": "The structural warm machine reduces NAND count, depth, wiring, and transitions, but uses more DFF/state/port bits at both W6 and W8. That tradeoff is not Pareto dominance under the frozen vector rule."
+    },
+    "unexpectedArchitecture": {
+      "satisfied": false,
+      "reason": "No architecture outside the preregistered structural, thermometer, presence, or exact-sidecar families survived the integrated adversarial tests."
+    },
+    "fallback": "NO_HARDWARE_ADVANTAGE"
+  },
+  "limits": [
+    "Logical NAND2/DFF evidence is not a placed, routed, timed, or power-characterized chip.",
+    "S4 is a fixed bounded catalog; catalog projections are never relabeled as general factorization.",
+    "Some composite GCD/LCM/rational settled-transition totals remain NOT_MEASURED and are not used for an advantage claim.",
+    "W8 sidecar addition uses the frozen 20,000 gate-level cases plus exhaustive semantic differential checking."
+  ]
+}

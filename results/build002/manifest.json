@@ -1,0 +1,82 @@
+{
+  "protocolId": "PAH-BUILD002-CONF0001",
+  "protocolBaselineCommit": "dfd2e7a409aaa114f054a0b40e4b282c68dc0d52",
+  "frozenPlanSha256": "24C770290A97A1C467DBCC7B4C97CA9EE875EFC21ADE837CA9D96049ACD76745",
+  "masterSeed": "0x5041485742303032",
+  "generatorCommand": "dotnet run --project src/PrimeAxiom.Cli --configuration Release -- experiment-build002 --output results/build002 --hdl-verification-summary .artifacts/build002-hdl-full-zero-repair/verification-summary.json --hdl-synthesis-metrics .artifacts/build002-hdl-full-zero-repair/synthesis-metrics.csv --hdl-toolchain .artifacts/build002-hdl-full-zero-repair/toolchain-bootstrap.json",
+  "runtime": ".NET 8.0.29",
+  "architecture": "X64",
+  "classification": "NO_HARDWARE_ADVANTAGE",
+  "correctnessChecks": 656810,
+  "correctnessFailures": 0,
+  "hdlImport": {
+    "status": "COMPLETE_VERIFIED",
+    "complete": true,
+    "verificationSummarySha256": "9228A81882128F4FD5A9F9BA466D1385DB5B5B829EAC01242BB09F0CD4E81B90",
+    "synthesisMetricsSha256": "98D141AEE19E1E741EBEC2B3D4E4DD31899FCB78FCF25FCF9DA5B41A8A93AA4D",
+    "toolchainBootstrapSha256": "6B78A5C143D541028148ABF3A00649327602638FE13FB1A0D219EB746C6DD989"
+  },
+  "files": [
+    {
+      "path": "correctness.json",
+      "sha256": "C61F296D18FE0FC0CFFD3390B032BDDFFE5DD0F883D65C3C698C18BB824DC27C"
+    },
+    {
+      "path": "static_costs.csv",
+      "sha256": "54BB380EFEB6E0482B5217E03CDBD98FB55E326CD2354A4782D1E1EAA14A5EBD"
+    },
+    {
+      "path": "dynamic_operations.csv",
+      "sha256": "64DF784BB887D1DF3A55510E4ACCB856FCA2D9651B9E1695D705D7CAA5A50721"
+    },
+    {
+      "path": "workload_matrix.csv",
+      "sha256": "A02874CED306D4D831ED3ADC910BBF15F4FF77154F8B76FF9A2200D03A1B6FDB"
+    },
+    {
+      "path": "ingress_egress.csv",
+      "sha256": "A97A9038D4390C88FA3CB95A52C7D0D74C730E9DA369D5342FBF5C8E60AAC36E"
+    },
+    {
+      "path": "representation_search.csv",
+      "sha256": "CF516A640393AB5EB296748130FEE17770DD5ADE8F2C72321A01408879FFBB3F"
+    },
+    {
+      "path": "addition_adversary.csv",
+      "sha256": "9C3AE05AF2CDED2845B11AA5B10AA08D106CCBD1CCF5D2DDE9041CC167ED85A6"
+    },
+    {
+      "path": "hostile_support.csv",
+      "sha256": "B71302BBFBDD08AEA3AC4CDA4B8049B431A190F087C1FEFF59D4B9A9D6842914"
+    },
+    {
+      "path": "synthesis_metrics.csv",
+      "sha256": "B97ECDE611E7466DE969D92166AFA98445EF57CC203AF44629D9B74962A662BB"
+    },
+    {
+      "path": "formal_receipts.json",
+      "sha256": "70559B2D6F3AD7883FF78750C528655E769C5243B7EB76655B22658926CADEEB"
+    },
+    {
+      "path": "toolchain.json",
+      "sha256": "BCAD3221E605FD74649F584127B24419A75DAB94EDB499D2BBF7B6C86BDD8845"
+    },
+    {
+      "path": "protocol_coverage.json",
+      "sha256": "8173E4D4484302756D2BAFDA57D4004D79AA494FBBC01C668DA54D397B1941E7"
+    },
+    {
+      "path": "figures/static_gate_counts.svg",
+      "sha256": "749DADACC59BF5A4ADF9EA5E66545CF4A8E6CF9EDF74BD4428541A92EA8D1095"
+    },
+    {
+      "path": "figures/representation_bits.svg",
+      "sha256": "556FE472FC25A5D73631EA71CB0F91E48C18F61791849DC3952098F701674E89"
+    },
+    {
+      "path": "README.md",
+      "sha256": "AA4E9BF6EDEFBFA02BD52CE4DC6650D8C8227AFBB1D343A7589202829488279A"
+    }
+  ],
+  "notes": "manifest.json intentionally does not hash itself; paths are output-relative and slash-normalized."
+}
