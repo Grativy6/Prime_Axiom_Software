@@ -16,8 +16,8 @@ if ($LASTEXITCODE -ne 0) {
 dotnet restore PrimeAxiom.sln --locked-mode
 if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
-dotnet format PrimeAxiom.sln --verify-no-changes --no-restore
-if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+$formatExitCode = & (Join-Path $PSScriptRoot 'verify-dotnet-format.ps1') -SolutionPath 'PrimeAxiom.sln'
+if ($formatExitCode -ne 0) { exit $formatExitCode }
 
 dotnet build PrimeAxiom.sln --configuration Release --no-restore
 if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
