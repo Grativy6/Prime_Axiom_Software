@@ -425,6 +425,10 @@ internal static class Build002ExperimentRunner
             var gcdNetlist = BaselineAlgorithmHardware.BuildSubtractiveGcdMachine(width);
             long gcdCases = 0;
             long gcdCycles = 0;
+            long lcmCycles = 0;
+            long lcmEvaluations = 0;
+            var dividerNands = divider.Metrics.Nand2Static;
+            var multiplierNands = multiplier.Metrics.Nand2Static;
             for (var left = 0; left < magnitudeLimit; left++)
             {
                 for (var right = 0; right < magnitudeLimit; right++)
@@ -435,6 +439,17 @@ internal static class Build002ExperimentRunner
                         $"C/BIN-GCD/W{width}/{left}/{right}");
                     gcdCases++;
                     gcdCycles += receipt.Cycles;
+                    var expectedLcm = left == 0 || right == 0
+                        ? 0L
+                        : ((long)left / receipt.Result) * right;
+                    correctness.Check(
+                        expectedLcm == OracleLcm(left, right),
+                        $"C/BIN-LCM/W{width}/{left}/{right}");
+                    var postGcdCycles = expectedLcm == 0 ? 0 : 2;
+                    lcmCycles += receipt.Cycles + postGcdCycles;
+                    lcmEvaluations += checked(
+                        (receipt.Cycles * (long)gcdNetlist.Metrics.Nand2Static) +
+                        (expectedLcm == 0 ? 0 : dividerNands + multiplierNands));
                 }
             }
 
@@ -457,6 +472,25 @@ internal static class Build002ExperimentRunner
                 "FULL_BINARY_TRANSITIONS_NOT_MEASURED",
                 gcd,
                 "Cycles execute the exhaustively checked NAND transition; settled transition totals were not replayed end-to-end.");
+            var lcm = new OperationMeasurement(
+                gcdCases,
+                lcmCycles,
+                lcmEvaluations,
+                NotMeasured,
+                NotMeasured,
+                NotMeasured,
+                NotMeasured);
+            AddMeasured(
+                $"C/BIN-LCM/W{width}",
+                "BIN-GCD+DIV+MUL",
+                width,
+                "LCM",
+                "COLD_MAG",
+                "MAGNITUDE_FINAL",
+                "COMPOSITE_STRUCTURAL_DECLARED",
+                "FULL_BINARY_2W_RESULT_TRANSITIONS_NOT_MEASURED",
+                lcm,
+                "LCM uses checked GCD, exact division, and full 2W multiplication; composite controller transitions are not claimed.");
 
             rows.Add(NotMeasuredDynamicRow(
                 "BIN+VSC-S4",
@@ -656,6 +690,19 @@ internal static class Build002ExperimentRunner
                 "Cycle/NAND-evaluation totals are exact for the checked transition; settled transition replay is NOT_MEASURED.");
             AddMeasurement(
                 "C",
+                $"C-W{width}-BIN-LCM-ALL",
+                "BIN-GCD+DIV+MUL",
+                width,
+                "COLD_MAG",
+                "MAGNITUDE_FINAL",
+                "EXECUTE",
+                "COMPOSITE_STRUCTURAL_DECLARED",
+                "FULL_BINARY_2W_RESULT_TRANSITIONS_NOT_MEASURED",
+                dynamic.Measurements[$"C/BIN-LCM/W{width}"],
+                "all ordered W-bit magnitude pairs",
+                "Exact 2W LCM semantics; GCD/divider/multiplier costs are charged, while composite settled transitions remain explicit NOT_MEASURED.");
+            AddMeasurement(
+                "C",
                 $"C-W{width}-BINEXP-MEET-SMOOTH",
                 "VFU-BINEXP-S4",
                 width,
@@ -697,17 +744,7 @@ internal static class Build002ExperimentRunner
             foreach (var rational in Build002Workloads.RationalReduction(width))
             {
                 rows.Add(RunBinaryRational(rational, correctness));
-                rows.Add(NotMeasuredWorkload(
-                    "D",
-                    rational.Id + "-STRUCTURAL",
-                    "VFU-BINEXP-S4",
-                    width,
-                    "WARM_RESIDENT",
-                    "STRUCTURAL_FINAL",
-                    "EXECUTE",
-                    1,
-                    "CATALOG_PROJECTION_ONLY",
-                    "Catalog reduction semantics are available, but an integrated rational register/controller was not built."));
+                rows.Add(RunStructuralRational(rational, correctness));
             }
 
             foreach (var trace in Build002Workloads.MixedAddition(width))
@@ -1227,6 +1264,118 @@ internal static class Build002ExperimentRunner
             $"{numerator}/{denominator}",
             rational.Feature,
             "GCD cycles and NAND evaluations are exact; end-to-end settled transitions are NOT_MEASURED.");
+    }
+
+    private static Build002WorkloadRow RunStructuralRational(
+        Build002RationalCase rational,
+        CorrectnessAccumulator correctness)
+    {
+        if (rational.Denominator == 0)
+        {
+            return new Build002WorkloadRow(
+                "D",
+                rational.Id + "-STRUCTURAL",
+                "VFU-BINEXP-S4-RATIONAL",
+                rational.Width,
+                "WARM_RESIDENT",
+                "STRUCTURAL_FINAL",
+                "EXECUTE",
+                "SEMANTIC_REJECTION",
+                "REJECTED_DENOMINATOR_ZERO",
+                1,
+                1,
+                0,
+                0,
+                0,
+                1,
+                0,
+                0,
+                0,
+                string.Empty,
+                rational.Feature,
+                "Denominator-zero rejection occurs before a structural datapath operation; controller static cost is reported as NOT_MEASURED.");
+        }
+
+        var numerator = ValuationProjection(rational.Width, rational.Numerator);
+        var denominator = ValuationProjection(rational.Width, rational.Denominator);
+        var meet = ExperimentalHardware.BuildBinaryExponentMeet(rational.Width);
+        var cancel = ExperimentalHardware.BuildBinaryExponentCancel(rational.Width);
+        var meetEval = meet.Netlist.Evaluate(
+            ExperimentalInputs(meet, numerator.State, denominator.State, opcode: null),
+            compareWithAllOff: true);
+        var common = numerator.State.Meet(denominator.State);
+        correctness.Check(common.Succeeded, $"D/STRUCTURAL/MEET/{rational.Id}");
+        CheckExperimentalResult(
+            meet,
+            meetEval,
+            common.Value!,
+            correctness,
+            $"D/STRUCTURAL/MEET_RESULT/{rational.Id}");
+
+        var numeratorEval = cancel.Netlist.Evaluate(
+            ExperimentalInputs(cancel, numerator.State, common.Value!, opcode: null),
+            compareWithAllOff: true);
+        var numeratorReduced = numerator.State.Cancel(common.Value!);
+        correctness.Check(numeratorReduced.Succeeded, $"D/STRUCTURAL/CANCEL_NUM/{rational.Id}");
+        CheckExperimentalResult(
+            cancel,
+            numeratorEval,
+            numeratorReduced.Value!,
+            correctness,
+            $"D/STRUCTURAL/CANCEL_NUM_RESULT/{rational.Id}");
+
+        var denominatorEval = cancel.Netlist.Evaluate(
+            ExperimentalInputs(cancel, denominator.State, common.Value!, opcode: null),
+            compareWithAllOff: true);
+        var denominatorReduced = denominator.State.Cancel(common.Value!);
+        correctness.Check(denominatorReduced.Succeeded, $"D/STRUCTURAL/CANCEL_DEN/{rational.Id}");
+        CheckExperimentalResult(
+            cancel,
+            denominatorEval,
+            denominatorReduced.Value!,
+            correctness,
+            $"D/STRUCTURAL/CANCEL_DEN_RESULT/{rational.Id}");
+
+        var fullySupported = numerator.FullySupported && denominator.FullySupported;
+        if (fullySupported)
+        {
+            var binaryGcd = OracleGcd(rational.Numerator, rational.Denominator);
+            correctness.Check(
+                numeratorReduced.Value!.Reconstruct().Value!.Value == rational.Numerator / binaryGcd &&
+                denominatorReduced.Value!.Reconstruct().Value!.Value == rational.Denominator / binaryGcd,
+                $"D/STRUCTURAL/FULL_REDUCTION/{rational.Id}");
+        }
+
+        var nandEvaluations = (long)meetEval.NandEvaluations +
+                              numeratorEval.NandEvaluations +
+                              denominatorEval.NandEvaluations;
+        var transitions = (long)meetEval.NandOutputTransitions +
+                          numeratorEval.NandOutputTransitions +
+                          denominatorEval.NandOutputTransitions;
+        return new Build002WorkloadRow(
+            "D",
+            rational.Id + "-STRUCTURAL",
+            "VFU-BINEXP-S4-RATIONAL",
+            rational.Width,
+            "WARM_RESIDENT",
+            "STRUCTURAL_FINAL",
+            "EXECUTE",
+            "COMPOSITE_STRUCTURAL_DECLARED",
+            fullySupported ? "FULLY_REDUCED_S4_STRUCTURAL" : "CATALOG_PROJECTION_ONLY",
+            3,
+            3,
+            nandEvaluations,
+            transitions,
+            0,
+            0,
+            0,
+            0,
+            0,
+            $"{FormatState(numeratorReduced.Value!)}/{FormatState(denominatorReduced.Value!)}",
+            rational.Feature,
+            fullySupported
+                ? "MEET plus two checked CANCEL operations fully reduce this S4-supported rational; integrated rational DFF/control is not included."
+                : "MEET plus two checked CANCEL operations remove only catalog factors; an unsupported shared cofactor can remain, so this is not a fully reduced rational.");
     }
 
     private static Build002WorkloadRow RunSidecarMixedTrace(
@@ -2206,6 +2355,30 @@ internal static class Build002ExperimentRunner
         return true;
     }
 
+    private static ValuationProjectionReceipt ValuationProjection(int width, int magnitude)
+    {
+        if (magnitude == 0)
+        {
+            return new ValuationProjectionReceipt(
+                ValuationHardwareState.Zero(width),
+                FullySupported: true);
+        }
+
+        var exponents = ValuationHardwareDomain.S4
+            .Select(prime => Valuation(magnitude, prime))
+            .ToArray();
+        var state = ValuationHardwareState.Create(width, false, exponents);
+        if (!state.Succeeded)
+        {
+            throw new InvalidOperationException(
+                $"A W-bit magnitude produced an invalid catalog valuation projection: {magnitude}.");
+        }
+
+        return new ValuationProjectionReceipt(
+            state.Value!,
+            TryEncodeSmooth(width, magnitude, out _));
+    }
+
     private static int ReadWord(
         IReadOnlyDictionary<string, BitState> outputs,
         string name,
@@ -2315,6 +2488,11 @@ internal static class Build002ExperimentRunner
         return left;
     }
 
+    private static long OracleLcm(int left, int right) =>
+        left == 0 || right == 0
+            ? 0
+            : ((long)left / OracleGcd(left, right)) * right;
+
     private static int Valuation(int magnitude, int prime)
     {
         if (magnitude == 0)
@@ -2413,6 +2591,10 @@ internal static class Build002ExperimentRunner
         ValuationHardwareState FinalState,
         int Rejections,
         OperationMeasurement Measurement);
+
+    private sealed record ValuationProjectionReceipt(
+        ValuationHardwareState State,
+        bool FullySupported);
 
     private sealed record HdlSummaryReceipt(
         string Name,
