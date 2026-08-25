@@ -197,7 +197,10 @@ namespace PrimeAxiom {
             Command = $(if ($IsWindows) { $env:PYTHON_EXECUTABLE } else { 'yosys-smtbmc' })
             Prefix = $(if ($IsWindows) { @((Join-Path $installRoot 'bin/yosys-smtbmc-script.py')) } else { @() })
             Arguments = @('-h')
-            Pattern = '^yosys-smtbmc-script\.py'
+            # The Windows Python entry point names the script; the Linux
+            # launcher prints its installed command name. Both must expose
+            # the same recognizable help contract rather than merely exit 0.
+            Pattern = '^yosys-smtbmc(?:-script\.py)?\s+\[options\]'
         }
         z3 = @{ Command = $(if ($IsWindows) { 'z3.exe' } else { 'z3' }); Prefix = @(); Arguments = @('--version'); Pattern = '^Z3 version ' }
     }
