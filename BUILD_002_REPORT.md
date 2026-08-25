@@ -365,6 +365,19 @@ The committed result manifest is [`results/build002/manifest.json`](results/buil
 
 The strengthened local full-verifier receipt `.artifacts/build002-verify-final-strengthened-verification.json` records `PASS`, 183/183 tests, zero failures, zero skipped, 656,810 arithmetic checks, 260 HDL cases, 15 formal cases, 150 synthesis rows, `deterministic_replay=true`, and replay-manifest SHA-256 `ABF8EFB022FDBE6B9DAAFE800E46DB26E1D8303683398B82A4169AA9F68CF239`. That replay hash differs from the committed manifest only because its recorded output directory is `.artifacts/build002-verify-final-strengthened`; all other generated artifact bytes match.
 
+### Cross-platform decision gate
+
+[Draft PR #2 CI run 32814482250](https://github.com/Grativy6/Prime_Axiom_Software/actions/runs/32814482250) closed the protocol's Windows/Ubuntu gate on commit `b6a110c709dd9667e75442ba86d269c1ecec1713`:
+
+| Platform | Build 002 job | Result | Replay manifest SHA-256 | Preserved raw HDL files |
+|---|---|---|---|---:|
+| Ubuntu | [97699948322](https://github.com/Grativy6/Prime_Axiom_Software/actions/runs/32814482250/job/97699948322) | `PASS`; `NO_HARDWARE_ADVANTAGE`; 183/183 tests, 0 skipped; 656,810 checks; 260 HDL | `E4725618033113A3EE1206A7DB51B46399E915D19C315CA0204CA3A061D05310` | 752 |
+| Windows | [97699948499](https://github.com/Grativy6/Prime_Axiom_Software/actions/runs/32814482250/job/97699948499) | same status, classification, and counts | `041E0E25017D2CD83246D2E9BE2BC96F778CBC9E1CC08BFCD6D4EEEFC8BB8B89` | 752 |
+
+Each downloaded manifest matched the SHA in its verification receipt and every listed file verified. Platform-specific synthesis, formal, and toolchain imports—and the coverage files that cite their source hashes—differ honestly; all other generated result files were byte-identical across the bundles. The separate inherited-evidence jobs also passed on both platforms.
+
+Two failed CI runs remain part of the evidence trail. [Run 32813419993](https://github.com/Grativy6/Prime_Axiom_Software/actions/runs/32813419993) exposed an overly Windows-specific `yosys-smtbmc` help recognizer. [Run 32813798348](https://github.com/Grativy6/Prime_Axiom_Software/actions/runs/32813798348) passed the repaired probe and all 260 HDL cases on both systems, then correctly withheld the terminal label because the frozen inherited receipts lacked explicit cross-platform line-ending attributes. The final run demonstrates both repairs; neither failed receipt is rewritten as success.
+
 From the repository root, the full verification path is:
 
 ```powershell
