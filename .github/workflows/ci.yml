@@ -88,3 +88,38 @@ jobs:
             .artifacts/build002-hdl-ci
           include-hidden-files: true
           if-no-files-found: error
+
+  build002-cross-platform:
+    needs: build002
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v6
+
+      - name: Download Linux Build 002 receipts
+        uses: actions/download-artifact@v7
+        with:
+          name: build002-Linux-receipts
+          path: .artifacts/cross-platform/linux
+
+      - name: Download Windows Build 002 receipts
+        uses: actions/download-artifact@v7
+        with:
+          name: build002-Windows-receipts
+          path: .artifacts/cross-platform/windows
+
+      - name: Verify the paired platform receipts
+        shell: pwsh
+        run: >-
+          & ./scripts/verify-build002-cross-platform.ps1
+          -LinuxArtifactDirectory .artifacts/cross-platform/linux
+          -WindowsArtifactDirectory .artifacts/cross-platform/windows
+          -OutputPath artifacts/build002-cross-platform-verification.json
+
+      - name: Upload paired cross-platform receipt
+        uses: actions/upload-artifact@v6
+        with:
+          name: build002-cross-platform-receipt
+          path: artifacts/build002-cross-platform-verification.json
+          if-no-files-found: error

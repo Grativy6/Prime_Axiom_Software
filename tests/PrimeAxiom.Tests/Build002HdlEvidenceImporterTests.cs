@@ -22,6 +22,7 @@ public sealed class Build002HdlEvidenceImporterTests
 
             Assert.False(first.Complete);
             Assert.Equal("NOT_SUPPLIED", first.Status);
+            Assert.Equal("NOT_SUPPLIED", first.Platform);
             Assert.Equal(0, first.VerificationCaseCount);
             Assert.Equal(0, first.FormalCaseCount);
             Assert.Equal(0, first.SynthesisRowCount);
@@ -74,10 +75,11 @@ public sealed class Build002HdlEvidenceImporterTests
 
             Assert.True(first.Complete);
             Assert.Equal("COMPLETE_VERIFIED", first.Status);
-            Assert.Equal(15, first.VerificationCaseCount);
-            Assert.Equal(3, first.FormalCaseCount);
-            Assert.Equal(6, first.SynthesisRowCount);
-            Assert.Equal(5, first.WarningCountsMeasured);
+            Assert.Equal("windows-x64", first.Platform);
+            Assert.Equal(260, first.VerificationCaseCount);
+            Assert.Equal(15, first.FormalCaseCount);
+            Assert.Equal(150, first.SynthesisRowCount);
+            Assert.Equal(149, first.WarningCountsMeasured);
             Assert.Equal(1, first.WarningCountsNotMeasured);
             Assert.Equal(Hash(fixture.Summary), first.VerificationSummarySourceSha256);
             Assert.Equal(Hash(fixture.Synthesis), first.SynthesisMetricsSourceSha256);
@@ -149,7 +151,7 @@ public sealed class Build002HdlEvidenceImporterTests
 
             Assert.False(receipt.Complete);
             Assert.Equal("INCOMPLETE_PHASE_COVERAGE", receipt.Status);
-            Assert.Equal(5, receipt.SynthesisRowCount);
+            Assert.Equal(149, receipt.SynthesisRowCount);
         }
         finally
         {
@@ -195,15 +197,33 @@ public sealed class Build002HdlEvidenceImporterTests
     private static FixturePaths WriteCompleteFixture(string sourceDirectory)
     {
         Directory.CreateDirectory(sourceDirectory);
-        var cases = new List<object>();
+        var cases = new List<object>
+        {
+            Case("ANALYZER_REGRESSION", "netlist_alias_and_failure_guards"),
+            Case("SIMULATION", "tb_primitives"),
+        };
         foreach (var width in new[] { 4, 6, 8 })
         {
-            var detail = width == 4 ? @"proof at E:\secret lab\formal.log" : string.Empty;
-            cases.Add(Case("LINT", $"pa_bin_add_w{width}"));
-            cases.Add(Case("SIMULATION", $"tb_binary_w{width}"));
-            cases.Add(Case("FORMAL", $"formal_binary_w{width}", detail));
-            cases.Add(Case("SYNTHESIS_DECLARED", $"pa_bin_add_w{width}"));
-            cases.Add(Case("SYNTHESIS_OPTIMIZED", $"pa_bin_add_w{width}"));
+            foreach (var pattern in RequiredTopPatterns)
+            {
+                var top = string.Format(CultureInfo.InvariantCulture, pattern, width);
+                cases.Add(Case("LINT", top));
+                cases.Add(Case("SYNTHESIS_DECLARED", top));
+                cases.Add(Case("SYNTHESIS_OPTIMIZED", top));
+            }
+
+            foreach (var family in RequiredSimulationFamilies)
+            {
+                cases.Add(Case("SIMULATION", $"tb_{family}_w{width}"));
+            }
+
+            foreach (var family in RequiredFormalFamilies)
+            {
+                var detail = width == 4 && family == "binary"
+                    ? @"proof at E:\secret lab\formal.log"
+                    : string.Empty;
+                cases.Add(Case("FORMAL", $"formal_{family}_w{width}", detail));
+            }
         }
 
         var summaryPath = Path.Combine(sourceDirectory, "verification-summary.json");
@@ -225,17 +245,20 @@ public sealed class Build002HdlEvidenceImporterTests
         var rowNumber = 0;
         foreach (var width in new[] { 4, 6, 8 })
         {
-            foreach (var evidenceClass in new[] { "STRUCTURAL_DECLARED", "STRUCTURAL_OPTIMIZED" })
+            foreach (var pattern in RequiredTopPatterns)
             {
-                var hashCharacter = (char)('a' + rowNumber++);
-                csv.Append("PAH-BUILD002-CONF0001,")
-                    .Append("pa_bin_add_w")
-                    .Append(width.ToString(CultureInfo.InvariantCulture))
-                    .Append(',')
-                    .Append(evidenceClass)
-                    .Append(",10,0,0,2,1,3,13,23,4,0,5,ACYCLIC,")
-                    .Append(new string(hashCharacter, 64))
-                    .AppendLine(",PASS");
+                var top = string.Format(CultureInfo.InvariantCulture, pattern, width);
+                foreach (var evidenceClass in new[] { "STRUCTURAL_DECLARED", "STRUCTURAL_OPTIMIZED" })
+                {
+                    var hashCharacter = "0123456789abcdef"[rowNumber++ % 16];
+                    csv.Append("PAH-BUILD002-CONF0001,")
+                        .Append(top)
+                        .Append(',')
+                        .Append(evidenceClass)
+                        .Append(",10,0,0,2,1,3,13,23,4,0,5,ACYCLIC,")
+                        .Append(new string(hashCharacter, 64))
+                        .AppendLine(",PASS");
+                }
             }
         }
 
@@ -244,20 +267,28 @@ public sealed class Build002HdlEvidenceImporterTests
         Directory.CreateDirectory(synthesisLogDirectory);
         foreach (var width in new[] { 4, 6, 8 })
         {
-            File.WriteAllText(
-                Path.Combine(synthesisLogDirectory, $"pa_bin_add_w{width}.declared.log"),
-                "No diagnostics.\n",
-                Utf8NoBom);
-        }
+            foreach (var pattern in RequiredTopPatterns)
+            {
+                var top = string.Format(CultureInfo.InvariantCulture, pattern, width);
+                foreach (var mode in new[] { "declared", "optimized" })
+                {
+                    if (top == "pa_bin_vsc_w8" && mode == "optimized")
+                    {
+                        continue;
+                    }
 
-        File.WriteAllText(
-            Path.Combine(synthesisLogDirectory, "pa_bin_add_w4.optimized.log"),
-            "Warning: first. warning: second.\n",
-            Utf8NoBom);
-        File.WriteAllText(
-            Path.Combine(synthesisLogDirectory, "pa_bin_add_w6.optimized.log"),
-            "ABC Warning: one.\n",
-            Utf8NoBom);
+                    var content = top == "pa_bin_add_w4" && mode == "optimized"
+                        ? "Warning: first. warning: second.\n"
+                        : top == "pa_bin_add_w6" && mode == "optimized"
+                            ? "ABC Warning: one.\n"
+                            : "No diagnostics.\n";
+                    File.WriteAllText(
+                        Path.Combine(synthesisLogDirectory, $"{top}.{mode}.log"),
+                        content,
+                        Utf8NoBom);
+                }
+            }
+        }
 
         var toolchainPath = Path.Combine(sourceDirectory, "toolchain-bootstrap.json");
         WriteJson(toolchainPath, new
@@ -324,6 +355,21 @@ public sealed class Build002HdlEvidenceImporterTests
         "synthesis_metrics.csv",
         "toolchain.json",
     ];
+    private static readonly string[] RequiredTopPatterns =
+    [
+        "pa_bin_add_w{0}", "pa_bin_sub_w{0}", "pa_bin_compare_w{0}", "pa_bin_mul_w{0}",
+        "pa_bin_fu_w{0}", "pa_bin_counter_w{0}", "pa_bin_fu_registered_w{0}",
+        "pa_binexp_compose_w{0}", "pa_binexp_checked_compose_w{0}", "pa_binexp_cancel_w{0}",
+        "pa_binexp_meet_w{0}", "pa_binexp_join_w{0}", "pa_binexp_divides_w{0}",
+        "pa_binexp_valuation_w{0}", "pa_binexp_power_w{0}",
+        "pa_therm_compose_w{0}", "pa_therm_meet_w{0}", "pa_therm_join_w{0}",
+        "pa_therm_divides_w{0}", "pa_therm_validate_w{0}", "pa_bin_to_therm_w{0}",
+        "pa_therm_to_bin_w{0}", "pa_cold_encode_w{0}", "pa_vsc_query_w{0}", "pa_bin_vsc_w{0}",
+    ];
+    private static readonly string[] RequiredSimulationFamilies =
+        ["binary", "counter", "binexp", "checked", "therm", "sidecar"];
+    private static readonly string[] RequiredFormalFamilies =
+        ["binary", "binexp", "checked", "therm", "sidecar"];
 
     private static readonly UTF8Encoding Utf8NoBom = new(encoderShouldEmitUTF8Identifier: false);
     private static readonly JsonSerializerOptions FixtureJsonOptions = new() { WriteIndented = true };

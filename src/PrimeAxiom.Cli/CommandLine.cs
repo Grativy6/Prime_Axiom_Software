@@ -134,13 +134,13 @@ internal static class CommandLine
                     output = args[++index];
                     break;
                 case "--hdl-verification-summary" when index + 1 < args.Length:
-                    hdlVerificationSummary = Path.GetFullPath(args[++index]);
+                    hdlVerificationSummary = args[++index];
                     break;
                 case "--hdl-synthesis-metrics" when index + 1 < args.Length:
-                    hdlSynthesisMetrics = Path.GetFullPath(args[++index]);
+                    hdlSynthesisMetrics = args[++index];
                     break;
                 case "--hdl-toolchain" when index + 1 < args.Length:
-                    hdlToolchainBootstrap = Path.GetFullPath(args[++index]);
+                    hdlToolchainBootstrap = args[++index];
                     break;
                 default:
                     Console.Error.WriteLine($"Unknown Build 002 experiment option: {args[index]}");

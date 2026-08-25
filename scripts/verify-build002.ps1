@@ -83,11 +83,32 @@ try {
         throw "Generated manifest is not deterministic across an immediate replay: first=$firstManifestSha256 second=$secondManifestSha256"
     }
     $coverage = Get-Content -LiteralPath (Join-Path $outputFull 'protocol_coverage.json') -Raw | ConvertFrom-Json
-    if ($coverage.classification -ne 'NO_HARDWARE_ADVANTAGE' -or -not $coverage.decisionEarned) {
-        throw "Build 002 terminal classification was not earned: $($coverage.classification)"
-    }
     if (-not $coverage.hdl.complete -or $coverage.hdl.status -ne 'COMPLETE_VERIFIED') {
         throw 'Imported HDL evidence is not COMPLETE_VERIFIED.'
+    }
+    if ([int]$coverage.hdl.verificationCaseCount -ne 260 -or
+        [int]$coverage.hdl.formalCaseCount -ne 15 -or
+        [int]$coverage.hdl.synthesisRowCount -ne 150 -or
+        [int]$coverage.hdl.warningCountsMeasured -ne 150 -or
+        [int]$coverage.hdl.warningCountsNotMeasured -ne 0) {
+        throw "Build 002 HDL matrix is incomplete: cases=$($coverage.hdl.verificationCaseCount) formal=$($coverage.hdl.formalCaseCount) synthesis=$($coverage.hdl.synthesisRowCount) warningsMeasured=$($coverage.hdl.warningCountsMeasured) warningsNotMeasured=$($coverage.hdl.warningCountsNotMeasured)"
+    }
+
+    $hdlPlatform = [string]$coverage.hdl.platform
+    if ($hdlPlatform -eq 'linux-x64') {
+        if ($coverage.classification -ne 'NO_HARDWARE_ADVANTAGE' -or -not $coverage.decisionEarned) {
+            throw "Build 002 canonical terminal classification was not earned: $($coverage.classification)"
+        }
+        $evidenceRole = 'CANONICAL_LINUX_TERMINAL'
+    } elseif ($hdlPlatform -eq 'windows-x64') {
+        if ($coverage.classification -ne 'PARTIAL — FINAL DECISION NOT EARNED' -or
+            $coverage.decisionEarned -or
+            $coverage.decisionRules.fallback -ne 'NO_HARDWARE_ADVANTAGE') {
+            throw "Build 002 Windows receipt crossed the canonical authority boundary: classification=$($coverage.classification) fallback=$($coverage.decisionRules.fallback)"
+        }
+        $evidenceRole = 'WINDOWS_REPRODUCIBILITY_NONTERMINAL'
+    } else {
+        throw "Build 002 HDL platform is not registered: $hdlPlatform"
     }
 
     $manifest = Get-Content -LiteralPath (Join-Path $outputFull 'manifest.json') -Raw | ConvertFrom-Json
@@ -113,6 +134,8 @@ try {
         schema = 'prime-axiom-build002-verification-v1'
         protocol = 'PAH-BUILD002-CONF0001'
         status = 'PASS'
+        evidence_role = $evidenceRole
+        hdl_platform = $hdlPlatform
         classification = [string]$coverage.classification
         tests = [ordered]@{ total = $total; passed = $passed; failed = $failed; skipped = $skipped }
         arithmetic_checks = [long]$coverage.correctness.checkCount
@@ -130,7 +153,7 @@ try {
 
     git diff --exit-code $baselineCommit -- BUILD_000_REPORT.md BUILD_001_REPORT.md results/build000 results/build001
     if ($LASTEXITCODE -ne 0) { throw 'Build 002 verification changed inherited Build 000/001 evidence.' }
-    Write-Host "Build 002 verification passed: $passed/$total tests; 0 skipped; $($coverage.hdl.verificationCaseCount) HDL cases; deterministic terminal classification $($coverage.classification)."
+    Write-Host "Build 002 verification passed: $passed/$total tests; 0 skipped; $($coverage.hdl.verificationCaseCount) HDL cases; role $evidenceRole; classification $($coverage.classification)."
 } finally {
     Pop-Location
 }

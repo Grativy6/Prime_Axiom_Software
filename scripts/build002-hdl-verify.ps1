@@ -105,7 +105,7 @@ try {
     $analyzerTestLog=Join-Path $outputFull 'analyzer-regression.log'
     $analyzerTests=Invoke-Logged -FileName $python -Arguments @('-m','unittest','hdl/tools/test_analyze_netlist.py') -LogPath $analyzerTestLog
     $analyzerTestsPassed=(-not $analyzerTests.TimedOut -and $analyzerTests.ExitCode -eq 0 -and $analyzerTests.Output -match 'OK\s*$')
-    Add-CaseResult -Phase 'ANALYZER_REGRESSION' -Case 'netlist_alias_and_failure_guards' -Passed $analyzerTestsPassed -Log $analyzerTestLog -Detail $(if($analyzerTests.TimedOut){'TIMEOUT'}elseif($analyzerTests.ExitCode -ne 0){"EXIT_$($analyzerTests.ExitCode)"}else{'SUCCESS_MARKER_MISSING'})
+    Add-CaseResult -Phase 'ANALYZER_REGRESSION' -Case 'netlist_alias_and_failure_guards' -Passed $analyzerTestsPassed -Log $analyzerTestLog -Detail $(if($analyzerTests.TimedOut){'TIMEOUT'}elseif($analyzerTests.ExitCode -ne 0){"EXIT_$($analyzerTests.ExitCode)"}elseif($analyzerTestsPassed){''}else{'SUCCESS_MARKER_MISSING'})
 
     $lintDir=Join-Path $outputFull 'lint';New-Item -ItemType Directory -Force -Path $lintDir|Out-Null
     foreach($top in $tops){
@@ -142,7 +142,7 @@ try {
             $command="read_verilog -formal -sv $sources; prep -top $top -flatten; chformal -lower; opt_clean; sat -verify -prove-asserts -set-assumes -set-def-inputs -show-inputs -show-outputs"
             $run=Invoke-Logged -FileName $yosys -Arguments @('-Q','-p',$command) -LogPath $log
             $pass=(-not $run.TimedOut -and $run.ExitCode -eq 0 -and $run.Output -match 'SAT proof finished - no model found: SUCCESS!' -and $run.Output -match 'End of script\.')
-            Add-CaseResult -Phase 'FORMAL' -Case $top -Passed $pass -Log $log -Detail $(if($run.TimedOut){'TIMEOUT'}elseif($run.ExitCode -ne 0){"EXIT_$($run.ExitCode)"}else{'SUCCESS_MARKER_MISSING'})
+            Add-CaseResult -Phase 'FORMAL' -Case $top -Passed $pass -Log $log -Detail $(if($run.TimedOut){'TIMEOUT'}elseif($run.ExitCode -ne 0){"EXIT_$($run.ExitCode)"}elseif($pass){''}else{'SUCCESS_MARKER_MISSING'})
         }}
     }
 

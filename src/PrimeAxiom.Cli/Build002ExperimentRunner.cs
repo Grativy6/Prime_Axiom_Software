@@ -28,7 +28,6 @@ internal static class Build002ExperimentRunner
         ["STRUCTURAL_FINAL", "MAGNITUDE_FINAL", "MAGNITUDE_EVERY_OP"];
     private static readonly string[] MixedExperiments = ["E", "F"];
     private static readonly string[] RequiredAPhases = ["INGRESS", "EXECUTE", "EGRESS"];
-    private static readonly int[] DecisionWidths = [6, 8];
     private static readonly string[] GeneratedRelativePaths =
     [
         "correctness.json",
@@ -123,6 +122,9 @@ internal static class Build002ExperimentRunner
         WriteReadme(
             Path.Combine(outputDirectory, "README.md"),
             invocationOutputArgument,
+            hdlVerificationSummaryPath,
+            hdlSynthesisMetricsPath,
+            hdlToolchainBootstrapPath,
             correctnessReceipt,
             repositoryRoot,
             hdlImport,
@@ -132,6 +134,9 @@ internal static class Build002ExperimentRunner
             repositoryRoot,
             outputDirectory,
             invocationOutputArgument,
+            hdlVerificationSummaryPath,
+            hdlSynthesisMetricsPath,
+            hdlToolchainBootstrapPath,
             hdlImport,
             correctnessReceipt,
             staticRows,
@@ -144,7 +149,7 @@ internal static class Build002ExperimentRunner
             Classify(repositoryRoot, hdlImport, staticRows, workloadRows, correctnessReceipt));
     }
 
-    private static List<Build002StaticCostRow> BuildStaticCosts()
+    internal static List<Build002StaticCostRow> BuildStaticCosts()
     {
         var rows = new List<Build002StaticCostRow>();
         foreach (var width in Build002Protocol.Widths)
@@ -2487,6 +2492,7 @@ internal static class Build002ExperimentRunner
             {
                 hdl.Status,
                 hdl.Complete,
+                hdl.Platform,
                 hdl.VerificationCaseCount,
                 hdl.FormalCaseCount,
                 hdl.SynthesisRowCount,
@@ -2568,7 +2574,7 @@ internal static class Build002ExperimentRunner
             staticRows.Any(row => row.Width == width && row.Operation == "BINEXP_TO_THERMOMETER") &&
             staticRows.Any(row => row.Width == width && row.Operation == "THERMOMETER_TO_BINEXP"));
         var complete = inherited.Complete &&
-                       hdl.Complete &&
+                       HdlDecisionEvidenceComplete(hdl) &&
                        correctness.FailureCount == 0 &&
                        experimentsComplete &&
                        bContractsComplete &&
@@ -2582,105 +2588,77 @@ internal static class Build002ExperimentRunner
             return PartialClassification;
         }
 
-        var rules = BuildDecisionRuleValues(staticRows);
-        if (rules.AlternativeArithmeticUnit)
-        {
-            return "ALTERNATIVE_ARITHMETIC_UNIT_CANDIDATE";
-        }
-
-        if (rules.PrimeStructuralCoprocessor)
-        {
-            return "PRIME_STRUCTURAL_COPROCESSOR_CANDIDATE";
-        }
-
-        if (rules.WarmStateSpecialized)
-        {
-            return "WARM_STATE_SPECIALIZED_ADVANTAGE";
-        }
-
-        return "NO_HARDWARE_ADVANTAGE";
+        return ClassifyStaticDecision(staticRows);
     }
+
+    internal static string ClassifyStaticDecision(IReadOnlyList<Build002StaticCostRow> staticRows) =>
+        Build002DecisionScreen.Evaluate(staticRows).EarnsNoHardwareAdvantage
+            ? "NO_HARDWARE_ADVANTAGE"
+            : PartialClassification;
+
+    internal static bool HdlDecisionEvidenceComplete(Build002HdlImportReceipt hdl) =>
+        hdl.Complete &&
+        hdl.Platform == "linux-x64" &&
+        hdl.VerificationCaseCount == 260 &&
+        hdl.FormalCaseCount == 15 &&
+        hdl.SynthesisRowCount == 150 &&
+        hdl.WarningCountsMeasured == hdl.SynthesisRowCount &&
+        hdl.WarningCountsNotMeasured == 0;
 
     private static object BuildDecisionRules(IReadOnlyList<Build002StaticCostRow> staticRows)
     {
-        var values = BuildDecisionRuleValues(staticRows);
+        var screen = Build002DecisionScreen.Evaluate(staticRows);
         return new
         {
-            AlternativeArithmeticUnitCandidate = new
-            {
-                Satisfied = values.AlternativeArithmeticUnit,
-                Reason = "The only integrated mixed-operation experimental machine is the exact sidecar. It is statically larger than the matched binary machine at W6 and W8 and therefore cannot Pareto-dominate E in both regimes.",
-            },
-            PrimeStructuralCoprocessorCandidate = new
-            {
-                Satisfied = values.PrimeStructuralCoprocessor,
-                Reason = "The exact sidecar is larger than the full binary divide/query context at W6 and W8 before any 32-operation dynamic cost is charged; its static overhead cannot reach frozen Pareto break-even.",
-            },
-            WarmStateSpecializedAdvantage = new
-            {
-                Satisfied = values.WarmStateSpecialized,
-                Reason = "The structural warm machine reduces NAND count, depth, wiring, and transitions, but uses more DFF/state/port bits at both W6 and W8. That tradeoff is not Pareto dominance under the frozen vector rule.",
-            },
+            AlternativeArithmeticUnitCandidate = RuleReceipt(screen.AlternativeArithmeticUnit),
+            PrimeStructuralCoprocessorCandidate = RuleReceipt(screen.PrimeStructuralCoprocessor),
+            WarmStateSpecializedAdvantage = RuleReceipt(screen.WarmStateSpecialized),
             UnexpectedArchitecture = new
             {
                 Satisfied = false,
-                Reason = "No architecture outside the preregistered structural, thermometer, presence, or exact-sidecar families survived the integrated adversarial tests.",
+                Status = screen.CandidateInventory.Complete ? "NOT_PRESENT" : "INCOMPLETE_EVIDENCE",
+                Basis = screen.CandidateInventory.Complete
+                    ? "REGISTERED_INTEGRATED_CANDIDATE_INVENTORY_COMPLETE"
+                    : "INTEGRATED_CANDIDATE_INVENTORY_MISMATCH",
+                Reason = screen.CandidateInventory.Complete
+                    ? "The integrated experimental candidate inventory contains exactly the preregistered sidecar and resident structural rows at both decision widths."
+                    : "The integrated experimental candidate inventory is missing, duplicated, or contains an unregistered row; a terminal decision requires a new bounded rule or repaired evidence.",
+                Inventory = screen.CandidateInventory,
             },
-            Fallback = "NO_HARDWARE_ADVANTAGE",
+            Fallback = screen.EarnsNoHardwareAdvantage
+                ? "NO_HARDWARE_ADVANTAGE"
+                : PartialClassification,
+        };
+
+        static object RuleReceipt(Build002DecisionRuleScreen rule) => new
+        {
+            Satisfied = false,
+            Status = StatusText(rule.Status),
+            rule.Basis,
+            rule.Reason,
+            Comparisons = rule.Comparisons.Select(comparison => new
+            {
+                comparison.ComparisonId,
+                comparison.Context,
+                comparison.Width,
+                Status = StatusText(comparison.Status),
+                comparison.Basis,
+                comparison.CandidateRowId,
+                comparison.BaselineRowId,
+                comparison.CandidateVector,
+                comparison.BaselineVector,
+                comparison.CandidateWorseDimensions,
+                comparison.EvidenceFailures,
+            }),
+        };
+
+        static string StatusText(Build002StaticScreenStatus status) => status switch
+        {
+            Build002StaticScreenStatus.StaticallyDisqualified => "STATICALLY_DISQUALIFIED",
+            Build002StaticScreenStatus.DynamicEvaluationRequired => "DYNAMIC_EVALUATION_REQUIRED",
+            _ => "INCOMPLETE_EVIDENCE",
         };
     }
-
-    private static DecisionRuleValues BuildDecisionRuleValues(
-        IReadOnlyList<Build002StaticCostRow> staticRows)
-    {
-        var alternative = DecisionWidths.All(width =>
-            ParetoDominates(
-                FindStatic(staticRows, "BIN+VSC-S4", width, "INTEGRATED_LOAD_REFRESH_QUERY_SCALE_CANCEL_ADD"),
-                FindStatic(staticRows, "BIN-MIXED-WARM", width, "INTEGRATED_LOAD_SCALE_CANCEL_ADD")));
-        var coprocessor = DecisionWidths.All(width =>
-            ParetoDominates(
-                FindStatic(staticRows, "BIN+VSC-S4", width, "INTEGRATED_LOAD_REFRESH_QUERY_SCALE_CANCEL_ADD"),
-                FindStatic(staticRows, "BIN-DIV", width, "UNSIGNED_RESTORING_DIVIDE")));
-        var warm = DecisionWidths.All(width =>
-            ParetoDominates(
-                FindStatic(staticRows, "VFU-BINEXP-S4-WARM", width, "INTEGRATED_SCALE_CANCEL"),
-                FindStatic(staticRows, "BIN-SCALE-CANCEL-WARM", width, "INTEGRATED_SCALE_CANCEL")));
-        return new DecisionRuleValues(alternative, coprocessor, warm);
-    }
-
-    private static Build002StaticCostRow? FindStatic(
-        IReadOnlyList<Build002StaticCostRow> rows,
-        string implementation,
-        int width,
-        string operation) =>
-        rows.SingleOrDefault(row => row.Implementation == implementation &&
-            row.Width == width && row.Operation == operation);
-
-    private static bool ParetoDominates(Build002StaticCostRow? candidate, Build002StaticCostRow? baseline)
-    {
-        if (candidate is null || baseline is null)
-        {
-            return false;
-        }
-
-        var candidateVector = StaticVector(candidate.Metrics);
-        var baselineVector = StaticVector(baseline.Metrics);
-        return candidateVector.Zip(baselineVector, (left, right) => left <= right).All(value => value) &&
-               candidateVector.Zip(baselineVector, (left, right) => left < right).Any(value => value);
-    }
-
-    private static long[] StaticVector(NandStaticMetrics metrics) =>
-    [
-        metrics.Nand2Static,
-        metrics.DffStatic,
-        metrics.StateBits,
-        metrics.PortBits,
-        metrics.WireBits,
-        metrics.ConnectionsStatic,
-        metrics.MaximumFanout,
-        metrics.CrossLaneConnections,
-        metrics.UnitNandCriticalDepth,
-    ];
 
     private static InheritedEvidenceReceipt CheckInheritedEvidence(string repositoryRoot)
     {
@@ -2705,14 +2683,25 @@ internal static class Build002ExperimentRunner
     private static void WriteReadme(
         string path,
         string invocationOutputArgument,
+        string? hdlVerificationSummaryPath,
+        string? hdlSynthesisMetricsPath,
+        string? hdlToolchainBootstrapPath,
         CorrectnessReceipt correctness,
         string repositoryRoot,
         Build002HdlImportReceipt hdl,
         IReadOnlyList<Build002StaticCostRow> staticRows,
         IReadOnlyList<Build002WorkloadRow> workloadRows)
     {
-        var command = BuildGeneratorCommand(invocationOutputArgument, hdl.Complete);
+        var command = BuildGeneratorCommand(
+            repositoryRoot,
+            invocationOutputArgument,
+            hdlVerificationSummaryPath,
+            hdlSynthesisMetricsPath,
+            hdlToolchainBootstrapPath);
         var classification = Classify(repositoryRoot, hdl, staticRows, workloadRows, correctness);
+        var decisionBoundary = classification == "NO_HARDWARE_ADVANTAGE"
+            ? "The terminal negative is not a claim that valuation operations lack local advantages. The warm structural unit uses fewer NANDs, less depth, and fewer transitions for known-factor composition/cancellation, but it uses more state/port bits; the exact sidecar is larger than the matched binary datapath at W6 and W8; and cold adapters dominate the operation savings. Under the frozen Pareto rule none of those tradeoffs is a whole-machine hardware advantage. No universal scalar score or post-hoc weighted ranking is emitted."
+            : "This is a non-terminal reproducibility aggregate. Its registered static candidates are disqualified under the frozen necessary-condition screen, but only the canonical Linux receipt may issue the terminal classification. Missing canonical provenance, incomplete evidence, or an unregistered integrated candidate remains PARTIAL.";
         var content = $$"""
             # Build 002 generated evidence
 
@@ -2747,11 +2736,11 @@ internal static class Build002ExperimentRunner
 
             Correctness failures: {{correctness.FailureCount}}
 
-            HDL evidence: `{{hdl.Status}}` ({{hdl.VerificationCaseCount}} checks; {{hdl.FormalCaseCount}} formal; {{hdl.SynthesisRowCount}} synthesis rows)
+            HDL evidence: `{{hdl.Status}}` on `{{hdl.Platform}}` ({{hdl.VerificationCaseCount}} checks; {{hdl.FormalCaseCount}} formal; {{hdl.SynthesisRowCount}} synthesis rows)
 
             ## Decision boundary
 
-            The terminal negative is not a claim that valuation operations lack local advantages. The warm structural unit uses fewer NANDs, less depth, and fewer transitions for known-factor composition/cancellation, but it uses more state/port bits; the exact sidecar is larger than the matched binary datapath at W6 and W8; and cold adapters dominate the operation savings. Under the frozen Pareto rule none of those tradeoffs is a whole-machine hardware advantage. No universal scalar score or post-hoc weighted ranking is emitted.
+            {{decisionBoundary}}
             """;
         Build002Protocol.WriteLfText(path, content + "\n");
     }
@@ -2760,6 +2749,9 @@ internal static class Build002ExperimentRunner
         string repositoryRoot,
         string outputDirectory,
         string invocationOutputArgument,
+        string? hdlVerificationSummaryPath,
+        string? hdlSynthesisMetricsPath,
+        string? hdlToolchainBootstrapPath,
         Build002HdlImportReceipt hdl,
         CorrectnessReceipt correctness,
         IReadOnlyList<Build002StaticCostRow> staticRows,
@@ -2777,7 +2769,12 @@ internal static class Build002ExperimentRunner
             ProtocolBaselineCommit = Build002Protocol.BaselineCommit,
             FrozenPlanSha256 = Build002Protocol.HashFile(planPath),
             MasterSeed = $"0x{Build002Protocol.MasterSeed:X16}",
-            GeneratorCommand = BuildGeneratorCommand(invocationOutputArgument, hdl.Complete),
+            GeneratorCommand = BuildGeneratorCommand(
+                repositoryRoot,
+                invocationOutputArgument,
+                hdlVerificationSummaryPath,
+                hdlSynthesisMetricsPath,
+                hdlToolchainBootstrapPath),
             Runtime = RuntimeInformation.FrameworkDescription,
             Architecture = RuntimeInformation.ProcessArchitecture.ToString(),
             Classification = Classify(repositoryRoot, hdl, staticRows, workloadRows, correctness),
@@ -2787,6 +2784,7 @@ internal static class Build002ExperimentRunner
             {
                 hdl.Status,
                 hdl.Complete,
+                hdl.Platform,
                 VerificationSummarySha256 = hdl.VerificationSummarySourceSha256,
                 SynthesisMetricsSha256 = hdl.SynthesisMetricsSourceSha256,
                 ToolchainBootstrapSha256 = hdl.ToolchainBootstrapSourceSha256,
@@ -2797,15 +2795,65 @@ internal static class Build002ExperimentRunner
         Build002Protocol.WriteJson(Path.Combine(outputDirectory, "manifest.json"), manifest);
     }
 
-    private static string BuildGeneratorCommand(string outputArgument, bool includeHdl)
+    internal static string BuildGeneratorCommand(
+        string repositoryRoot,
+        string outputArgument,
+        string? hdlVerificationSummaryPath,
+        string? hdlSynthesisMetricsPath,
+        string? hdlToolchainBootstrapPath)
     {
-        var command = $"dotnet run --project src/PrimeAxiom.Cli --configuration Release -- experiment-build002 --output {outputArgument}";
-        return includeHdl
-            ? command + " --hdl-verification-summary .artifacts/build002-hdl-full-zero-repair/verification-summary.json" +
-              " --hdl-synthesis-metrics .artifacts/build002-hdl-full-zero-repair/synthesis-metrics.csv" +
-              " --hdl-toolchain .artifacts/build002-hdl-full-zero-repair/toolchain-bootstrap.json"
-            : command;
+        ArgumentException.ThrowIfNullOrWhiteSpace(repositoryRoot);
+        ArgumentException.ThrowIfNullOrWhiteSpace(outputArgument);
+
+        var arguments = new List<string>
+        {
+            "dotnet",
+            "run",
+            "--project",
+            "src/PrimeAxiom.Cli",
+            "--configuration",
+            "Release",
+            "--",
+            "experiment-build002",
+            "--output",
+            QuotePowerShellPath(SanitizeInvocationPath(repositoryRoot, outputArgument)),
+        };
+        AddOptionalPath("--hdl-verification-summary", hdlVerificationSummaryPath);
+        AddOptionalPath("--hdl-synthesis-metrics", hdlSynthesisMetricsPath);
+        AddOptionalPath("--hdl-toolchain", hdlToolchainBootstrapPath);
+        return string.Join(' ', arguments);
+
+        void AddOptionalPath(string option, string? value)
+        {
+            if (string.IsNullOrWhiteSpace(value))
+            {
+                return;
+            }
+
+            arguments.Add(option);
+            arguments.Add(QuotePowerShellPath(SanitizeInvocationPath(repositoryRoot, value)));
+        }
     }
+
+    private static string SanitizeInvocationPath(string repositoryRoot, string value)
+    {
+        var root = Path.GetFullPath(repositoryRoot);
+        var fullPath = Path.GetFullPath(value, root);
+        var relative = Path.GetRelativePath(root, fullPath);
+        var outsideRepository = Path.IsPathRooted(relative) ||
+                                relative.Equals("..", StringComparison.Ordinal) ||
+                                relative.StartsWith($"..{Path.DirectorySeparatorChar}", StringComparison.Ordinal) ||
+                                relative.StartsWith($"..{Path.AltDirectorySeparatorChar}", StringComparison.Ordinal);
+        if (!outsideRepository)
+        {
+            return relative.Replace('\\', '/');
+        }
+
+        var fileName = Path.GetFileName(fullPath);
+        return $"<external>/{(string.IsNullOrEmpty(fileName) ? "path" : fileName)}";
+    }
+
+    private static string QuotePowerShellPath(string value) => $"'{value.Replace("'", "''", StringComparison.Ordinal)}'";
 
     private static void WriteStaticGateFigure(
         string path,
@@ -3579,11 +3627,6 @@ internal static class Build002ExperimentRunner
     private sealed record ValuationProjectionReceipt(
         ValuationHardwareState State,
         bool FullySupported);
-
-    private sealed record DecisionRuleValues(
-        bool AlternativeArithmeticUnit,
-        bool PrimeStructuralCoprocessor,
-        bool WarmStateSpecialized);
 
     private sealed record InheritedEvidenceReceipt(
         bool Complete,

@@ -10,6 +10,7 @@ namespace PrimeAxiom.Cli;
 public sealed record Build002HdlImportReceipt(
     bool Complete,
     string Status,
+    string Platform,
     int VerificationCaseCount,
     int FormalCaseCount,
     int SynthesisRowCount,
@@ -36,6 +37,38 @@ public static partial class Build002HdlEvidenceImporter
     private const string NotMeasured = "NOT_MEASURED";
     private const string ToolchainRelease = "2026-08-24";
     private static readonly int[] RequiredWidths = [4, 6, 8];
+    private static readonly string[] RequiredTopPatterns =
+    [
+        "pa_bin_add_w{0}",
+        "pa_bin_sub_w{0}",
+        "pa_bin_compare_w{0}",
+        "pa_bin_mul_w{0}",
+        "pa_bin_fu_w{0}",
+        "pa_bin_counter_w{0}",
+        "pa_bin_fu_registered_w{0}",
+        "pa_binexp_compose_w{0}",
+        "pa_binexp_checked_compose_w{0}",
+        "pa_binexp_cancel_w{0}",
+        "pa_binexp_meet_w{0}",
+        "pa_binexp_join_w{0}",
+        "pa_binexp_divides_w{0}",
+        "pa_binexp_valuation_w{0}",
+        "pa_binexp_power_w{0}",
+        "pa_therm_compose_w{0}",
+        "pa_therm_meet_w{0}",
+        "pa_therm_join_w{0}",
+        "pa_therm_divides_w{0}",
+        "pa_therm_validate_w{0}",
+        "pa_bin_to_therm_w{0}",
+        "pa_therm_to_bin_w{0}",
+        "pa_cold_encode_w{0}",
+        "pa_vsc_query_w{0}",
+        "pa_bin_vsc_w{0}",
+    ];
+    private static readonly string[] RequiredSimulationFamilies =
+        ["binary", "counter", "binexp", "checked", "therm", "sidecar"];
+    private static readonly string[] RequiredFormalFamilies =
+        ["binary", "binexp", "checked", "therm", "sidecar"];
     private static readonly string[] RequiredToolVersions =
     [
         "yosys",
@@ -192,6 +225,7 @@ public static partial class Build002HdlEvidenceImporter
         return new Build002HdlImportReceipt(
             complete,
             status,
+            platform,
             summary?.Cases.Count ?? 0,
             summary?.Cases.Count(item => string.Equals(item.Phase, "FORMAL", StringComparison.Ordinal)) ?? 0,
             importedSynthesisRows.Count,
@@ -596,24 +630,36 @@ public static partial class Build002HdlEvidenceImporter
             return false;
         }
 
+        var expected = new HashSet<string>(StringComparer.Ordinal)
+        {
+            "ANALYZER_REGRESSION\0netlist_alias_and_failure_guards",
+            "SIMULATION\0tb_primitives",
+        };
         foreach (var width in RequiredWidths)
         {
-            var lint = CasesFor(summary, "LINT", width);
-            var declared = CasesFor(summary, "SYNTHESIS_DECLARED", width);
-            var optimized = CasesFor(summary, "SYNTHESIS_OPTIMIZED", width);
-            if (lint.Count == 0 || !lint.SetEquals(declared) || !lint.SetEquals(optimized))
+            foreach (var pattern in RequiredTopPatterns)
             {
-                return false;
+                var top = string.Format(CultureInfo.InvariantCulture, pattern, width);
+                expected.Add($"LINT\0{top}");
+                expected.Add($"SYNTHESIS_DECLARED\0{top}");
+                expected.Add($"SYNTHESIS_OPTIMIZED\0{top}");
             }
 
-            if (CasesFor(summary, "SIMULATION", width).Count == 0 ||
-                CasesFor(summary, "FORMAL", width).Count == 0)
+            foreach (var family in RequiredSimulationFamilies)
             {
-                return false;
+                expected.Add($"SIMULATION\0tb_{family}_w{width}");
+            }
+
+            foreach (var family in RequiredFormalFamilies)
+            {
+                expected.Add($"FORMAL\0formal_{family}_w{width}");
             }
         }
 
-        return true;
+        var actual = summary.Cases
+            .Select(item => $"{item.Phase}\0{item.Case}")
+            .ToHashSet(StringComparer.Ordinal);
+        return actual.SetEquals(expected);
     }
 
     private static bool HasCompleteSynthesisRelationships(
