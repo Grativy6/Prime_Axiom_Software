@@ -139,3 +139,69 @@ On the manifest host, the transparent managed gate and coordinate models ran at 
 6. Can certified logarithm intervals compare large compact products efficiently on realistic adversarial cases without reconstruction?
 7. How do sparse layouts, small-vector optimization, allocation, and cache behavior change the result beyond payload-bit estimates?
 8. What reversible embedding is useful when operands or provenance must be retained, and what ancilla/cleanup cost does it require?
+
+---
+
+# Build 001 observations
+
+Build 001 receipts are under `results/build001/`. Their coverage is `PILOT_SUBSET_COMPLETE_FULL_CONFIRMATION_NOT_RUN`; every statement below inherits that ceiling unless a narrower domain is named.
+
+## Established mathematics
+
+1. For a finite set of primes `S`, every nonzero integer has a unique sign, exact `S`-part, and positive `S`-free cofactor. Build 001 implements this established decomposition; it does not originate it.
+2. For a prime `p`, `v_p(a+b) >= min(v_p(a), v_p(b))`; the minimum is exact when the two finite valuations differ. Equal valuations can cancel and raise the result valuation.
+3. Multiplication adds exact valuations, powers scale them, exact division subtracts them when defined, and the bank portions of gcd/lcm take minima/maxima. These local rules do not remove corresponding cofactor operations.
+4. A certified lower bound plus an exact residual still denotes an exact integer. It is incomplete knowledge of decomposition, not approximate magnitude.
+5. Zero has infinite `p`-adic valuation for every prime and requires an explicit result kind; reporting finite zero would conflate it with an ordinary nonzero valuation.
+
+## Prior art
+
+1. PARI/GP selected-prime stripping and factored matrices, FLINT partial factor vectors, and FriCAS exact partially factored values closely anticipate the bank/exponent/cofactor mechanism.
+2. Factor bases, GMP factor removal and rational cross-GCD, OpenJDK's lazy `v_2` cache, and bounded factor caches already separate preserved factor knowledge from authoritative magnitude in specialized contexts.
+3. Mature prior art treats exact residuals and factor-certification status separately. A composite or unresolved cofactor is not a failed value and must not be called prime merely because it is stored as one field.
+
+## Engineering observation
+
+1. A bounded bank is coherent immediately above ordinary binary numeric representation. It is neither a pre-binary primitive nor a total replacement for magnitude arithmetic.
+2. The exact cofactor removes finite-basis escape but retains the full general-arithmetic burden. Hybrid multiplication pays exponent work *and* a cofactor multiplication unless the cofactor is one.
+3. Canonical and partial valuation knowledge can coexist in one immutable exact type if lower-bound lanes permit additional bank factors to remain in the cofactor and exact-only operations refuse or refresh partial inputs.
+4. Addition can preserve proved common bank factors without claiming a complete factorization. Wider dense banks create many equal-zero lanes whose exact status becomes deferred after addition.
+5. Bank identity is semantic configuration. Migration is exact only when evicted powers are folded into every affected cofactor and admitted primes are extracted; changing a global bank is therefore potentially working-set-wide maintenance.
+6. An adaptive policy cannot discover a hidden outside-bank factor from magnitude input without charged computation. Treating such discovery as a cache hit would hide ingress/factorization work.
+7. Phase-separated heterogeneous receipts are necessary. NAND evaluations, remainders, divisions, cofactor operations, lane traffic, metadata, storage, migrations, and time do not form a universal scalar cost without an externally justified model.
+8. VM failure must be transactional. Invalidating a failed destination and clearing query outputs prevents an earlier successful value from masquerading as the failed instruction's result.
+9. Valid structured values can request impractically large reconstructions because exponent and cofactor magnitude are not bounded by an output-resource policy. Reconstruction remains an explicit resource-sensitive boundary.
+
+## Experimental result
+
+1. The recorded Release test assembly passed 89/89 tests with zero skipped. The independent experiment executed 39,621 bounded checks with zero failures: exhaustive signed ingress, exhaustive ordered small signed pairs, 5,000 seeded random trials, and malformed/zero-valuation probes.
+2. In 1,000 seeded additions, partial outputs occurred for 975/1,000 values at bank 4 and every value at banks 8, 16, and 32. Lower-bound lanes grew from 2,186/4,000 at bank 4 to 28,900/32,000 at bank 32.
+3. Eagerly refreshing those additions required 3,513, 7,251, 15,035, and 30,868 remainder probes at banks 4, 8, 16, and 32. On the manifest host, the checked timing receipt placed bank-8 lazy addition below eager normalization; exact variable timings remain in `microbenchmarks.csv`.
+4. The deterministic `K+1` LRU attack migrated 16 live values 320 times at `K=4` and 2,112 times at `K=32`; lane reads and writes grew from 1,280 each to 67,584 each. Exactness failures remained zero.
+5. A favorable resident-product proxy used fewer modeled NAND evaluations than binary at every registered `Q` from 1 through 4,096. At `K=4,Q=1`, it used 1,001 versus 10,368. The hybrid two-operand payload was 174 versus 36 bits. This cross-profile diagnostic is not a complete frozen Pareto profile and cannot apply the registered 2x rule.
+6. On the recorded managed host, both bank-8 hybrid multiplication probes were substantially slower than the rough `BigInteger` multiplication control. Exact variable timings remain in `microbenchmarks.csv`; these unmatched implementation timings establish no runtime win and no hardware conclusion.
+7. Workload rows retained 115 bounded passes, 77 not-supported controls, and two expected Build 000 dense-basis escapes across five pilot families. The full sparse and true Build 000 sparse-operation comparators remain unsupported rather than receiving relabeled oracle/dense costs. These are pilot mechanism rows, not the frozen full confirmation matrix.
+8. Build 001 status is `PARTIAL — PILOT_NEGATIVE; FINAL DECISION NOT EARNED`. Complete profiles, registered correctness scale, multiple widths, eight replicates, per-cell schemas, and two-family confirmation were not run, so the frozen stop rule and every terminal decision label remain open.
+
+## Conjecture
+
+1. A sparse per-value cache of demanded valuation certificates may preserve most useful reuse without the dense zero-lane payload and global migration debt of a fixed bank.
+2. A tiny fixed-prime valuation or constant-divider accelerator may help a query-heavy workload if trace evidence demonstrates enough reuse to amortize ingress, area, and transfer.
+3. Structured producers that already emit verified factors may offer better economics than magnitude ingress, but only against mature persistent-factored and optimized magnitude baselines.
+
+## Dead end
+
+1. **Bounded bank as a general exact-integer replacement.** The cofactor remains general magnitude, while dense lanes add storage and maintenance. The tested architecture paid both systems' costs.
+2. **More lanes automatically preserve more useful structure.** Under addition, wider banks mostly accumulated uncertain zero-valuation lanes and substantially more refresh work.
+3. **Adaptive membership as free locality.** Hidden factors require discovery, and changing membership across a live set caused exact but rapidly growing migration traffic.
+4. **Resident NAND proxy as an end-to-end advantage.** The favorable proxy omitted several heterogeneous boundary costs and was paired only with a separate logical-input payload diagnostic, not a complete eligible profile.
+5. **Representation novelty.** The finite `S`-decomposition, exact cofactor, partial factor knowledge, structural product arithmetic, factor bases, and valuation caches are established prior art.
+
+## Open question
+
+1. Does sparse demand-driven valuation evidence beat no-cache magnitude arithmetic, mature factored forms, and lazy single-prime caches on real rational-cancellation or divisibility-filter workloads?
+2. Can an immutable exact magnitude plus stable per-value certificates eliminate global bank migration while preserving useful evidence through multiplication and addition?
+3. What is the measured Pareto frontier against GMP, PARI, FLINT, and FriCAS when source modes, native memory, allocation, output obligations, and factor validation are matched?
+4. Which certificate replacement policy survives phase shifts without inspecting hidden factor structure for free?
+5. Does synthesized fixed-prime valuation hardware retain any area/latency advantage after divider, routing, register, control, and transfer costs are included?
+6. What bounded reconstruction/resource policy rejects denial-of-service-sized structured values without narrowing ordinary exact-integer semantics silently?

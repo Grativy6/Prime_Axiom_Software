@@ -1,0 +1,5 @@
+bank_size,working_set_primes,policy_changes,live_values,per_value_migrations,remainder_tests,factor_divisions,cofactor_multiplications,lane_reads,lane_writes,exactness_failures,scenario
+4,5,20,16,320,320,0,16,1280,1280,0,Deterministic K+1 reference cycle; every bank change migrates all 16 live values
+8,9,36,16,576,576,0,32,4608,4608,0,Deterministic K+1 reference cycle; every bank change migrates all 16 live values
+16,17,68,16,1088,1088,0,32,17408,17408,0,Deterministic K+1 reference cycle; every bank change migrates all 16 live values
+32,33,132,16,2112,2112,0,32,67584,67584,0,Deterministic K+1 reference cycle; every bank change migrates all 16 live values

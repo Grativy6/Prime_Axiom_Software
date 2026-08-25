@@ -1,4 +1,4 @@
-name: build-000-ci
+name: build-000-and-001-ci
 
 on:
   push:
@@ -11,11 +11,17 @@ permissions:
 
 jobs:
   verify:
-    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
     timeout-minutes: 20
     steps:
       - name: Check out source
         uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
 
       - name: Install pinned .NET SDK
         uses: actions/setup-dotnet@v6
@@ -24,26 +30,16 @@ jobs:
           cache: true
           cache-dependency-path: '**/packages.lock.json'
 
-      - name: Restore locked dependency graph
-        run: dotnet restore PrimeAxiom.sln --locked-mode
-
-      - name: Verify formatting
-        run: dotnet format PrimeAxiom.sln --verify-no-changes --no-restore
-
-      - name: Build
-        run: dotnet build PrimeAxiom.sln --configuration Release --no-restore
-
-      - name: Test
-        run: dotnet test PrimeAxiom.sln --configuration Release --no-build --logger trx --results-directory TestResults
-
-      - name: Regenerate deterministic evidence without timing noise
-        run: dotnet run --project src/PrimeAxiom.Cli --configuration Release --no-build -- experiment --output artifacts/build000-ci --skip-benchmarks
+      - name: Verify Build 001 and immutable Build 000 evidence
+        shell: pwsh
+        run: >-
+          & ./scripts/verify-build001.ps1
+          -SkipBenchmarks
+          -OutputDirectory artifacts/build001-ci
 
       - name: Upload receipts
         uses: actions/upload-artifact@v6
         with:
-          name: build000-ci-receipts
-          path: |
-            TestResults
-            artifacts/build000-ci
+          name: build001-${{ runner.os }}-sanitized-receipts
+          path: artifacts/build001-ci
           if-no-files-found: error

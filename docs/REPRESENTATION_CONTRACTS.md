@@ -136,3 +136,185 @@ Exact magnitude and exact prime coordinates are bijective on a declared covered 
 - Separate ingress, resident operation, and egress.
 - Do not compare a transparent logical model with an optimized host primitive as if they were the same cost class.
 - Preserve overflow, basis escape, invalid input, and unsupported operation as distinct results.
+
+---
+
+<!-- BUILD 001 CONTRACT START -->
+
+## 9. Build 001 executable contract: bounded valuation bank plus exact cofactor
+
+This section is the Build 001 contract implemented by `ValuationBank`, `HybridInteger`, `HybridRational`, and `HybridMachine`. Sections 1–8 remain the Build 000 contract and are not reinterpreted by this addition.
+
+### 9.1 Exact value and lane-knowledge invariants
+
+For a nonzero `HybridInteger`, the executable value is always exact:
+
+```text
+x = sign * cofactor * product(bank[i] ^ exponent[i])
+```
+
+The mandatory component invariants are:
+
+- `sign` is `-1` or `+1`;
+- `cofactor` is a positive arbitrary-precision integer;
+- the ordered exponent, knowledge, and provenance arrays each have exactly one entry per bank lane;
+- every exponent is an unsigned fixed-width `BinaryWord` of the value's declared exponent width;
+- every knowledge and provenance tag is a defined enum value;
+- bank and exponent width are part of the representation context.
+
+There are exactly two executable lane-knowledge states:
+
+| State | Executable meaning | Cofactor rule |
+|---|---|---|
+| `KnownExact` | The stored exponent equals the complete valuation for that bank prime. | The cofactor must not be divisible by that prime. |
+| `CertifiedLowerBound` | The stored exponent is known to occur, but additional copies of the prime may remain in the exact cofactor. | Divisibility by that prime is permitted. |
+
+`HybridValidity.Canonical` means every lane is `KnownExact`. `HybridValidity.Partial` means at least one lane is a `CertifiedLowerBound`. A partial value is not an approximate integer: its sign, exponent contribution, and cofactor still reconstruct exactly. Only its per-lane knowledge is deferred.
+
+**There is no executable `STALE` state.** There is also no serialized or resident `UNKNOWN` lane enum and no invalid `HybridInteger` object. An unknown exact valuation is represented by a usable `CertifiedLowerBound` lane plus the exact cofactor. Failed/malformed state is rejected before a value is returned or is represented by an invalid machine register after a failed producer. Unknown query answers use the query result's `IsKnown=false`/nullable result contract. A certified lower bound may numerically be zero, but its knowledge tag prevents that zero from being treated as an exact zero valuation.
+
+### 9.2 Zero, sign, and identity
+
+Zero has one executable component/knowledge form:
+
+```text
+sign = 0
+cofactor = 0
+every exponent = 0
+every lane knowledge state = KnownExact
+```
+
+Zero is therefore distinct from the all-zero exponent representation of one. Its lane provenance may record the operation that produced zero, but provenance is not numeric identity.
+
+The canonical multiplicative identity produced by `Identity` is:
+
+```text
+sign = +1
+cofactor = 1
+every exponent = 0
+every lane knowledge state = KnownExact
+```
+
+`IsIdentity` tests the numeric components `sign=+1`, `cofactor=1`, and all-zero exponents; it intentionally does not inspect knowledge or provenance. Consequently a deliberately deferred component encoding of the exact number one can also satisfy `IsIdentity`, although the `Identity` factory returns the canonical all-exact form. Negative values use `sign=-1` with a positive cofactor; sign is never folded into the cofactor.
+
+`Valuation(p)` of zero is reported as exact positive infinity (`ValuationResultKind.PositiveInfinity`), not as finite zero. The power contract defines every zeroth power, including `0^0`, as the positive multiplicative identity. Negative integer powers are rejected.
+
+### 9.3 Bank, width, and resource bounds
+
+A `ValuationBank` is an ordered configuration, not per-value numeric payload. Its executable constraints are:
+
+- lane count is in `0..4096` (`ValuationBank.MaximumLanes`);
+- every label is a positive prime fitting `Int32`, checked by deterministic trial division;
+- labels are strictly increasing and unique;
+- equality and `CanonicalId` depend on the ordered prime sequence, not the bank's display name or strategy tag;
+- an empty bank has strategy `None` and reduces the numeric payload to sign plus exact binary cofactor.
+
+`BankStrategy` records `None`, `FixedPrefix`, `WorkloadSelected`, `Adaptive`, or `Configured`, but the current value and VM code do not implement an automatic adaptive replacement policy. Runtime bank changes occur only through explicit `MigrateBank` operations.
+
+Exponent width is in `1..4096` bits (`HybridInteger.MaximumExponentWidth`). A lane exponent is in `0..2^width-1`. Ingress, multiplication, power, refresh, and migration report `ExponentOverflow` and return no value instead of truncating. Public enumerable ingress reads at most `bank.Count + 1` elements so an overlong or infinite source is rejected after the declared bound rather than consumed indefinitely.
+
+The logical payload meter reports two sign/zero bits, `lane_count * exponent_width` exponent bits, one knowledge bit per lane, a fixed-width provenance estimate per lane, the occupied cofactor bit length (zero for zero), and bank-prime catalogue bits separately. It is a logical metric, not managed-object size.
+
+The cofactor and claimed magnitude are host `BigInteger` values and have no representation-level bit cap. Serialization has a `1,048,576` UTF-8-byte limit and JSON parse depth 8, but these do not bound numeric reconstruction or VM register count. `HybridMachine` uses a dynamically keyed host dictionary and declares no fixed register-count ceiling.
+
+#### Magnitude-materialization and resource-ceiling limitation
+
+The implementation has no output-bit ceiling, work budget, timeout, cancellation token, or typed `RESOURCE_LIMIT` result. A legal 4096-bit lane exponent can denote a computationally infeasible magnitude. `Reconstruct` materializes bank powers; addition materializes unequal residual prime powers; bank eviction folds powers into the cofactor; `Power` materializes cofactor powers; and refresh/normalization can divide a large cofactor repeatedly. Serialization enforces a byte cap only after constructing its JSON stream. Resource or counter exhaustion on these contract-valid paths may therefore escape the typed `HybridFailure`/receipt protocol. Callers and experiments must impose external magnitude, operation, and allocation limits before processing adversarial legal values. This is an implementation limitation, not an earned safety guarantee.
+
+### 9.4 Ingress contracts
+
+`FromBinary` is claimed-magnitude-free ordinary binary ingress. It accepts an exact signed `BigInteger`, divides only by the configured bank primes, records each extracted valuation as `KnownExact`, and leaves the exact unfactored remainder in the cofactor. It does not fully factor the cofactor. Zero takes the explicit zero form. Exponent overflow returns no value.
+
+`FromStructured` is **component ingress**. The supplied sign, cofactor, exponents, bank, width, and optional knowledge states constitute the value. The method checks lane counts, enum states, sign/cofactor rules, exponent bounds, the unique zero form, and the coprimality implication of each `KnownExact` lane. Knowledge defaults to all `KnownExact`. It does not compare the components with any separately asserted ordinary magnitude, and it accepts no caller-supplied provenance; successful lanes receive `StructuredIngress` provenance.
+
+`FromClaimedMagnitude` is **component-plus-claim ingress**. It first performs the complete `FromStructured` validation, then reconstructs the signed magnitude and compares it exactly with the externally claimed `BigInteger`. A mismatch returns `ClaimedMagnitudeMismatch` and no value. Reconstruction and comparison work are charged to ingress. Work already performed for validation/reconstruction is not permission to omit it from receipts.
+
+`Deserialize` is structured component ingress after strict schema validation; it is not an independent magnitude certificate. A deserialized partial value remains exact under the component equation but retains only its declared lower-bound lane knowledge.
+
+### 9.5 Strict serialization
+
+The encoder emits deterministic UTF-8 JSON under schema `prime-axiom-hybrid-integer-v1` in this field order:
+
+```text
+schema, bank, exponentWidth, sign, cofactor, exponents, knowledge
+```
+
+Bank labels, exponent width, and sign are JSON integers. Cofactor and exponent values are invariant-culture, minimally formatted nonnegative decimal strings. Knowledge states are case-sensitive enum names. Provenance is intentionally omitted because it is production evidence rather than numeric/knowledge identity.
+
+The decoder:
+
+- rejects null and inputs over `1,048,576` UTF-8 bytes before parsing;
+- disallows comments and trailing commas and limits JSON depth to 8;
+- requires a top-level object with exactly the seven versioned properties, with no missing, extra, or duplicate property;
+- requires the exact schema identifier;
+- requires bank, exponent, and knowledge arrays, rejects more than 4096 bank entries before constructing a `ValuationBank`, and relies on the overall byte cap to bound the parsed input;
+- accepts only canonical `Int32` lexical forms for bank labels, width, and sign, so forms such as numeric `-0` are rejected;
+- accepts only minimally formatted nonnegative decimal strings for cofactor/exponents, so empty, signed, or leading-zero strings are rejected;
+- requires exponent and knowledge array lengths to equal the bank lane count and knowledge names to be defined with exact case;
+- rebuilds and revalidates the prime bank, then calls the full component-ingress validator;
+- converts every schema/component failure to `InvalidSerialization` and returns no executable value.
+
+The decoder requires the exact field set but does not require input properties to arrive in encoder order; a successful reserialization normalizes order and numeric spelling. The bank's strategy/name and per-lane provenance do not survive serialization because neither is serialized.
+
+### 9.6 Operation and knowledge rules
+
+All values are immutable. Successful operations return new values; failed operations return `Value=null`. The current knowledge rules are:
+
+| Operation | Partial inputs accepted? | Executable knowledge/result rule |
+|---|---:|---|
+| `MULTIPLY` / `COMPOSE` | Yes | Exponents add. A result lane is exact only if both input lanes are exact; otherwise it is a lower bound. Exact cofactors multiply and remain part of the cost. Zero returns canonical zero. |
+| `ADD_PRESERVE` / `SUBTRACT_PRESERVE` | Yes | Retain the componentwise exponent minimum. A lane is exact only when both input lanes are exact and their exponents differ; equal or already-deferred lanes become lower bounds. Residual signed cofactor arithmetic keeps the total integer exact. Exact cancellation returns canonical zero. |
+| `NEGATE` | Yes | Change only the sign tag; zero remains zero and lane knowledge is preserved. |
+| `POWER` | Yes | Reject negative powers; exponent zero returns canonical identity. Positive powers scale lanes and preserve their knowledge class while exponentiating the cofactor. Lane overflow is checked before cofactor exponentiation. With an empty bank, the scalar need not fit an exponent lane. |
+| `VALUATION` | Yes | Zero returns exact positive infinity. A nonzero exact lane returns a known exact valuation. A lower-bound lane returns its bound with `IsKnown=false` and `IsExact=false`; the receipt succeeds because the bound itself is valid. |
+| `PARITY` | Yes | Zero is even. Without a 2-lane, inspect the exact cofactor. A positive lower-bound 2-exponent proves evenness; an exact zero exponent proves oddness; a deferred zero lower bound returns an explicit unknown nullable answer. |
+| `REFRESH_LANE` | Yes | Exact/zero lanes are no-ops. A lower-bound lane is made exact by trial-dividing its prime from the exact cofactor, adding the extracted count to the lane, and stripping those factors from the cofactor. Overflow is transactional. |
+| `NORMALIZE` | Yes | Refresh every lower-bound lane in bank order. On any failure, no normalized value is returned and the original immutable value remains usable. |
+| `EXACT_DIVIDE` | No | Both operands must be canonical. Perform checked lane subtraction and exact cofactor division. Division by zero, lane underflow, or cofactor remainder returns no value. |
+| `DIVIDES` | No, except zero conventions | Bank/width must match and nonzero operands must be canonical. Exact lane order may disprove divisibility; otherwise the cofactor remainder decides. The contract uses “zero divides only zero” and “every nonzero integer divides zero.” Deferred lanes return `RequiresCanonical`, `IsKnown=false`, and no Boolean. |
+| `GCD` / `LCM` | No | Compatible canonical operands only. Use lane minima/maxima plus ordinary cofactor GCD or LCM. GCD/LCM zero conventions are explicit. |
+| `NUMERIC_EQUALS` | Yes | Same-bank/same-width canonical values compare sign, cofactor, and lanes. Cross-bank or partial values reconstruct both exact magnitudes and compare them, charging egress. |
+| `RECONSTRUCT` | Yes | Always includes the cofactor and every stored exponent; knowledge affects what is known about a lane, not numeric exactness. Subject to the resource limitation in 9.3. |
+| rational creation/simplification | Creation yes; simplification no | Creation requires a nonzero denominator plus common bank/width and may retain partial components. Simplification requires canonical components, then uses exact GCD/division and normalizes denominator sign. |
+
+Binary operations other than numeric equality require identical ordered bank primes and exponent width. Bank mismatch and width mismatch are typed failures; callers must migrate explicitly. Query unknownness is operation-specific: a valid valuation lower bound or parity uncertainty can have a successful receipt with `IsKnown=false`, while a divisibility query that requires canonical lanes has a failed `RequiresCanonical` receipt.
+
+### 9.7 Explicit bank migration
+
+`MigrateBank(targetBank, targetExponentWidth?)` is an explicit, per-value, transactional maintenance operation:
+
+1. Validate the target width (`1..4096`), defaulting to the source width.
+2. For every evicted source lane, fold its stored prime power into the exact cofactor. Any additional copies hidden by a lower-bound lane were already in that cofactor.
+3. For a retained prime, copy its exponent and knowledge state, rejecting the migration if the exponent does not fit the target width.
+4. For a newly admitted prime, trial-divide the evolving cofactor to exhaustion, store the extracted exponent as `KnownExact`, and reject overflow.
+5. Mark every target lane's provenance as `BankMigration`; preserve sign and exact reconstructed magnitude.
+
+Zero migration changes its bank/width context and returns canonical zero. On any overflow the source value and source bank object remain unchanged and no migrated value is returned. The receipt charges trial remainders, factor divisions, cofactor multiplications, lane/metadata work, and one migration. The operation does not mutate a global bank or automatically scan a machine register file; an adaptive policy must issue migrations explicitly for each affected value.
+
+### 9.8 Provenance and equality
+
+Each lane carries one `LaneProvenance` tag (`Zero`, `BinaryIngress`, `StructuredIngress`, `Multiplication`, `ExactDivision`, `Power`, `UnequalValuationAddition`, `CommonLowerBoundAddition`, `Refresh`, `BankMigration`, or `RationalCancellation`). Operations replace provenance according to the path that produced their output. Provenance is inspectable and counted in logical payload estimates, but it is not a cryptographic certificate and is not caller authority.
+
+Structural `Equals`/`GetHashCode` include bank prime sequence, exponent width, sign, cofactor, exponent words, and lane knowledge. They exclude provenance, bank display name, and bank strategy. Thus two values with the same integer but different banks, decompositions, widths, or knowledge states need not be structurally equal. `NumericEquals` is the explicit integer-equality operation and reconstructs when canonical same-bank comparison is unavailable.
+
+### 9.9 VM atomic failure contract
+
+`HybridMachine` is configured with one default bank and exponent width for binary/component loads. Registers store immutable `HybridInteger` objects. A successful producer commits its non-null result atomically. A failed producer:
+
+- commits no partial result;
+- removes any prior value in its destination and marks that destination invalid;
+- leaves all distinct source registers unchanged;
+- halts the current program on that first failure;
+- retains the failing instruction and its incurred cost in the trace.
+
+If a destination aliases a source register, destination invalidation applies to that same register; the stronger phrase “all source registers remain valid” is therefore not an alias-safe promise. A later successful load may revalidate an invalid destination.
+
+Reading an uninitialized or invalidated source returns `InvalidRegister` without executing the requested operation and invalidates the requested destination, if any. Null instruction lists and null/malformed instructions return typed program/instruction failures. Caught `ArgumentException`, `InvalidOperationException`, and `OverflowException` become `InvalidInstruction`; the destination is invalidated. The machine's register dictionary persists across `Run` calls, while each run starts with empty scalar/valuation output slots.
+
+Before `RECONSTRUCT` or `VALUATION` reads its source, the corresponding last-query output slot is cleared, so a failed query cannot expose a prior successful scalar or valuation as its own result. The trace reports `DestinationValidAfter` and the run receipt states `HALT_ON_FAILURE`.
+
+Successful `MIGRATE_BANK` may place a value with a different bank/width in a register; it does not change the machine's default load bank/width. Later binary operations still enforce operand bank/width compatibility.
+
+This invalidation model is the only executable stale-state defense in Build 001: old destination values are destroyed on producer failure rather than retained with a `STALE` tag.
+
+<!-- BUILD 001 CONTRACT END -->

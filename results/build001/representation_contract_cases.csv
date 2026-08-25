@@ -1,0 +1,16 @@
+case,expected,actual,failure,validity,magnitude,receipt_scope
+binary-zero,success/canonical-zero,success,None,Canonical,0,Exact signed binary magnitude; zero is explicitly tagged
+binary-negative,success/exact-negative,success,None,Canonical,-12,Divide only by configured bank primes; no general factorization
+structured-identity,success/identity,success,None,Canonical,1,Verified exact cofactor and bounded valuation claims
+negative-zero,reject,failure,InvalidStructuredIngress,,,Malformed structured states are rejected before becoming executable values
+exact-lane-contradicted,reject,failure,InvalidStructuredIngress,,,Malformed structured states are rejected before becoming executable values
+lower-bound-residual,success/partial,success,None,Partial,8,Verified exact cofactor and bounded valuation claims
+width-overflow,reject,failure,ExponentOverflow,,,Bounded valuation extraction from exact binary magnitude
+claimed-magnitude-valid,success,success,None,Canonical,12,Component contract and exact equality to the claimed magnitude were both checked
+claimed-magnitude-false,reject,failure,ClaimedMagnitudeMismatch,,,Validated components do not equal the externally claimed exact magnitude
+undefined-knowledge,reject,failure,InvalidStructuredIngress,,,Malformed structured states are rejected before becoming executable values
+malformed-json-0,reject,failure,InvalidSerialization,,,"Invalid JSON: The input does not contain any JSON tokens. Expected the input to start with a valid JSON token, when isFinalBlock is true. LineNumber: 0 | BytePositionInLine: 0."
+malformed-json-1,reject,failure,InvalidSerialization,,,"Properties must be exactly the versioned schema fields, with no duplicates."
+malformed-json-2,reject,failure,InvalidSerialization,,,"Properties must be exactly the versioned schema fields, with no duplicates."
+malformed-json-3,reject,failure,InvalidSerialization,,,Unknown serialization schema.
+malformed-json-4,reject,failure,InvalidSerialization,,,Invalid bank: Every bank label must be a positive prime that fits in Int32. (Parameter 'primes')

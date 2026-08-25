@@ -6,6 +6,7 @@ coverage/
 
 # Local research scratch and supplied-source extracts
 .artifacts/
+/artifacts/
 
 # IDE and OS state
 .vs/

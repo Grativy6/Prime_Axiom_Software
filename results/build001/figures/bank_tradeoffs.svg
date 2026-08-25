@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="520" viewBox="0 0 900 520" role="img" aria-labelledby="title desc">
+<title id="title">Bank metadata versus cofactor size</title><desc id="desc">First-prime bank tradeoff for the multiplicative pilot corpus.</desc><rect width="900" height="520" fill="#fbfaf7"/>
+<metadata id="provenance"><generator-command>dotnet run --project src/PrimeAxiom.Cli --configuration Release --no-build -- experiment-build001 --output results/build001</generator-command><input path="bank_strategy_matrix.csv" sha256="9209EBA3C67FF6029060B5A58B5164401823A4689EC6874422DA2806D785BD77"/></metadata>
+<text x="70" y="35" font-family="Segoe UI, sans-serif" font-size="21" font-weight="600">Bank growth trades cofactor bits for lanes and metadata</text><line x1="80" y1="450" x2="850" y2="450" stroke="#4a5561"/><line x1="80" y1="70" x2="80" y2="450" stroke="#4a5561"/>
+<circle cx="171.9" cy="110.0" r="7" fill="#276fbf"/><text x="181.9" y="102.0" font-family="Segoe UI, sans-serif" font-size="12">K=4</text>
+<circle cx="261.6" cy="434.5" r="7" fill="#276fbf"/><text x="271.6" y="426.5" font-family="Segoe UI, sans-serif" font-size="12">K=8</text>
+<circle cx="441.1" cy="434.5" r="7" fill="#276fbf"/><text x="451.1" y="426.5" font-family="Segoe UI, sans-serif" font-size="12">K=16</text>
+<circle cx="800.0" cy="434.5" r="7" fill="#276fbf"/><text x="810.0" y="426.5" font-family="Segoe UI, sans-serif" font-size="12">K=32</text>
+<text x="465" y="495" text-anchor="middle" font-family="Segoe UI, sans-serif" font-size="12">average exponent + metadata bits per value</text><text x="20" y="260" transform="rotate(-90 20 260)" text-anchor="middle" font-family="Segoe UI, sans-serif" font-size="12">average exact cofactor bits</text></svg>
