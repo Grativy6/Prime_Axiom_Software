@@ -1,4 +1,4 @@
-name: build-000-and-001-ci
+name: prime-axiom-builds-ci
 
 on:
   push:
@@ -42,4 +42,84 @@ jobs:
         with:
           name: build001-${{ runner.os }}-sanitized-receipts
           path: artifacts/build001-ci
+          if-no-files-found: error
+
+  build002:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 90
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Install pinned .NET SDK
+        uses: actions/setup-dotnet@v6
+        with:
+          global-json-file: global.json
+          cache: true
+          cache-dependency-path: '**/packages.lock.json'
+
+      - name: Cache locked OSS CAD Suite
+        uses: actions/cache@v5
+        with:
+          path: .artifacts/oss-cad-suite
+          key: build002-oss-cad-${{ runner.os }}-${{ hashFiles('hdl/toolchain.lock.json') }}
+
+      - name: Verify Build 002 and inherited evidence
+        shell: pwsh
+        run: >-
+          & ./scripts/verify-build002.ps1
+          -OutputDirectory artifacts/build002-ci
+          -HdlOutputDirectory .artifacts/build002-hdl-ci
+
+      - name: Upload Build 002 receipts
+        uses: actions/upload-artifact@v6
+        with:
+          name: build002-${{ runner.os }}-receipts
+          path: |
+            artifacts/build002-ci
+            artifacts/build002-ci-verification.json
+            .artifacts/build002-test-results/test-results.trx
+            .artifacts/build002-hdl-ci
+          include-hidden-files: true
+          if-no-files-found: error
+
+  build002-cross-platform:
+    needs: build002
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v6
+
+      - name: Download Linux Build 002 receipts
+        uses: actions/download-artifact@v7
+        with:
+          name: build002-Linux-receipts
+          path: .artifacts/cross-platform/linux
+
+      - name: Download Windows Build 002 receipts
+        uses: actions/download-artifact@v7
+        with:
+          name: build002-Windows-receipts
+          path: .artifacts/cross-platform/windows
+
+      - name: Verify the paired platform receipts
+        shell: pwsh
+        run: >-
+          & ./scripts/verify-build002-cross-platform.ps1
+          -LinuxArtifactDirectory .artifacts/cross-platform/linux
+          -WindowsArtifactDirectory .artifacts/cross-platform/windows
+          -OutputPath artifacts/build002-cross-platform-verification.json
+
+      - name: Upload paired cross-platform receipt
+        uses: actions/upload-artifact@v6
+        with:
+          name: build002-cross-platform-receipt
+          path: artifacts/build002-cross-platform-verification.json
           if-no-files-found: error

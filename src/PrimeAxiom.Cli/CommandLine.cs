@@ -21,6 +21,7 @@ internal static class CommandLine
             "demo" => RunDemo(),
             "experiment" => RunExperiment(args[1..]),
             "experiment-build001" => RunBuild001Experiment(args[1..]),
+            "experiment-build002" => RunBuild002Experiment(args[1..]),
             _ => Unknown(args[0]),
         };
     }
@@ -119,6 +120,50 @@ internal static class CommandLine
         return receipt.FailureCount == 0 ? 0 : 1;
     }
 
+    private static int RunBuild002Experiment(string[] args)
+    {
+        var output = "results/build002";
+        string? hdlVerificationSummary = null;
+        string? hdlSynthesisMetrics = null;
+        string? hdlToolchainBootstrap = null;
+        for (var index = 0; index < args.Length; index++)
+        {
+            switch (args[index])
+            {
+                case "--output" when index + 1 < args.Length:
+                    output = args[++index];
+                    break;
+                case "--hdl-verification-summary" when index + 1 < args.Length:
+                    hdlVerificationSummary = args[++index];
+                    break;
+                case "--hdl-synthesis-metrics" when index + 1 < args.Length:
+                    hdlSynthesisMetrics = args[++index];
+                    break;
+                case "--hdl-toolchain" when index + 1 < args.Length:
+                    hdlToolchainBootstrap = args[++index];
+                    break;
+                default:
+                    Console.Error.WriteLine($"Unknown Build 002 experiment option: {args[index]}");
+                    return 2;
+            }
+        }
+
+        var repositoryRoot = Directory.GetCurrentDirectory();
+        var receipt = Build002ExperimentRunner.Run(
+            repositoryRoot,
+            Path.GetFullPath(output),
+            output,
+            hdlVerificationSummary,
+            hdlSynthesisMetrics,
+            hdlToolchainBootstrap);
+        Console.WriteLine($"Wrote Build 002 evidence to {receipt.OutputDirectory}");
+        Console.WriteLine(
+            $"Checks: {receipt.CheckCount.ToString(CultureInfo.InvariantCulture)}; " +
+            $"failures: {receipt.FailureCount.ToString(CultureInfo.InvariantCulture)}; " +
+            $"classification: {receipt.Classification}");
+        return receipt.FailureCount == 0 ? 0 : 1;
+    }
+
     private static int Unknown(string command)
     {
         Console.Error.WriteLine($"Unknown command: {command}");
@@ -132,5 +177,6 @@ internal static class CommandLine
         Console.WriteLine("  demo");
         Console.WriteLine("  experiment [--output DIRECTORY] [--skip-benchmarks]");
         Console.WriteLine("  experiment-build001 [--output DIRECTORY] [--skip-benchmarks]");
+        Console.WriteLine("  experiment-build002 [--output DIRECTORY] [--hdl-verification-summary FILE] [--hdl-synthesis-metrics FILE] [--hdl-toolchain FILE]");
     }
 }

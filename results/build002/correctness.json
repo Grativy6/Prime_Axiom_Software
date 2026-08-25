@@ -1,0 +1,16 @@
+{
+  "status": "BOUNDED_PASS",
+  "checkCount": 656810,
+  "failureCount": 0,
+  "failures": [],
+  "domains": {
+    "divider": "all ordered magnitude pairs at W=4,6,8",
+    "gcd": "all ordered magnitude pairs through deterministic subtractive semantic steps",
+    "multiplier": "all ordered magnitude pairs at W=4,6,8",
+    "structuralNative": "all ordered common-domain S4-smooth magnitude-derived state pairs",
+    "sidecarDatapath": "every W-bit integrated LOAD and every supported S4 threshold query, plus every frozen E/F trace",
+    "matchedBinaryDatapath": "every frozen E/F trace on the matched integrated binary baseline",
+    "workloads": "all frozen A through F/R rows at their declared semantic or integrated hardware evidence layer"
+  },
+  "scope": "Bounded generated-run checks only. HDL simulation/formal/synthesis are separate imported receipts; repository tests independently cover malformed states and encoding adapters. NOT_MEASURED composite transition fields are excluded from claims."
+}

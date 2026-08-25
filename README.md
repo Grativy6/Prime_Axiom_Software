@@ -1,39 +1,52 @@
 # Prime Axiom Software
 
-Prime Axiom Software is an adversarial research build asking where verified multiplicative structure is worth preserving above an ordinary binary floor.
+Prime Axiom Software asks what mathematics becomes inexpensive when two machines are built from the same binary state, NAND logic, and DFF-delimited memory but diverge at numeric representation.
 
-Build 000 earned the fork point: prime structure does not replace distinction, state, switching, memory, or binary arithmetic. Build 001 implemented the recommended finite valuation bank plus exact cofactor and then attacked it with addition, bank migration, malformed states, differential tests, cost receipts, and favorable and hostile workloads.
+Build 002’s frozen terminal classification is **`NO_HARDWARE_ADVANTAGE`**. This is a strict Pareto result for the bounded W4/W6/W8 experiment matrix—not a claim that valuation hardware has no local use.
 
-Build 001's status is **`PARTIAL — PILOT_NEGATIVE; FINAL DECISION NOT EARNED`**. The representation is exact and the factor-resident multiplication mechanism is real, but tested banks used much more logical payload than binary, the timed hybrid multiplication probes lost badly to the host `BigInteger` multiplication control, addition generated extensive deferred-valuation debt, and adaptive membership incurred global migration costs. Evidence coverage is explicitly `PILOT_SUBSET_COMPLETE_FULL_CONFIRMATION_NOT_RUN`; the frozen stop rule was not met, and no terminal, general-impossibility, or hardware claim follows.
+The machine found two different kinds of natural mathematics:
 
-The pilot suggests a narrower next direction if partial closure is accepted: exact ordinary magnitude plus a sparse, demand-driven cache of certified valuations, compared against optimized magnitude and mature factored-arithmetic systems.
+- binary positional state remains the compact general-purpose choice for magnitude, addition, comparison, and arbitrary support;
+- resident bounded prime valuations naturally realize componentwise composition/cancellation, divisibility order, meet/join, and monotone threshold predicates.
 
-![Build 001 phase-separated cost receipts](results/build001/figures/phase_costs.svg)
+The second structure is real. At W8, the integrated warm valuation SCALE/CANCEL machine uses 864 NANDs at depth 38 versus 3,959 NANDs at depth 448 for the matched binary machine. But it needs 15 state bits versus 8, and the W8 cold encoder and reconstruction adapters cost 4,786 and 18,343 NANDs. Reconstructing once at trace end still wins on the measured cycle/NAND dimensions; reconstructing after every operation loses on them. Adapter transition totals remain `NOT_MEASURED`, so neither comparison is silently promoted to full-vector dominance. The integrated exact sidecar also loses its matched static comparison: 15,871 NANDs and 26 DFFs versus 4,242 NANDs and 8 DFFs for binary magnitude.
+
+So the answer is not “prime structure is unnatural.” It is: **bounded valuation geometry is a natural warm structural specialization above binary, while ordinary magnitude remains the natural boundary for general computation on this floor.** Addition exposes the boundary by preserving common valuation lower bounds but often invalidating exact metadata.
+
+The generated terminal receipt contains 656,810 arithmetic checks with zero failures, while the completed repository verifier ran 211/211 tests with zero skipped. The pinned HDL flow passed 260/260 cases, including 15 formal proofs and 150 synthesis rows with all warning counts measured. These are logical NAND/DFF and bounded verification results, not placed-and-routed silicon claims.
+
+![Build 002 declared operation-local NAND counts](results/build002/figures/static_gate_counts.svg)
 
 ## Evidence map
 
-- [Build 001 report](BUILD_001_REPORT.md)
-- [Build 001 frozen experiment protocol](docs/EXPERIMENTS_BUILD001.md)
-- [Build 001 prior-art reconciliation](docs/PRIOR_ART_BUILD001.md)
-- [Build 001 cost model](docs/COST_MODEL.md)
-- [Checked Build 001 pilot receipts](results/build001/manifest.json)
-- [Build 000 report](BUILD_000_REPORT.md)
-- [Architecture](docs/ARCHITECTURE.md)
-- [Representation contracts](docs/REPRESENTATION_CONTRACTS.md)
-- [Build 000 experiment register](docs/EXPERIMENTS.md)
+- [Build 002 final report](BUILD_002_REPORT.md)
+- [Frozen Build 002 protocol](research/build002_experiment_plan.md)
+- [Generated terminal coverage](results/build002/protocol_coverage.json)
+- [Generated evidence manifest](results/build002/manifest.json)
+- [Hardware experiments](docs/HARDWARE_EXPERIMENTS.md)
+- [Hardware architecture](docs/HARDWARE_ARCHITECTURE.md)
+- [Hardware mathematics](docs/HARDWARE_MATHEMATICS.md)
+- [Hardware cost model](docs/HARDWARE_COST_MODEL.md)
+- [Hardware prior art](docs/HARDWARE_PRIOR_ART.md)
 - [Classified observations](docs/OBSERVATIONS.md)
-- [History and prior art](docs/HISTORY_AND_PRIOR_ART.md)
-- [Research method and limits](docs/RESEARCH_METHOD.md)
-- [Supplied-reference boundary](docs/REFERENCE_BOUNDARY.md)
-- [Raw Build 000 receipts](results/build000/manifest.json)
+- [Build 001 report](BUILD_001_REPORT.md) — preserved pilot status: `PARTIAL — PILOT_NEGATIVE; FINAL DECISION NOT EARNED`
+- [Build 000 report](BUILD_000_REPORT.md)
 
-## Quick start
+## Reproduce
 
-Requires the .NET 8 SDK pinned by `global.json`.
+The repository pins .NET 8 and OSS CAD Suite 2026-08-24. The complete verifier preserves Build 000/001, runs formatting/build/tests with zero skips, executes the HDL simulation/formal/synthesis matrix, generates Build 002 twice, and verifies deterministic manifest hashes:
 
 ```powershell
-& .\scripts\verify-build001.ps1
-dotnet run --project src/PrimeAxiom.Cli --configuration Release --no-build -- demo
+& .\scripts\verify-build002.ps1
 ```
 
-Build 000 alone remains reproducible with `& .\scripts\verify.ps1`. Checked-in functional receipts and variable timing receipts record their environment and hashes under `results/build000/` and `results/build001/`; wall-clock benchmark values are expected to vary on another host.
+Run that path on Linux x64 to reproduce the protocol-selected canonical terminal HDL receipt and committed platform-dependent bytes. A standalone Windows run is `PASS` only as `WINDOWS_REPRODUCIBILITY_NONTERMINAL` and intentionally remains `PARTIAL — FINAL DECISION NOT EARNED`. The paired verifier compares ordered HDL semantics, stable synthesis fields, and platform-neutral generated files; platform, tool, and netlist hashes may differ.
+
+The HDL toolchain download is large. For a quick source-level check:
+
+```powershell
+dotnet restore PrimeAxiom.sln --locked-mode
+dotnet test PrimeAxiom.sln --configuration Release
+```
+
+Raw HDL logs and netlists stay under ignored `.artifacts/` directories; validated, path-sanitized summaries are committed under `results/build002/`.

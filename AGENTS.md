@@ -4,7 +4,7 @@ This repository is an adversarial research instrument, not a vehicle for proving
 
 ## Read first
 
-Before changing claims or experiments, read `BUILD_001_REPORT.md`, `docs/EXPERIMENTS_BUILD001.md`, `docs/COST_MODEL.md`, `docs/PRIOR_ART_BUILD001.md`, `docs/OBSERVATIONS.md`, and `docs/REPRESENTATION_CONTRACTS.md`. Read `BUILD_000_REPORT.md` and `docs/RESEARCH_METHOD.md` for the earned lower-layer result. Preserve negative results and exact scope.
+Before changing claims or experiments, read `BUILD_002_REPORT.md`, `research/build002_experiment_plan.md`, `docs/HARDWARE_EXPERIMENTS.md`, `docs/HARDWARE_COST_MODEL.md`, `docs/HARDWARE_PRIOR_ART.md`, `docs/HARDWARE_MATHEMATICS.md`, and `docs/OBSERVATIONS.md`. Read the Build 000/001 reports for inherited scope. Preserve negative results, failed receipts, frozen hashes, and exact claim ceilings.
 
 ## Evidence rules
 
@@ -13,6 +13,13 @@ Before changing claims or experiments, read `BUILD_001_REPORT.md`, `docs/EXPERIM
 - Compare lineages on the same substrate and disclose every conversion. Factorization, reconstruction, basis lookup, zero/sign handling, overflow, and metadata are costs, not free adapters.
 - Keep deterministic evidence under its build directory and preserve its declared raw/aggregate status. Build 000 is pinned to commit `7792b8b2a83c95693a6db48a0ed4b153bb0808f4`; do not rewrite its report or `results/build000/` receipts from Build 001 work.
 - Build 001 evidence is a completed pilot subset, not the frozen full confirmation matrix. Preserve `PILOT_SUBSET_COMPLETE_FULL_CONFIRMATION_NOT_RUN` and `PARTIAL — PILOT_NEGATIVE; FINAL DECISION NOT EARNED`. Do not assign any frozen terminal label until the registered full-matrix stop condition is satisfied.
+- Build 002 earned `NO_HARDWARE_ADVANTAGE` under `PAH-BUILD002-CONF0001`. This is a bounded W4/W6/W8 strict-Pareto classification, not a universal impossibility theorem. Preserve the local warm structural result: fewer NANDs/depth/transitions coexist with more DFF/state/port bits, so it is a tradeoff rather than Pareto dominance.
+- Build 002's decision screen is tri-state. Static evidence may disqualify a registered candidate, but it may not award a positive label. Missing, duplicated, sentinel-valued, cyclic, wrong-contract, tied/no-worse, or unregistered integrated evidence keeps the result `PARTIAL — FINAL DECISION NOT EARNED` until the applicable frozen dynamic rule is evaluated.
+- Linux x64 is the canonical terminal HDL receipt because optimized netlist hashes differ by platform. A standalone Windows run is nonterminal reproducibility evidence and must remain `PARTIAL — FINAL DECISION NOT EARNED`; only the paired verifier establishes cross-platform reproduction, and it cannot let Windows earn or retain the terminal label alone. Preserve platform/tool identities and netlist hashes honestly. A terminal receipt also requires measured warning counts for every synthesis row; a missing sibling synthesis log is not complete evidence.
+- Never relabel an S4 catalog projection as a full GCD, LCM, factorization, or exact valuation outside its support. Ordinary magnitude remains authoritative in `BIN+VSC-S4`; `valid=false` threshold bits are sound lower bounds, not exact exponents.
+- Keep `COLD_MAG`, `WARM_RESIDENT`, and `WARM_GENERATED` separate. Keep `PREDICATE_ONLY`, `STRUCTURAL_FINAL`, `MAGNITUDE_FINAL`, and `MAGNITUDE_EVERY_OP` separate. Phase rows may be summed only within one implementation and exact contract.
+- Every measured operation must remain exactly one of `REPRESENTATION_LOCAL`, `BINARY_MAGNITUDE_LOCAL`, `CROSS_REPRESENTATION`, or `REQUIRES_FACTOR_DISCOVERY`. A `-1` cost is `NOT_MEASURED`, never free.
+- `results/build002/` is generated and LF byte-pinned. Regenerate it through the Build 002 runner with validated HDL inputs; never hand-edit a receipt or manifest.
 - Generated files must record the command, seed or input family, runtime, relevant bounds, and hashes. Never hand-edit generated Build 001 receipts.
 - Prefer source or museum/university records for history and primary papers for prior art. Mark inference as inference.
 
@@ -26,6 +33,7 @@ Before changing claims or experiments, read `BUILD_001_REPORT.md`, `docs/EXPERIM
 - Keep bank configuration/validation, ingress, native work, maintenance, and egress separate. The heterogeneous cost-vector fields are not a universal unit and must not be summed with post hoc weights.
 - Bank migration is an exact global maintenance operation over affected values, not metadata relabeling. A prime hidden in a magnitude is not adaptively discovered without a charged computation.
 - Keep conventional and experimental implementations independently testable. Do not redefine ordinary arithmetic to make an alternative representation pass.
+- Build 002 hardware claims stop at ideal NAND2 graphs, DFF boundary counts, settled-vector traces, common-flow synthesis, bounded simulation, and formal miters. They do not imply placed/routed area, frequency, energy, analog behavior, or process-independent optimality.
 - Use deterministic exhaustive and seeded randomized differential tests. Add a regression fixture for every discovered failure.
 - Failed VM producers invalidate their destination atomically and preserve distinct source registers; if a destination aliases a source, destination invalidation wins. Failed scalar queries clear old scalar output. Never allow prior successful state to survive as the result of a failed instruction.
 
@@ -35,11 +43,11 @@ PAL v2.2 and A0/Software Boundary-Layer Kernel v0.9.1 may suggest questions abou
 
 ## Reproduction
 
-Use the pinned .NET SDK in `global.json`.
+Use the pinned .NET SDK in `global.json` and the locked OSS CAD Suite release in `hdl/toolchain.lock.json`.
 
 ```powershell
-& .\scripts\verify-build001.ps1
+& .\scripts\verify-build002.ps1
 dotnet run --project src/PrimeAxiom.Cli --configuration Release --no-build -- demo
 ```
 
-Use `& .\scripts\verify.ps1` only for the immutable Build 000 verification path. Build 001's script includes Build 000 preservation checks, regenerates Build 001 evidence, and verifies manifest hashes.
+The Build 002 verifier preserves inherited Build 000/001 evidence, requires a zero-skip test pass, executes the pinned HDL matrix, replays result generation twice, and verifies every manifest hash. Execute it on Linux x64 for canonical terminal bytes. A standalone Windows pass is deliberately nonterminal; `scripts/verify-build002-cross-platform.ps1` compares the two uploaded receipts and establishes only the registered cross-platform reproduction claims. Use `& .\scripts\verify-build001.ps1` or `& .\scripts\verify.ps1` only for their inherited narrower paths.
