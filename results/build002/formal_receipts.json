@@ -4,7 +4,7 @@
   "scope": "FULL_W4_W6_W8",
   "status": "PASS",
   "complete": true,
-  "sourceSummarySha256": "9228A81882128F4FD5A9F9BA466D1385DB5B5B829EAC01242BB09F0CD4E81B90",
+  "sourceSummarySha256": "465DB68B20E80D2E2F40213BEBF5D6618FCD5B2818E1BC9156229FECFF72B55C",
   "caseCount": 15,
   "passedCaseCount": 15,
   "failedCaseCount": 0,
@@ -12,77 +12,77 @@
     {
       "case": "formal_binary_w4",
       "status": "PASS",
-      "detail": "SUCCESS_MARKER_MISSING"
+      "detail": ""
     },
     {
       "case": "formal_binexp_w4",
       "status": "PASS",
-      "detail": "SUCCESS_MARKER_MISSING"
+      "detail": ""
     },
     {
       "case": "formal_checked_w4",
       "status": "PASS",
-      "detail": "SUCCESS_MARKER_MISSING"
+      "detail": ""
     },
     {
       "case": "formal_sidecar_w4",
       "status": "PASS",
-      "detail": "SUCCESS_MARKER_MISSING"
+      "detail": ""
     },
     {
       "case": "formal_therm_w4",
       "status": "PASS",
-      "detail": "SUCCESS_MARKER_MISSING"
+      "detail": ""
     },
     {
       "case": "formal_binary_w6",
       "status": "PASS",
-      "detail": "SUCCESS_MARKER_MISSING"
+      "detail": ""
     },
     {
       "case": "formal_binexp_w6",
       "status": "PASS",
-      "detail": "SUCCESS_MARKER_MISSING"
+      "detail": ""
     },
     {
       "case": "formal_checked_w6",
       "status": "PASS",
-      "detail": "SUCCESS_MARKER_MISSING"
+      "detail": ""
     },
     {
       "case": "formal_sidecar_w6",
       "status": "PASS",
-      "detail": "SUCCESS_MARKER_MISSING"
+      "detail": ""
     },
     {
       "case": "formal_therm_w6",
       "status": "PASS",
-      "detail": "SUCCESS_MARKER_MISSING"
+      "detail": ""
     },
     {
       "case": "formal_binary_w8",
       "status": "PASS",
-      "detail": "SUCCESS_MARKER_MISSING"
+      "detail": ""
     },
     {
       "case": "formal_binexp_w8",
       "status": "PASS",
-      "detail": "SUCCESS_MARKER_MISSING"
+      "detail": ""
     },
     {
       "case": "formal_checked_w8",
       "status": "PASS",
-      "detail": "SUCCESS_MARKER_MISSING"
+      "detail": ""
     },
     {
       "case": "formal_sidecar_w8",
       "status": "PASS",
-      "detail": "SUCCESS_MARKER_MISSING"
+      "detail": ""
     },
     {
       "case": "formal_therm_w8",
       "status": "PASS",
-      "detail": "SUCCESS_MARKER_MISSING"
+      "detail": ""
     }
   ]
 }

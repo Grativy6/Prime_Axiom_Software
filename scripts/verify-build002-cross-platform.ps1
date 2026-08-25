@@ -52,6 +52,30 @@ function Artifact-Paths([string]$DownloadRoot) {
     }
 }
 
+function Verify-Artifact-Linkage(
+    [string]$Label,
+    [object]$Paths,
+    [object]$Verification,
+    [object]$ResultManifest,
+    [string]$ResultManifestPath
+) {
+    $summaryPath = Join-Path $Paths.Hdl 'verification-summary.json'
+    $synthesisPath = Join-Path $Paths.Hdl 'synthesis-metrics.csv'
+    $toolchainPath = Join-Path $Paths.Hdl 'toolchain-bootstrap.json'
+    $resultManifestSha256 = File-Sha256 $ResultManifestPath
+
+    Require ([string]$Verification.manifest_sha256 -ceq $resultManifestSha256) "$Label verification receipt does not name the downloaded result manifest."
+    Require ([string]$ResultManifest.protocolId -ceq $protocol) "$Label result manifest protocol mismatch."
+    Require ([string]$ResultManifest.classification -ceq [string]$Verification.classification) "$Label result manifest classification does not match its verification receipt."
+    Require ([long]$ResultManifest.correctnessChecks -eq [long]$Verification.arithmetic_checks -and [long]$ResultManifest.correctnessFailures -eq 0) "$Label result manifest correctness counts do not match its verification receipt."
+    Require $ResultManifest.hdlImport.complete "$Label result manifest does not claim a complete HDL import."
+    Require ([string]$ResultManifest.hdlImport.status -ceq 'COMPLETE_VERIFIED') "$Label result manifest HDL import status mismatch."
+    Require ([string]$ResultManifest.hdlImport.platform -ceq [string]$Verification.hdl_platform) "$Label result manifest HDL platform does not match its verification receipt."
+    Require ([string]$ResultManifest.hdlImport.verificationSummarySha256 -ceq (File-Sha256 $summaryPath)) "$Label result manifest does not name the downloaded raw HDL summary."
+    Require ([string]$ResultManifest.hdlImport.synthesisMetricsSha256 -ceq (File-Sha256 $synthesisPath)) "$Label result manifest does not name the downloaded raw synthesis metrics."
+    Require ([string]$ResultManifest.hdlImport.toolchainBootstrapSha256 -ceq (File-Sha256 $toolchainPath)) "$Label result manifest does not name the downloaded raw toolchain receipt."
+}
+
 $linux = Artifact-Paths $LinuxArtifactDirectory
 $windows = Artifact-Paths $WindowsArtifactDirectory
 $linuxVerification = Read-Json $linux.Verification
@@ -79,14 +103,16 @@ foreach ($receipt in @($linuxVerification, $windowsVerification)) {
 
 $linuxResultManifestPath = Join-Path $linux.Results 'manifest.json'
 $windowsResultManifestPath = Join-Path $windows.Results 'manifest.json'
-$null = Verify-Manifest $linux.Results $linuxResultManifestPath
-$null = Verify-Manifest $windows.Results $windowsResultManifestPath
+$linuxResultManifest = Verify-Manifest $linux.Results $linuxResultManifestPath
+$windowsResultManifest = Verify-Manifest $windows.Results $windowsResultManifestPath
 $linuxRawManifestPath = Join-Path $linux.Hdl 'manifest.json'
 $windowsRawManifestPath = Join-Path $windows.Hdl 'manifest.json'
 $linuxRawManifest = Verify-Manifest $linux.Hdl $linuxRawManifestPath
 $windowsRawManifest = Verify-Manifest $windows.Hdl $windowsRawManifestPath
 Require (@($linuxRawManifest.files).Count -eq 751) 'Linux raw manifest does not contain 751 entries.'
 Require (@($windowsRawManifest.files).Count -eq 751) 'Windows raw manifest does not contain 751 entries.'
+Verify-Artifact-Linkage 'Linux' $linux $linuxVerification $linuxResultManifest $linuxResultManifestPath
+Verify-Artifact-Linkage 'Windows' $windows $windowsVerification $windowsResultManifest $windowsResultManifestPath
 
 $linuxSummary = Read-Json (Join-Path $linux.Hdl 'verification-summary.json')
 $windowsSummary = Read-Json (Join-Path $windows.Hdl 'verification-summary.json')

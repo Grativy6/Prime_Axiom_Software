@@ -146,9 +146,9 @@ proc -> flatten -> opt -> memory_map -> techmap -> opt -> dffunmap
 
 The analyzer rejects X/Z constants, unresolved/forbidden cells, duplicate drivers, undriven used nets, and combinational loops. Optimized combinational cells must be NAND2; recognized DFF cells remain separately charged.
 
-## Corrected full HDL receipt
+## Canonical Linux HDL receipt
 
-The final corrected Windows run is preserved at `.artifacts/build002-hdl-full-zero-repair/`. Its [`verification-summary.json`](../.artifacts/build002-hdl-full-zero-repair/verification-summary.json) reports:
+The protocol-selected Linux run is preserved at `.artifacts/build002-hdl-linux-canonical-4b0cb25/`. It was recovered byte-for-byte from [Ubuntu job 97724707932 in successful five-job CI run 32822919820](https://github.com/Grativy6/Prime_Axiom_Software/actions/runs/32822919820/job/97724707932), and its 751-entry raw manifest verifies all 752 files in the directory (the manifest does not list itself). Its `verification-summary.json` reports:
 
 | Phase | Cases | Result |
 |---|---:|---|
@@ -173,32 +173,36 @@ The 19 simulation cases are one primitive truth-table bench plus six benches at 
 
 The primitive bench exhausts eight input rows across its named primitive checks. The 15 formal cases are five harness families—binary, binexp, checked bad-tag conservation, thermometer, and sidecar—at all three widths. Each final log ends with `SAT proof finished - no model found: SUCCESS!`. These are assertions in [the formal harnesses](../hdl/formal/), not proofs of every synthesized top.
 
-### Receipt hashes
+### Canonical receipt hashes
 
 | Artifact | SHA-256 |
 |---|---|
-| Final verification summary | `9228a81882128f4fd5a9f9ba466d1385db5b5b829eac01242bb09f0cd4e81b90` |
-| Final manifest | `ea152ad904391da7ac66db69d1e21d0ca29081e3a8523ce5c2c3b6031d82d65c` |
-| Final synthesis metrics CSV | `98d141aee19e1e741ebec2b3d4e4dd31899fcb78fcf25fcf9da5b41a8a93aa4d` |
-| Final toolchain receipt | `6b78a5c143d541028148abf3a00649327602638fe13fb1a0d219eb746c6dd989` |
+| Verification summary | `465db68b20e80d2e2f40213bebf5d6618fcd5b2818e1bc9156229fecff72b55c` |
+| Raw manifest | `204357147fa688b4f50884987d124c33c438986aa93659dc75bde90f85aa2b7c` |
+| Synthesis metrics CSV | `e279451a6abc7fd3eb6221d080eb70a7fc5651b724678b47eb26dee3038e6649` |
+| Toolchain receipt | `ee89d226ea3c2407878d340aff34e4b1f1c542aec55eed0944adc1852c2d6664` |
 
-The manifest contains 751 file entries. Its file hashes are the integrity boundary for the raw logs, scripts, JSON netlists, analyzer receipts, and metrics; `260/260` is not a substitute for those artifacts.
+The manifest contains 751 file entries. Its file hashes are the integrity boundary for the raw logs, scripts, JSON netlists, analyzer receipts, and metrics; `260/260` is not a substitute for those artifacts. The raw summary intentionally retains CI-origin `log` paths under `.artifacts/build002-hdl-ci/`; after relocation, resolve each suffix under `.artifacts/build002-hdl-linux-canonical-4b0cb25/`. Those values are not paths relative to the summary file.
 
 ### Pinned toolchain actually exercised
 
-| Component | Verified Windows version |
+| Component | Verified Linux version |
 |---|---|
-| OSS CAD Suite | release `2026-08-24`, `windows-x64` |
-| Archive | 595,298,533 bytes; SHA-256 `95d3cf2a59d1617f2363ee9370bb3577799f33a07e9c66e126ddeb68e8e5814c` |
-| Yosys | `Yosys 0.68+120 (git sha1 a34d3baae-dirty, Release, GNU [REDACTED_PATH] 15.2.1)` in the committed sanitized receipt |
+| OSS CAD Suite | release `2026-08-24`, `linux-x64` |
+| Archive | 741,360,658 bytes; SHA-256 `9d7f79975ef624e1119fc9690fd9b9839b67026925aff3e2a1192d861b8dbb7c` |
+| Yosys | `Yosys 0.68+120 (git sha1 a34d3baae-dirty, Release, Clang [REDACTED_PATH] 21.1.8)` in the committed sanitized receipt |
 | Icarus | `Icarus Verilog version 14.0 (devel) (s20260301-391-g64f13540a-dirty)` |
 | vvp | `Icarus Verilog runtime version 14.0 (devel) (s20260301-391-g64f13540a-dirty)` |
 | Verilator | `Verilator 5.051 devel rev v5.050-251-g477b48fb3 (mod)` |
 | SBY | `SBY v0.68` (probed, not the final proof engine) |
-| yosys-smtbmc | `yosys-smtbmc-script.py [options] <yosys_smt2_output>` (recognizable script probe, not the final proof engine) |
+| yosys-smtbmc | `yosys-smtbmc [options] <yosys_smt2_output>` (recognizable script probe, not the final proof engine) |
 | Z3 | `Z3 version 4.15.5 - 64 bit` (probed, not the final proof engine) |
 
-The Linux x64 archive is locked at 741,360,658 bytes and SHA-256 `9d7f79975ef624e1119fc9690fd9b9839b67026925aff3e2a1192d861b8dbb7c`. The canonical committed HDL source receipt above is the Windows run, while [the cross-platform protocol decision gate](https://github.com/Grativy6/Prime_Axiom_Software/actions/runs/32814482250) independently passed the complete verifier on Ubuntu and Windows and preserved both raw bundles. The final formal proofs used Yosys's internal MiniSAT flow, not SBY/Z3 as a second engine; no cross-platform mapped-netlist identity or physical-hardware claim follows.
+### Windows reproducibility receipt
+
+The current Windows receipt is preserved at `.artifacts/build002-hdl-windows-repro-4b0cb25/`: verification summary `70dd688a00cb5dda930b7a5ca81b749b6001b6a7f3af41a665be472975d42f2b`, raw manifest `e028933ed6251626c741fd21f083020646943cb831a30341c8c09d5eafe827e1`, synthesis CSV `56a2ddd325954371becb95c927c89469f8d920255cd4f0116f94bf330dd3568b`, and toolchain receipt `6b78a5c143d541028148abf3a00649327602638fe13fb1a0d219eb746c6dd989`. It uses the 595,298,533-byte Windows archive with SHA-256 `95d3cf2a59d1617f2363ee9370bb3577799f33a07e9c66e126ddeb68e8e5814c`. Its CI verification receipt is `PASS` with role `WINDOWS_REPRODUCIBILITY_NONTERMINAL`, classification `PARTIAL — FINAL DECISION NOT EARNED`, and SHA-256 `4d3690e6aee777f224877faeb89b3a27cb511fb92a7eb3aa4b0060b82c125ffc`.
+
+Across the Linux and Windows full receipts, all 150 synthesis rows have identical stable numeric, status, warning, and architecture fields. Platform, compiler/tool string, and all 150 per-row netlist hashes differ, including every one of the 75 optimized rows. The ordered 260-case verification phase/name/status/detail vectors match exactly, and 10 platform-neutral generated files are byte-identical. The paired CI receipt has SHA-256 `00de5f878f4813c63335fac258363f800c0ecbd4ff7427fef92ef25d0692371f`. Linux alone supplies the terminal classification; Windows is nonterminal reproducibility evidence, not mapped-netlist identity. The final formal proofs used Yosys's internal MiniSAT flow, not SBY/Z3 as a second engine, and no physical-hardware claim follows.
 
 ### Representative measured static rows
 
@@ -307,7 +311,10 @@ Raw failures were retained rather than rewritten:
 | `.artifacts/build002-hdl-quick-fixed/` | `QUICK_W4`, 83/83 pass | `0e63a688a633f1d7efe83fe1695f7294fea9e2d6ad592952da5896918578e767` | Demonstrated the first harness/analyzer repair, before the zero/saturation contract audit. |
 | `.artifacts/build002-hdl-full/` | `FULL_W4_W6_W8`, 245/245 pass | `33f1f493055057c8a75132d0fd696ee1a4ac122e9932bc37edb1fde2e4c2b12e` | Superseded full run under the defective zero/persistence contract; passing its then-current tests did not make that contract correct. |
 | `.artifacts/build002-hdl-quick-zero-repair/` | `QUICK_W4`, 88/88 pass | `e76d68d8ff3735c5ec7d2041d9c81b621aa305556abb215876f7e4d6778a3968` | W=4 validation of the repaired zero and checked-compose contract. |
-| `.artifacts/build002-hdl-full-zero-repair/` | `FULL_W4_W6_W8`, 260/260 pass | `9228a81882128f4fd5a9f9ba466d1385db5b5b829eac01242bb09f0cd4e81b90` | Current corrected full HDL evidence. |
+| `.artifacts/build002-hdl-full-zero-repair/` | `FULL_W4_W6_W8`, 260/260 pass | `9228a81882128f4fd5a9f9ba466d1385db5b5b829eac01242bb09f0cd4e81b90` | Historical corrected Windows receipt; superseded by the role-hardened current CI artifact. |
+| `.artifacts/build002-hdl-linux-canonical/` | `FULL_W4_W6_W8`, 260/260 pass | `0c15c7f0e4a3ac8a3be433d0cc67f2b7f6ec7ac4f517fcc4bca1959b661d07a4` | Superseded Linux receipt preserved from the earlier CI head. |
+| `.artifacts/build002-hdl-windows-repro-4b0cb25/` | `FULL_W4_W6_W8`, 260/260 pass | `70dd688a00cb5dda930b7a5ca81b749b6001b6a7f3af41a665be472975d42f2b` | Current Windows nonterminal reproducibility evidence recovered intact from CI. |
+| `.artifacts/build002-hdl-linux-canonical-4b0cb25/` | `FULL_W4_W6_W8`, 260/260 pass | `465db68b20e80d2e2f40213bebf5d6618fcd5b2818e1bc9156229fecff72b55c` | Current protocol-selected Linux canonical terminal evidence recovered intact from CI. |
 
 The failed quick receipt's four formal failures were diagnosed as proof-harness problems: internal unconstrained registers and an expected-result mux introduced X/don't-care behavior. Inputs were made explicit, assertions became opcode-guarded, and the SAT command now includes `-set-assumes`. The nine declared-netlist failures were analyzer false positives around hierarchical aliases, constants, and parameter-elided ports; alias equivalence was repaired and protected by analyzer regression tests. These diagnoses do not erase the failed receipt.
 
@@ -320,18 +327,18 @@ Toolchain bring-up also found reproducibility defects that are now guarded: the 
 
 ## Exact reproduction
 
-The canonical end-to-end verifier restores, formats, builds, runs the zero-skip test suite, regenerates the full HDL evidence, generates the result set twice, compares deterministic hashes, validates the manifest, protects inherited Build 000/001 evidence, and writes a verification receipt:
+The end-to-end verifier restores, formats, builds, runs the zero-skip test suite, regenerates the full HDL evidence, requires all 150 synthesis warning counts, generates the result set twice, compares deterministic hashes, validates the manifest, protects inherited Build 000/001 evidence, and writes a verification receipt. Run it on Linux x64 to reproduce the canonical terminal receipt. The same command on Windows produces nonterminal reproducibility evidence; pair the two uploaded artifacts with `scripts/verify-build002-cross-platform.ps1`:
 
 ```powershell
 & .\scripts\verify-build002.ps1
 ```
 
-To replay the aggregate against the already preserved corrected HDL evidence without rerunning HDL:
+To replay the aggregate against the already preserved Linux-canonical HDL evidence without rerunning HDL:
 
 ```powershell
 & .\scripts\verify-build002.ps1 `
   -UseExistingHdlEvidence `
-  -HdlOutputDirectory '.artifacts/build002-hdl-full-zero-repair' `
+  -HdlOutputDirectory '.artifacts/build002-hdl-linux-canonical-4b0cb25' `
   -OutputDirectory 'artifacts/build002-reproduction'
 ```
 
@@ -351,7 +358,7 @@ The lower-level HDL commands, from the repository root in PowerShell, are:
   -OutputDirectory '.artifacts/build002-hdl-reproduction-quick'
 ```
 
-The verification script uses [the exact lock](../hdl/toolchain.lock.json), ordered RTL list, lint/simulation/formal commands, synthesis passes, post-map NAND conversion, netlist analyzer, completion guards, and deterministic receipt writer. A fresh run should be preserved rather than written over any directory cited above.
+The verification script uses [the exact lock](../hdl/toolchain.lock.json), ordered RTL list, lint/simulation/formal commands, synthesis passes, post-map NAND conversion, netlist analyzer, completion guards, and deterministic receipt writer. A fresh run should be preserved rather than written over any directory cited above. An existing-evidence replay must retain the complete raw Linux directory, including the raw manifest and every sibling declared/optimized synthesis log; supplying only the three top-level receipts leaves warning counts `NOT_MEASURED` and cannot earn a terminal decision.
 
 To verify the four main hashes from a reproduction:
 
@@ -374,9 +381,9 @@ dotnet run --project .\src\PrimeAxiom.Cli `
   --configuration Release `
   -- experiment-build002 `
   --output results/build002 `
-  --hdl-verification-summary .artifacts/build002-hdl-reproduction/verification-summary.json `
-  --hdl-synthesis-metrics .artifacts/build002-hdl-reproduction/synthesis-metrics.csv `
-  --hdl-toolchain .artifacts/build002-hdl-reproduction/toolchain-bootstrap.json
+  --hdl-verification-summary .artifacts/build002-hdl-linux-canonical-4b0cb25/verification-summary.json `
+  --hdl-synthesis-metrics .artifacts/build002-hdl-linux-canonical-4b0cb25/synthesis-metrics.csv `
+  --hdl-toolchain .artifacts/build002-hdl-linux-canonical-4b0cb25/toolchain-bootstrap.json
 ```
 
 The generator validates and path-sanitizes all three supplied HDL receipts before emitting [150 synthesis rows](../results/build002/synthesis_metrics.csv), [15 formal receipts](../results/build002/formal_receipts.json), and the [toolchain receipt](../results/build002/toolchain.json). Imported HDL evidence does not silently turn a missing non-HDL field into a measured synthesis or dynamic value. Inspect [protocol_coverage.json](../results/build002/protocol_coverage.json), every `NOT_MEASURED` value, the [result manifest](../results/build002/manifest.json), and the phase-separated CSVs before interpreting the generated set.
@@ -397,19 +404,23 @@ This invokes fallback rule 5 of the frozen protocol after rules 1–4 fail. It i
 
 ### Completion receipts
 
-- [Generated manifest](../results/build002/manifest.json): SHA-256 `ce25af5f5dceaf74e0182e729e09b3e6463f6d286bae165424c2af78ea01d809`; runtime `.NET 8.0.29`; generator command reproduced above.
+- [Generated manifest](../results/build002/manifest.json): SHA-256 `235b7a67826a1b45b50c63907dfce6262f4f614059f93e7441d950fc2b49b014`; runtime `.NET 8.0.29`; generator command reproduced above.
 - [Protocol coverage](../results/build002/protocol_coverage.json): all seven A–F/R families are `COMPLETE_BOUNDED`, totaling 609 workload rows across W=4/6/8; the decision flag is true.
 - [Correctness](../results/build002/correctness.json): `656,810` checks, `0` failures. The generator has no skip mechanism, and the required-test receipt records zero skipped checks.
 - HDL: `260/260` verification cases, including `15/15` formal cases; `150` synthesis rows comprise 75 `STRUCTURAL_DECLARED` and 75 `STRUCTURAL_OPTIMIZED` rows, all with measured warning counts.
+- Strengthened local replay: `.artifacts/build002-final-canonical-4b0cb25-verification.json` is `PASS` with role `CANONICAL_LINUX_TERMINAL`, 211/211 tests, zero skipped, deterministic replay, and receipt SHA-256 `e921c9ded2c4e94badd0ad695e907953f075c9f241ad9ab53c9586dfff6670d5`.
+- Source-and-generator evidence CI: [run 32822919820](https://github.com/Grativy6/Prime_Axiom_Software/actions/runs/32822919820) passed both inherited jobs, Linux canonical, Windows nonterminal, and the paired cross-platform verifier.
 - Inherited Build 000/001 evidence matches the frozen manifest/report hashes recorded in the coverage receipt.
 
 ### Frozen-rule audit
 
-1. **Alternative arithmetic unit candidate — not satisfied.** The integrated BIN+VSC-S4 machine is statically larger than the matched binary mixed-operation machine at W6 and W8, and E's delayed/eager sidecar policies use more NAND evaluations and transitions under the same `MAGNITUDE_EVERY_OP` contract.
-2. **Prime structural coprocessor candidate — not satisfied.** The exact sidecar's W6/W8 static overhead exceeds the full binary divider/query context before a 32-operation dynamic horizon is charged. Static hardware cannot be amortized away under the registered Pareto rule.
-3. **Warm-state specialized advantage — not satisfied.** B confirms lower NAND count, depth, wiring, evaluations, and transitions for resident structural scale/cancel, but the structural machine uses more DFF/state and port bits at both W6 and W8. This is a tradeoff, not Pareto dominance.
-4. **Unexpected architecture — not satisfied.** No architecture outside the preregistered structural, thermometer, presence, or exact-sidecar families survived the integrated adversarial tests.
+1. **Alternative arithmetic unit candidate — statically disqualified.** The registered integrated E-capable BIN+VSC-S4 machine is worse in mandatory static dimensions at W6 and W8, and E's delayed/eager policies also use more NAND evaluations and transitions under the same `MAGNITUDE_EVERY_OP` contract.
+2. **Prime structural coprocessor candidate — statically disqualified.** The exact sidecar's W6/W8 static overhead exceeds the full binary divider/query context before a 32-operation dynamic horizon is charged. Static hardware cannot be amortized away under the registered Pareto rule.
+3. **Warm-state specialized advantage — statically disqualified.** The registered B resident machine and C sidecar-query candidate are both screened. B has real NAND/depth/wiring/transition savings but more DFF/state and port bits; C has the sidecar overhead described above. D has no integrated candidate. Thus every eligible B/C/D candidate context loses a mandatory static dimension.
+4. **Unexpected architecture — not present in the registered inventory.** The integrated inventory contains exactly the preregistered sidecar and resident structural rows at both decision widths. An extra integrated candidate would force `PARTIAL` and require a new bounded rule rather than being silently absorbed.
 5. **Fallback — selected.** `NO_HARDWARE_ADVANTAGE` follows because none of the positive rules is satisfied.
+
+This audit deliberately does not infer a positive classification from static Pareto evidence. A candidate that is tied or no-worse in every static dimension proceeds to the full frozen dynamic predicate; it does not win at the static screen. Missing, malformed, or unregistered evidence produces `PARTIAL`.
 
 ### Meaning of the negative
 

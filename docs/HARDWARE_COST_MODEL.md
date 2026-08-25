@@ -220,4 +220,4 @@ The final classification uses the frozen rules in Section 14 of the experiment p
 
 ## Reproducibility
 
-Each result row carries protocol ID, implementation, width, source regime, output obligation, evidence class, and support status. The manifest hashes every committed result artifact and records tool versions, command templates, platform, and generator commit. Generated text uses UTF-8 without BOM and LF endings. Frozen seeds and boundary cases are defined in the experiment protocol and implemented by the Build 002 runner.
+Each result row carries protocol ID, implementation, width, source regime, output obligation, evidence class, and support status. The self-excluding manifest hashes every other committed result artifact and records runtime/tool versions, the exact generator command, platform, and frozen baseline commit. The source/generator revision that produced the canonical imported receipts is anchored separately by the Build 002 report and CI receipt. Generated text uses UTF-8 without BOM and LF endings. Frozen seeds and boundary cases are defined in the experiment protocol and implemented by the Build 002 runner.

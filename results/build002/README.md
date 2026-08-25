@@ -9,7 +9,7 @@ This directory preserves cold/warm source regimes, output obligations, phase cos
 ## Reproduce
 
 ```powershell
-dotnet run --project src/PrimeAxiom.Cli --configuration Release -- experiment-build002 --output results/build002 --hdl-verification-summary .artifacts/build002-hdl-full-zero-repair/verification-summary.json --hdl-synthesis-metrics .artifacts/build002-hdl-full-zero-repair/synthesis-metrics.csv --hdl-toolchain .artifacts/build002-hdl-full-zero-repair/toolchain-bootstrap.json
+dotnet run --project src/PrimeAxiom.Cli --configuration Release -- experiment-build002 --output 'results/build002' --hdl-verification-summary '.artifacts/build002-hdl-linux-canonical-4b0cb25/verification-summary.json' --hdl-synthesis-metrics '.artifacts/build002-hdl-linux-canonical-4b0cb25/synthesis-metrics.csv' --hdl-toolchain '.artifacts/build002-hdl-linux-canonical-4b0cb25/toolchain-bootstrap.json'
 ```
 
 Master seed: `0x5041485742303032`
@@ -31,7 +31,7 @@ Correctness checks: 656810
 
 Correctness failures: 0
 
-HDL evidence: `COMPLETE_VERIFIED` (260 checks; 15 formal; 150 synthesis rows)
+HDL evidence: `COMPLETE_VERIFIED` on `linux-x64` (260 checks; 15 formal; 150 synthesis rows)
 
 ## Decision boundary
 

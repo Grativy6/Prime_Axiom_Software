@@ -4,7 +4,9 @@
 
 > **Classification: `NO_HARDWARE_ADVANTAGE`**
 
-This is the terminal classification earned by frozen protocol `PAH-BUILD002-CONF0001`. All required experiment families A–F/R are `COMPLETE_BOUNDED` at `W in {4,6,8}`; the generated campaign recorded 656,810 bounded checks with zero failures; and the imported HDL campaign completed 260/260 cases, including 15 formal cases and 150 validated synthesis rows. The final repository verifier passed 183/183 tests with zero failed or skipped and confirmed deterministic evidence replay. The decision flag in [`protocol_coverage.json`](results/build002/protocol_coverage.json) is `true`.
+This is the terminal classification earned by frozen protocol `PAH-BUILD002-CONF0001`. All required experiment families A–F/R are `COMPLETE_BOUNDED` at `W in {4,6,8}`; the generated campaign recorded 656,810 bounded checks with zero failures; and the imported HDL campaign completed 260/260 cases, including 15 formal cases and 150 validated synthesis rows with every warning count measured. The final repository verifier passed 211/211 tests with zero failed or skipped and confirmed deterministic evidence replay. The decision flag in [`protocol_coverage.json`](results/build002/protocol_coverage.json) is `true`.
+
+The implemented static comparison is only a necessary-condition screen: it may disqualify a registered candidate that is worse in any applicable charged static dimension at a required width, but it cannot award a positive classification. Missing or duplicate rows, wrong contracts, negative sentinels, loops, a surviving tied/no-worse context, or an unregistered integrated candidate force `PARTIAL`. The terminal negative survives that stricter audit because every registered rule 1–3 candidate context—E, C, and the B/C alternatives for rule 3—is statically disqualified, while the complete dynamic campaign remains preserved.
 
 The negative is narrow. It does **not** mean that valuation state has no useful local behavior. The fully integrated warm S4 scale/cancel machine used substantially fewer NANDs, wires, logical levels, NAND evaluations, and settled NAND-output transitions than its matched binary machine. It nevertheless used more DFF/state bits and more port bits at both decision widths. Under the frozen definition—no worse in every applicable charged dimension and strictly better in at least one—that is a tradeoff, not Pareto dominance.
 
@@ -241,7 +243,7 @@ Its componentwise order is a distributive divisibility lattice with meet/min and
 
 ### 7. Which operations became cheaper?
 
-Already-resident known-factor scale/cancel became much smaller and shallower in the integrated S4 machine, and its B traces used fewer evaluations and settled transitions. Operation-only compose also beat the transparent binary multiplier at the measured widths. Thermometer meet/join/divides and fixed-threshold query used shallow monotone logic. These wins apply to resident structural or predicate contracts, not automatically to cold or magnitude-output workloads.
+Already-resident known-factor scale/cancel became much smaller and shallower in the integrated S4 machine, and its B traces used fewer evaluations and settled transitions. At W6 and W8, both operation-only compose variants used fewer NANDs and less depth than the transparent binary multiplier; W4 binary-exponent compose instead traded more NANDs for less depth. Thermometer meet/join/divides and fixed-threshold query used shallow order/threshold logic. These wins apply to resident structural or predicate contracts, not automatically to cold or magnitude-output workloads.
 
 ### 8. Which operations became more expensive?
 
@@ -336,7 +338,10 @@ The build retained failures rather than rewriting them:
 
 - `.artifacts/build002-hdl-failed-quick-0001/`: 69/82 pass, 13 fail; summary SHA-256 `08dbc63151fda2aca35d63427e2edb87d74085d90cb81ed66e17482523e0aefe`. Four formal harness and nine analyzer failures exposed unconstrained/X-state proof logic and alias/constant/parameter-elision analyzer defects.
 - `.artifacts/build002-hdl-full/`: 245/245 pass, later superseded because its zero and saturation-reentry contract was wrong. A green suite did not make an incomplete contract correct.
-- `.artifacts/build002-hdl-full-zero-repair/`: corrected 260/260 receipt; summary SHA-256 `9228a81882128f4fd5a9f9ba466d1385db5b5b829eac01242bb09f0cd4e81b90`.
+- `.artifacts/build002-hdl-full-zero-repair/`: historical corrected Windows 260/260 receipt; summary SHA-256 `9228a81882128f4fd5a9f9ba466d1385db5b5b829eac01242bb09f0cd4e81b90`.
+- `.artifacts/build002-hdl-linux-canonical/`: superseded Linux 260/260 receipt recovered intact from [CI run 32816524938](https://github.com/Grativy6/Prime_Axiom_Software/actions/runs/32816524938); summary SHA-256 `0c15c7f0e4a3ac8a3be433d0cc67f2b7f6ec7ac4f517fcc4bca1959b661d07a4` and raw-manifest SHA-256 `3765754f45842d4714adce021b9206d6d41d158b1aafd32c39540aa64fa56679`.
+- `.artifacts/build002-hdl-windows-repro-4b0cb25/`: current nonterminal Windows 260/260 receipt from [CI job 97724707901](https://github.com/Grativy6/Prime_Axiom_Software/actions/runs/32822919820/job/97724707901); summary SHA-256 `70dd688a00cb5dda930b7a5ca81b749b6001b6a7f3af41a665be472975d42f2b` and raw-manifest SHA-256 `e028933ed6251626c741fd21f083020646943cb831a30341c8c09d5eafe827e1`.
+- `.artifacts/build002-hdl-linux-canonical-4b0cb25/`: current protocol-selected Linux 260/260 canonical receipt from [CI job 97724707932](https://github.com/Grativy6/Prime_Axiom_Software/actions/runs/32822919820/job/97724707932); summary SHA-256 `465db68b20e80d2e2f40213bebf5d6618fcd5b2818e1bc9156229fecff72b55c` and raw-manifest SHA-256 `204357147fa688b4f50884987d124c33c438986aa93659dc75bde90f85aa2b7c`.
 
 The two substantive repaired defects were:
 
@@ -356,27 +361,34 @@ Dead ends established by the completed matrix include:
 
 ## Reproduction and receipts
 
-The committed result manifest is [`results/build002/manifest.json`](results/build002/manifest.json), whose file SHA-256 is `CE25AF5F5DCEAF74E0182E729E09B3E6463F6D286BAE165424C2AF78EA01D809`. It records `.NET 8.0.29`, master seed `0x5041485742303032`, the exact generator command, and hashes for every committed result artifact. The imported raw-source hashes are:
+The committed result manifest is [`results/build002/manifest.json`](results/build002/manifest.json), whose file SHA-256 is `235B7A67826A1B45B50C63907DFCE6262F4F614059F93E7441D950FC2B49B014`. It records `.NET 8.0.29`, master seed `0x5041485742303032`, the actual repository-relative Linux input paths, and hashes for every other committed result artifact; the manifest intentionally excludes itself. The imported canonical raw-source hashes are:
 
-- HDL verification summary: `9228A81882128F4FD5A9F9BA466D1385DB5B5B829EAC01242BB09F0CD4E81B90`;
-- HDL synthesis metrics: `98D141AEE19E1E741EBEC2B3D4E4DD31899FCB78FCF25FCF9DA5B41A8A93AA4D`;
-- HDL toolchain bootstrap: `6B78A5C143D541028148ABF3A00649327602638FE13FB1A0D219EB746C6DD989`;
-- pinned Windows OSS CAD Suite archive: 595,298,533 bytes, SHA-256 `95D3CF2A59D1617F2363EE9370BB3577799F33A07E9C66E126DDEB68E8E5814C`.
+- HDL verification summary: `465DB68B20E80D2E2F40213BEBF5D6618FCD5B2818E1BC9156229FECFF72B55C`;
+- HDL synthesis metrics: `E279451A6ABC7FD3EB6221D080EB70A7FC5651B724678B47EB26DEE3038E6649`;
+- HDL toolchain bootstrap: `EE89D226EA3C2407878D340AFF34E4B1F1C542AEC55EED0944ADC1852C2D6664`;
+- raw HDL manifest: `204357147FA688B4F50884987D124C33C438986AA93659DC75BDE90F85AA2B7C`;
+- pinned Linux OSS CAD Suite archive: 741,360,658 bytes, SHA-256 `9D7F79975EF624E1119FC9690FD9B9839B67026925AFF3E2A1192D861B8DBB7C`.
 
-The strengthened local full-verifier receipt `.artifacts/build002-verify-final-strengthened-verification.json` records `PASS`, 183/183 tests, zero failures, zero skipped, 656,810 arithmetic checks, 260 HDL cases, 15 formal cases, 150 synthesis rows, `deterministic_replay=true`, and replay-manifest SHA-256 `ABF8EFB022FDBE6B9DAAFE800E46DB26E1D8303683398B82A4169AA9F68CF239`. Only `README.md` and `manifest.json` differ from the committed result set, solely because they record or hash the output directory `.artifacts/build002-verify-final-strengthened`; all other generated artifact bytes match.
+The raw summary preserves its original CI-relative `log` values under `.artifacts/build002-hdl-ci/`. After byte-identical relocation, resolve each suffix under `.artifacts/build002-hdl-linux-canonical-4b0cb25/`; those values are not relative to the summary file itself.
+
+The earlier Windows full-verifier receipt `.artifacts/build002-verify-final-strengthened-verification.json` remains a historical `PASS` with 183/183 tests, zero skipped, 656,810 arithmetic checks, 260 HDL cases, and deterministic replay. It predates the Linux-canonical import and the decision/provenance hardening. Relative to the current committed set, the six platform-, decision-, or invocation-dependent files are `formal_receipts.json`, `synthesis_metrics.csv`, `toolchain.json`, `protocol_coverage.json`, `README.md`, and `manifest.json`; the platform-neutral arithmetic, workload, representation, and figure outputs remain unchanged. The old receipt supports Windows reproducibility, not canonical-byte identity.
+
+The current strengthened replay receipt `.artifacts/build002-final-canonical-4b0cb25-verification.json` records `PASS`, role `CANONICAL_LINUX_TERMINAL`, 211/211 tests, zero failures, zero skipped, 656,810 arithmetic checks, 260 HDL cases, 15 formal cases, 150 synthesis rows, and `deterministic_replay=true`. Its SHA-256 is `E921C9DED2C4E94BADD0AD695E907953F075C9F241AD9AB53C9586DFFF6670D5`; its replay-manifest SHA-256 is `3BEDE7DA9BF30AC2ADD64D14C75C9A3EB0715F9C7B73C0B61F33C8E7906ABC60`. The replay imports the complete current Linux-canonical raw bundle. Only generated `README.md` (and therefore the self-excluded manifest file) differs from the committed result set because it records the scratch output directory; every other manifest-listed artifact hash matches.
 
 ### Cross-platform decision gate
 
-[Draft PR #2 CI run 32814482250](https://github.com/Grativy6/Prime_Axiom_Software/actions/runs/32814482250) closed the protocol's Windows/Ubuntu gate on commit `b6a110c709dd9667e75442ba86d269c1ecec1713`:
+[Draft PR #2 CI run 32822919820](https://github.com/Grativy6/Prime_Axiom_Software/actions/runs/32822919820) passed all five source-and-generator evidence jobs on commit `4b0cb2516d4ce13255b09a0e5884c4309430b701`:
 
-| Platform | Build 002 job | Result | Replay manifest SHA-256 | Preserved raw HDL files |
+| Platform | Build 002 job | Evidence role and result | Replay manifest SHA-256 | Preserved raw HDL files |
 |---|---|---|---|---:|
-| Ubuntu | [97699948322](https://github.com/Grativy6/Prime_Axiom_Software/actions/runs/32814482250/job/97699948322) | `PASS`; `NO_HARDWARE_ADVANTAGE`; 183/183 tests, 0 skipped; 656,810 checks; 260 HDL | `E4725618033113A3EE1206A7DB51B46399E915D19C315CA0204CA3A061D05310` | 752 |
-| Windows | [97699948499](https://github.com/Grativy6/Prime_Axiom_Software/actions/runs/32814482250/job/97699948499) | same status, classification, and counts | `041E0E25017D2CD83246D2E9BE2BC96F778CBC9E1CC08BFCD6D4EEEFC8BB8B89` | 752 |
+| Ubuntu | [97724707932](https://github.com/Grativy6/Prime_Axiom_Software/actions/runs/32822919820/job/97724707932) | `CANONICAL_LINUX_TERMINAL`; `PASS`; `NO_HARDWARE_ADVANTAGE`; 211/211 tests, 0 skipped | `B28BB59C9871C1D00DC4897A62DEA2E65280DF874547B9FF26596EA075034512` | 752 |
+| Windows | [97724707901](https://github.com/Grativy6/Prime_Axiom_Software/actions/runs/32822919820/job/97724707901) | `WINDOWS_REPRODUCIBILITY_NONTERMINAL`; `PASS`; `PARTIAL — FINAL DECISION NOT EARNED`; 211/211 tests, 0 skipped | `9A74852DEBF5C8DB18AE1E9E39DBBD048BCBF8098DFCFF820306A685A65FA451` | 752 |
 
-Each downloaded manifest matched the SHA in its verification receipt and every listed file verified. Platform-specific synthesis, formal, and toolchain imports, the coverage files that cite their source hashes, and the manifests that hash them differ honestly; all other generated result files were byte-identical across the bundles. The separate inherited-evidence jobs also passed on both platforms.
+Each downloaded manifest matched the SHA in its verification receipt and every listed file verified. The [paired job 97727003978](https://github.com/Grativy6/Prime_Axiom_Software/actions/runs/32822919820/job/97727003978) emitted a `PASS` receipt with SHA-256 `00DE5F878F4813C63335FAC258363F800C0ECBD4FF7427FEF92EF25D0692371F`: all 260 ordered HDL case semantics matched; all 150 stable synthesis field vectors matched; platform, tool-version, and netlist-hash fields differed in all 150 rows; all 75 optimized netlist hashes differed; and 10 platform-neutral generated files were byte-identical. Linux alone carries the terminal classification. The separate inherited-evidence jobs also passed on both platforms.
 
-Three failed CI runs and one superseded cancellation remain part of the evidence trail. [Run 32813419993](https://github.com/Grativy6/Prime_Axiom_Software/actions/runs/32813419993) exposed an overly Windows-specific `yosys-smtbmc` help recognizer. [Run 32813798348](https://github.com/Grativy6/Prime_Axiom_Software/actions/runs/32813798348) passed the repaired probe and all 260 HDL cases on both systems, then correctly withheld the terminal label because the frozen inherited receipts lacked explicit cross-platform line-ending attributes. [Run 32814358895](https://github.com/Grativy6/Prime_Axiom_Software/actions/runs/32814358895) was cancelled after its interim blanket-LF rule proved too broad; all four verification steps were cancelled and no receipts were uploaded, so it is not counted as a failed decision run. [Run 32815324796](https://github.com/Grativy6/Prime_Axiom_Software/actions/runs/32815324796) followed the four-job decision gate but hit the [documented intermittent .NET 8 formatter CLI-discovery race](https://github.com/dotnet/sdk/issues/44957) on its Windows inherited-evidence job after a successful restore. The shared format verifier now pins the resolved host path and retries once only for that exact exit-code/message signature; ordinary format failures still stop immediately. Run 32814482250 demonstrates the first two repairs and the terminal decision, while the draft PR records the eventual current-head regression gate. No failed or cancelled run is rewritten as success.
+[CI run 32814482250](https://github.com/Grativy6/Prime_Axiom_Software/actions/runs/32814482250) remains the historical first four-job decision gate. It predates the explicit Linux-terminal/Windows-nonterminal role hardening and is not substituted for the current paired receipt.
+
+Three failed CI runs and one superseded cancellation remain part of the evidence trail. [Run 32813419993](https://github.com/Grativy6/Prime_Axiom_Software/actions/runs/32813419993) exposed an overly Windows-specific `yosys-smtbmc` help recognizer. [Run 32813798348](https://github.com/Grativy6/Prime_Axiom_Software/actions/runs/32813798348) passed the repaired probe and all 260 HDL cases on both systems, then correctly withheld the terminal label because the frozen inherited receipts lacked explicit cross-platform line-ending attributes. [Run 32814358895](https://github.com/Grativy6/Prime_Axiom_Software/actions/runs/32814358895) was cancelled after its interim blanket-LF rule proved too broad; all four verification steps were cancelled and no receipts were uploaded, so it is not counted as a failed decision run. [Run 32815324796](https://github.com/Grativy6/Prime_Axiom_Software/actions/runs/32815324796) followed the four-job decision gate but hit the [documented intermittent .NET 8 formatter CLI-discovery race](https://github.com/dotnet/sdk/issues/44957) on its Windows inherited-evidence job after a successful restore. The shared format verifier now pins the resolved host path and retries once only for that exact exit-code/message signature; ordinary format failures still stop immediately. No failed or cancelled run is rewritten as success.
 
 From the repository root, the full verification path is:
 
@@ -396,9 +408,9 @@ dotnet run --project .\src\PrimeAxiom.Cli `
   --configuration Release `
   -- experiment-build002 `
   --output results/build002 `
-  --hdl-verification-summary .artifacts/build002-hdl-full-zero-repair/verification-summary.json `
-  --hdl-synthesis-metrics .artifacts/build002-hdl-full-zero-repair/synthesis-metrics.csv `
-  --hdl-toolchain .artifacts/build002-hdl-full-zero-repair/toolchain-bootstrap.json
+  --hdl-verification-summary .artifacts/build002-hdl-linux-canonical-4b0cb25/verification-summary.json `
+  --hdl-synthesis-metrics .artifacts/build002-hdl-linux-canonical-4b0cb25/synthesis-metrics.csv `
+  --hdl-toolchain .artifacts/build002-hdl-linux-canonical-4b0cb25/toolchain-bootstrap.json
 ```
 
 ## Limits
@@ -410,8 +422,8 @@ dotnet run --project .\src\PrimeAxiom.Cli `
 - W=8 sidecar addition uses the frozen 20,000 gate-level pairs plus exhaustive semantic differential checking. Only the latter is exhaustive over the semantic pair domain.
 - Pure S4 operations are full integer operations only on the declared S4-smooth common domain. Sidecar S4 results are catalog projections unless authoritative magnitude supplies the requested full result.
 - The C# integrated sidecar and the combinational HDL BIN+VSC top are distinct boundaries and are not substituted for one another.
-- The committed sanitized formal receipt records all 15 cases as `PASS`/complete and anchors them to the verified source-summary hash; its per-case `detail` string is `SUCCESS_MARKER_MISSING`. The raw final logs are the stronger transcript-level receipt and are preserved under the ignored corrected HDL artifact directory.
-- The Linux archive is hash-locked, but the cited canonical HDL execution receipt is Windows x64. No cross-platform physical or mapped-netlist identity claim is made here.
+- The committed sanitized formal receipt records all 15 cases as `PASS`/complete, anchors them to the verified source-summary hash, and leaves each successful `detail` string empty. `SUCCESS_MARKER_MISSING` is reserved for a recognizer failure. The raw final logs are the stronger transcript-level receipt and are preserved under the ignored Linux-canonical HDL artifact directory.
+- Linux x64 supplies the protocol-selected canonical terminal HDL receipt because optimized netlist hashes differ across platforms. A standalone Windows receipt is intentionally nonterminal; the paired verifier reproduces ordered semantics, stable aggregate fields, and platform-neutral generated files, not the terminal classification or mapped-netlist identity. No cross-platform physical or mapped-netlist identity claim is made here.
 
 ## Final interpretation
 

@@ -13,7 +13,7 @@ The second structure is real. At W8, the integrated warm valuation SCALE/CANCEL 
 
 So the answer is not “prime structure is unnatural.” It is: **bounded valuation geometry is a natural warm structural specialization above binary, while ordinary magnitude remains the natural boundary for general computation on this floor.** Addition exposes the boundary by preserving common valuation lower bounds but often invalidating exact metadata.
 
-The generated terminal receipt contains 656,810 arithmetic checks with zero failures, while the completed repository verifier ran 183/183 tests with zero skipped. The pinned HDL flow passed 260/260 cases, including 15 formal proofs and 150 synthesis rows. These are logical NAND/DFF and bounded verification results, not placed-and-routed silicon claims.
+The generated terminal receipt contains 656,810 arithmetic checks with zero failures, while the completed repository verifier ran 211/211 tests with zero skipped. The pinned HDL flow passed 260/260 cases, including 15 formal proofs and 150 synthesis rows with all warning counts measured. These are logical NAND/DFF and bounded verification results, not placed-and-routed silicon claims.
 
 ![Build 002 declared operation-local NAND counts](results/build002/figures/static_gate_counts.svg)
 
@@ -39,6 +39,8 @@ The repository pins .NET 8 and OSS CAD Suite 2026-08-24. The complete verifier p
 ```powershell
 & .\scripts\verify-build002.ps1
 ```
+
+Run that path on Linux x64 to reproduce the protocol-selected canonical terminal HDL receipt and committed platform-dependent bytes. A standalone Windows run is `PASS` only as `WINDOWS_REPRODUCIBILITY_NONTERMINAL` and intentionally remains `PARTIAL — FINAL DECISION NOT EARNED`. The paired verifier compares ordered HDL semantics, stable synthesis fields, and platform-neutral generated files; platform, tool, and netlist hashes may differ.
 
 The HDL toolchain download is large. For a quick source-level check:
 

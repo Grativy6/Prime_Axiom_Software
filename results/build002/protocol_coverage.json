@@ -116,34 +116,447 @@
   "hdl": {
     "status": "COMPLETE_VERIFIED",
     "complete": true,
+    "platform": "linux-x64",
     "verificationCaseCount": 260,
     "formalCaseCount": 15,
     "synthesisRowCount": 150,
     "warningCountsMeasured": 150,
     "warningCountsNotMeasured": 0,
     "sourceHashes": {
-      "verification": "9228A81882128F4FD5A9F9BA466D1385DB5B5B829EAC01242BB09F0CD4E81B90",
-      "synthesis": "98D141AEE19E1E741EBEC2B3D4E4DD31899FCB78FCF25FCF9DA5B41A8A93AA4D",
-      "toolchain": "6B78A5C143D541028148ABF3A00649327602638FE13FB1A0D219EB746C6DD989"
+      "verification": "465DB68B20E80D2E2F40213BEBF5D6618FCD5B2818E1BC9156229FECFF72B55C",
+      "synthesis": "E279451A6ABC7FD3EB6221D080EB70A7FC5651B724678B47EB26DEE3038E6649",
+      "toolchain": "EE89D226EA3C2407878D340AFF34E4B1F1C542AEC55EED0944ADC1852C2D6664"
     }
   },
   "decisionEarned": true,
   "decisionRules": {
     "alternativeArithmeticUnitCandidate": {
       "satisfied": false,
-      "reason": "The only integrated mixed-operation experimental machine is the exact sidecar. It is statically larger than the matched binary machine at W6 and W8 and therefore cannot Pareto-dominate E in both regimes."
+      "status": "STATICALLY_DISQUALIFIED",
+      "basis": "STATIC_NECESSARY_CONDITION_FAILURE",
+      "reason": "The registered integrated E-capable sidecar has a mandatory static-vector loss at both decision widths, so it cannot satisfy the frozen whole-vector Pareto rule.",
+      "comparisons": [
+        {
+          "comparisonId": "E_MIXED_MAGNITUDE|BIN\u002BVSC-S4|W6|INTEGRATED_LOAD_REFRESH_QUERY_SCALE_CANCEL_ADD|BIN.VSC.S4.DATAPATH.W6__vs__BIN-MIXED-WARM|W6|INTEGRATED_LOAD_SCALE_CANCEL_ADD|BIN.MAGNITUDE.DATAPATH.W6",
+          "context": "E_MIXED_MAGNITUDE",
+          "width": 6,
+          "status": "STATICALLY_DISQUALIFIED",
+          "basis": "STATIC_NECESSARY_CONDITION_FAILURE",
+          "candidateRowId": "BIN\u002BVSC-S4|W6|INTEGRATED_LOAD_REFRESH_QUERY_SCALE_CANCEL_ADD|BIN.VSC.S4.DATAPATH.W6",
+          "baselineRowId": "BIN-MIXED-WARM|W6|INTEGRATED_LOAD_SCALE_CANCEL_ADD|BIN.MAGNITUDE.DATAPATH.W6",
+          "candidateVector": {
+            "nand2Static": 5638,
+            "dffStatic": 19,
+            "stateBits": 19,
+            "inputBits": 14,
+            "outputBits": 28,
+            "portBits": 42,
+            "wireBits": 5677,
+            "connectionsStatic": 11323,
+            "maximumFanout": 275,
+            "crossLaneConnections": 0,
+            "unitNandCriticalDepth": 278,
+            "combinationalLoopStatus": "ACYCLIC"
+          },
+          "baselineVector": {
+            "nand2Static": 2532,
+            "dffStatic": 6,
+            "stateBits": 6,
+            "inputBits": 11,
+            "outputBits": 11,
+            "portBits": 22,
+            "wireBits": 2551,
+            "connectionsStatic": 5081,
+            "maximumFanout": 271,
+            "crossLaneConnections": 0,
+            "unitNandCriticalDepth": 276,
+            "combinationalLoopStatus": "ACYCLIC"
+          },
+          "candidateWorseDimensions": [
+            "nand2_static",
+            "dff_static",
+            "state_bits",
+            "input_bits",
+            "output_bits",
+            "port_bits",
+            "wire_bits",
+            "connections_static",
+            "max_fanout",
+            "unit_nand_critical_depth"
+          ],
+          "evidenceFailures": []
+        },
+        {
+          "comparisonId": "E_MIXED_MAGNITUDE|BIN\u002BVSC-S4|W8|INTEGRATED_LOAD_REFRESH_QUERY_SCALE_CANCEL_ADD|BIN.VSC.S4.DATAPATH.W8__vs__BIN-MIXED-WARM|W8|INTEGRATED_LOAD_SCALE_CANCEL_ADD|BIN.MAGNITUDE.DATAPATH.W8",
+          "context": "E_MIXED_MAGNITUDE",
+          "width": 8,
+          "status": "STATICALLY_DISQUALIFIED",
+          "basis": "STATIC_NECESSARY_CONDITION_FAILURE",
+          "candidateRowId": "BIN\u002BVSC-S4|W8|INTEGRATED_LOAD_REFRESH_QUERY_SCALE_CANCEL_ADD|BIN.VSC.S4.DATAPATH.W8",
+          "baselineRowId": "BIN-MIXED-WARM|W8|INTEGRATED_LOAD_SCALE_CANCEL_ADD|BIN.MAGNITUDE.DATAPATH.W8",
+          "candidateVector": {
+            "nand2Static": 15871,
+            "dffStatic": 26,
+            "stateBits": 26,
+            "inputBits": 16,
+            "outputBits": 35,
+            "portBits": 51,
+            "wireBits": 15919,
+            "connectionsStatic": 31803,
+            "maximumFanout": 415,
+            "crossLaneConnections": 0,
+            "unitNandCriticalDepth": 458,
+            "combinationalLoopStatus": "ACYCLIC"
+          },
+          "baselineVector": {
+            "nand2Static": 4242,
+            "dffStatic": 8,
+            "stateBits": 8,
+            "inputBits": 13,
+            "outputBits": 13,
+            "portBits": 26,
+            "wireBits": 4265,
+            "connectionsStatic": 8505,
+            "maximumFanout": 411,
+            "crossLaneConnections": 0,
+            "unitNandCriticalDepth": 456,
+            "combinationalLoopStatus": "ACYCLIC"
+          },
+          "candidateWorseDimensions": [
+            "nand2_static",
+            "dff_static",
+            "state_bits",
+            "input_bits",
+            "output_bits",
+            "port_bits",
+            "wire_bits",
+            "connections_static",
+            "max_fanout",
+            "unit_nand_critical_depth"
+          ],
+          "evidenceFailures": []
+        }
+      ]
     },
     "primeStructuralCoprocessorCandidate": {
       "satisfied": false,
-      "reason": "The exact sidecar is larger than the full binary divide/query context at W6 and W8 before any 32-operation dynamic cost is charged; its static overhead cannot reach frozen Pareto break-even."
+      "status": "STATICALLY_DISQUALIFIED",
+      "basis": "STATIC_NECESSARY_CONDITION_FAILURE",
+      "reason": "The registered integrated sidecar has a mandatory static-vector loss against the binary query context at both decision widths; cumulative dynamic savings cannot remove a separately charged static loss.",
+      "comparisons": [
+        {
+          "comparisonId": "C_SIDECAR_QUERY|BIN\u002BVSC-S4|W6|INTEGRATED_LOAD_REFRESH_QUERY_SCALE_CANCEL_ADD|BIN.VSC.S4.DATAPATH.W6__vs__BIN-DIV|W6|UNSIGNED_RESTORING_DIVIDE|BIN.DIVIDE_RESTORING.W6",
+          "context": "C_SIDECAR_QUERY",
+          "width": 6,
+          "status": "STATICALLY_DISQUALIFIED",
+          "basis": "STATIC_NECESSARY_CONDITION_FAILURE",
+          "candidateRowId": "BIN\u002BVSC-S4|W6|INTEGRATED_LOAD_REFRESH_QUERY_SCALE_CANCEL_ADD|BIN.VSC.S4.DATAPATH.W6",
+          "baselineRowId": "BIN-DIV|W6|UNSIGNED_RESTORING_DIVIDE|BIN.DIVIDE_RESTORING.W6",
+          "candidateVector": {
+            "nand2Static": 5638,
+            "dffStatic": 19,
+            "stateBits": 19,
+            "inputBits": 14,
+            "outputBits": 28,
+            "portBits": 42,
+            "wireBits": 5677,
+            "connectionsStatic": 11323,
+            "maximumFanout": 275,
+            "crossLaneConnections": 0,
+            "unitNandCriticalDepth": 278,
+            "combinationalLoopStatus": "ACYCLIC"
+          },
+          "baselineVector": {
+            "nand2Static": 1021,
+            "dffStatic": 0,
+            "stateBits": 0,
+            "inputBits": 12,
+            "outputBits": 14,
+            "portBits": 26,
+            "wireBits": 1034,
+            "connectionsStatic": 2056,
+            "maximumFanout": 90,
+            "crossLaneConnections": 0,
+            "unitNandCriticalDepth": 268,
+            "combinationalLoopStatus": "ACYCLIC"
+          },
+          "candidateWorseDimensions": [
+            "nand2_static",
+            "dff_static",
+            "state_bits",
+            "input_bits",
+            "output_bits",
+            "port_bits",
+            "wire_bits",
+            "connections_static",
+            "max_fanout",
+            "unit_nand_critical_depth"
+          ],
+          "evidenceFailures": []
+        },
+        {
+          "comparisonId": "C_SIDECAR_QUERY|BIN\u002BVSC-S4|W8|INTEGRATED_LOAD_REFRESH_QUERY_SCALE_CANCEL_ADD|BIN.VSC.S4.DATAPATH.W8__vs__BIN-DIV|W8|UNSIGNED_RESTORING_DIVIDE|BIN.DIVIDE_RESTORING.W8",
+          "context": "C_SIDECAR_QUERY",
+          "width": 8,
+          "status": "STATICALLY_DISQUALIFIED",
+          "basis": "STATIC_NECESSARY_CONDITION_FAILURE",
+          "candidateRowId": "BIN\u002BVSC-S4|W8|INTEGRATED_LOAD_REFRESH_QUERY_SCALE_CANCEL_ADD|BIN.VSC.S4.DATAPATH.W8",
+          "baselineRowId": "BIN-DIV|W8|UNSIGNED_RESTORING_DIVIDE|BIN.DIVIDE_RESTORING.W8",
+          "candidateVector": {
+            "nand2Static": 15871,
+            "dffStatic": 26,
+            "stateBits": 26,
+            "inputBits": 16,
+            "outputBits": 35,
+            "portBits": 51,
+            "wireBits": 15919,
+            "connectionsStatic": 31803,
+            "maximumFanout": 415,
+            "crossLaneConnections": 0,
+            "unitNandCriticalDepth": 458,
+            "combinationalLoopStatus": "ACYCLIC"
+          },
+          "baselineVector": {
+            "nand2Static": 1729,
+            "dffStatic": 0,
+            "stateBits": 0,
+            "inputBits": 16,
+            "outputBits": 18,
+            "portBits": 34,
+            "wireBits": 1746,
+            "connectionsStatic": 3476,
+            "maximumFanout": 120,
+            "crossLaneConnections": 0,
+            "unitNandCriticalDepth": 450,
+            "combinationalLoopStatus": "ACYCLIC"
+          },
+          "candidateWorseDimensions": [
+            "nand2_static",
+            "dff_static",
+            "state_bits",
+            "output_bits",
+            "port_bits",
+            "wire_bits",
+            "connections_static",
+            "max_fanout",
+            "unit_nand_critical_depth"
+          ],
+          "evidenceFailures": []
+        }
+      ]
     },
     "warmStateSpecializedAdvantage": {
       "satisfied": false,
-      "reason": "The structural warm machine reduces NAND count, depth, wiring, and transitions, but uses more DFF/state/port bits at both W6 and W8. That tradeoff is not Pareto dominance under the frozen vector rule."
+      "status": "STATICALLY_DISQUALIFIED",
+      "basis": "STATIC_NECESSARY_CONDITION_FAILURE",
+      "reason": "Every registered integrated B/C candidate has a mandatory static-vector loss against its matched binary context at both decision widths; D has no integrated candidate.",
+      "comparisons": [
+        {
+          "comparisonId": "B_WARM_SCALE_CANCEL|VFU-BINEXP-S4-WARM|W6|INTEGRATED_SCALE_CANCEL|VFU.BINEXP.S4.WARM_SCALE_CANCEL.W6__vs__BIN-SCALE-CANCEL-WARM|W6|INTEGRATED_SCALE_CANCEL|BIN.WARM_SCALE_CANCEL.W6",
+          "context": "B_WARM_SCALE_CANCEL",
+          "width": 6,
+          "status": "STATICALLY_DISQUALIFIED",
+          "basis": "STATIC_NECESSARY_CONDITION_FAILURE",
+          "candidateRowId": "VFU-BINEXP-S4-WARM|W6|INTEGRATED_SCALE_CANCEL|VFU.BINEXP.S4.WARM_SCALE_CANCEL.W6",
+          "baselineRowId": "BIN-SCALE-CANCEL-WARM|W6|INTEGRATED_SCALE_CANCEL|BIN.WARM_SCALE_CANCEL.W6",
+          "candidateVector": {
+            "nand2Static": 789,
+            "dffStatic": 14,
+            "stateBits": 14,
+            "inputBits": 3,
+            "outputBits": 20,
+            "portBits": 23,
+            "wireBits": 820,
+            "connectionsStatic": 1612,
+            "maximumFanout": 105,
+            "crossLaneConnections": 0,
+            "unitNandCriticalDepth": 38,
+            "combinationalLoopStatus": "ACYCLIC"
+          },
+          "baselineVector": {
+            "nand2Static": 2313,
+            "dffStatic": 6,
+            "stateBits": 6,
+            "inputBits": 3,
+            "outputBits": 12,
+            "portBits": 15,
+            "wireBits": 2324,
+            "connectionsStatic": 4644,
+            "maximumFanout": 274,
+            "crossLaneConnections": 0,
+            "unitNandCriticalDepth": 270,
+            "combinationalLoopStatus": "ACYCLIC"
+          },
+          "candidateWorseDimensions": [
+            "dff_static",
+            "state_bits",
+            "output_bits",
+            "port_bits"
+          ],
+          "evidenceFailures": []
+        },
+        {
+          "comparisonId": "B_WARM_SCALE_CANCEL|VFU-BINEXP-S4-WARM|W8|INTEGRATED_SCALE_CANCEL|VFU.BINEXP.S4.WARM_SCALE_CANCEL.W8__vs__BIN-SCALE-CANCEL-WARM|W8|INTEGRATED_SCALE_CANCEL|BIN.WARM_SCALE_CANCEL.W8",
+          "context": "B_WARM_SCALE_CANCEL",
+          "width": 8,
+          "status": "STATICALLY_DISQUALIFIED",
+          "basis": "STATIC_NECESSARY_CONDITION_FAILURE",
+          "candidateRowId": "VFU-BINEXP-S4-WARM|W8|INTEGRATED_SCALE_CANCEL|VFU.BINEXP.S4.WARM_SCALE_CANCEL.W8",
+          "baselineRowId": "BIN-SCALE-CANCEL-WARM|W8|INTEGRATED_SCALE_CANCEL|BIN.WARM_SCALE_CANCEL.W8",
+          "candidateVector": {
+            "nand2Static": 864,
+            "dffStatic": 15,
+            "stateBits": 15,
+            "inputBits": 3,
+            "outputBits": 21,
+            "portBits": 24,
+            "wireBits": 896,
+            "connectionsStatic": 1764,
+            "maximumFanout": 108,
+            "crossLaneConnections": 0,
+            "unitNandCriticalDepth": 38,
+            "combinationalLoopStatus": "ACYCLIC"
+          },
+          "baselineVector": {
+            "nand2Static": 3959,
+            "dffStatic": 8,
+            "stateBits": 8,
+            "inputBits": 3,
+            "outputBits": 14,
+            "portBits": 17,
+            "wireBits": 3972,
+            "connectionsStatic": 7940,
+            "maximumFanout": 414,
+            "crossLaneConnections": 0,
+            "unitNandCriticalDepth": 448,
+            "combinationalLoopStatus": "ACYCLIC"
+          },
+          "candidateWorseDimensions": [
+            "dff_static",
+            "state_bits",
+            "output_bits",
+            "port_bits"
+          ],
+          "evidenceFailures": []
+        },
+        {
+          "comparisonId": "C_SIDECAR_QUERY|BIN\u002BVSC-S4|W6|INTEGRATED_LOAD_REFRESH_QUERY_SCALE_CANCEL_ADD|BIN.VSC.S4.DATAPATH.W6__vs__BIN-DIV|W6|UNSIGNED_RESTORING_DIVIDE|BIN.DIVIDE_RESTORING.W6",
+          "context": "C_SIDECAR_QUERY",
+          "width": 6,
+          "status": "STATICALLY_DISQUALIFIED",
+          "basis": "STATIC_NECESSARY_CONDITION_FAILURE",
+          "candidateRowId": "BIN\u002BVSC-S4|W6|INTEGRATED_LOAD_REFRESH_QUERY_SCALE_CANCEL_ADD|BIN.VSC.S4.DATAPATH.W6",
+          "baselineRowId": "BIN-DIV|W6|UNSIGNED_RESTORING_DIVIDE|BIN.DIVIDE_RESTORING.W6",
+          "candidateVector": {
+            "nand2Static": 5638,
+            "dffStatic": 19,
+            "stateBits": 19,
+            "inputBits": 14,
+            "outputBits": 28,
+            "portBits": 42,
+            "wireBits": 5677,
+            "connectionsStatic": 11323,
+            "maximumFanout": 275,
+            "crossLaneConnections": 0,
+            "unitNandCriticalDepth": 278,
+            "combinationalLoopStatus": "ACYCLIC"
+          },
+          "baselineVector": {
+            "nand2Static": 1021,
+            "dffStatic": 0,
+            "stateBits": 0,
+            "inputBits": 12,
+            "outputBits": 14,
+            "portBits": 26,
+            "wireBits": 1034,
+            "connectionsStatic": 2056,
+            "maximumFanout": 90,
+            "crossLaneConnections": 0,
+            "unitNandCriticalDepth": 268,
+            "combinationalLoopStatus": "ACYCLIC"
+          },
+          "candidateWorseDimensions": [
+            "nand2_static",
+            "dff_static",
+            "state_bits",
+            "input_bits",
+            "output_bits",
+            "port_bits",
+            "wire_bits",
+            "connections_static",
+            "max_fanout",
+            "unit_nand_critical_depth"
+          ],
+          "evidenceFailures": []
+        },
+        {
+          "comparisonId": "C_SIDECAR_QUERY|BIN\u002BVSC-S4|W8|INTEGRATED_LOAD_REFRESH_QUERY_SCALE_CANCEL_ADD|BIN.VSC.S4.DATAPATH.W8__vs__BIN-DIV|W8|UNSIGNED_RESTORING_DIVIDE|BIN.DIVIDE_RESTORING.W8",
+          "context": "C_SIDECAR_QUERY",
+          "width": 8,
+          "status": "STATICALLY_DISQUALIFIED",
+          "basis": "STATIC_NECESSARY_CONDITION_FAILURE",
+          "candidateRowId": "BIN\u002BVSC-S4|W8|INTEGRATED_LOAD_REFRESH_QUERY_SCALE_CANCEL_ADD|BIN.VSC.S4.DATAPATH.W8",
+          "baselineRowId": "BIN-DIV|W8|UNSIGNED_RESTORING_DIVIDE|BIN.DIVIDE_RESTORING.W8",
+          "candidateVector": {
+            "nand2Static": 15871,
+            "dffStatic": 26,
+            "stateBits": 26,
+            "inputBits": 16,
+            "outputBits": 35,
+            "portBits": 51,
+            "wireBits": 15919,
+            "connectionsStatic": 31803,
+            "maximumFanout": 415,
+            "crossLaneConnections": 0,
+            "unitNandCriticalDepth": 458,
+            "combinationalLoopStatus": "ACYCLIC"
+          },
+          "baselineVector": {
+            "nand2Static": 1729,
+            "dffStatic": 0,
+            "stateBits": 0,
+            "inputBits": 16,
+            "outputBits": 18,
+            "portBits": 34,
+            "wireBits": 1746,
+            "connectionsStatic": 3476,
+            "maximumFanout": 120,
+            "crossLaneConnections": 0,
+            "unitNandCriticalDepth": 450,
+            "combinationalLoopStatus": "ACYCLIC"
+          },
+          "candidateWorseDimensions": [
+            "nand2_static",
+            "dff_static",
+            "state_bits",
+            "output_bits",
+            "port_bits",
+            "wire_bits",
+            "connections_static",
+            "max_fanout",
+            "unit_nand_critical_depth"
+          ],
+          "evidenceFailures": []
+        }
+      ]
     },
     "unexpectedArchitecture": {
       "satisfied": false,
-      "reason": "No architecture outside the preregistered structural, thermometer, presence, or exact-sidecar families survived the integrated adversarial tests."
+      "status": "NOT_PRESENT",
+      "basis": "REGISTERED_INTEGRATED_CANDIDATE_INVENTORY_COMPLETE",
+      "reason": "The integrated experimental candidate inventory contains exactly the preregistered sidecar and resident structural rows at both decision widths.",
+      "inventory": {
+        "complete": true,
+        "expectedRowIds": [
+          "BIN\u002BVSC-S4|W6|INTEGRATED_LOAD_REFRESH_QUERY_SCALE_CANCEL_ADD",
+          "BIN\u002BVSC-S4|W8|INTEGRATED_LOAD_REFRESH_QUERY_SCALE_CANCEL_ADD",
+          "VFU-BINEXP-S4-WARM|W6|INTEGRATED_SCALE_CANCEL",
+          "VFU-BINEXP-S4-WARM|W8|INTEGRATED_SCALE_CANCEL"
+        ],
+        "missingRowIds": [],
+        "unexpectedRowIds": [],
+        "duplicateRowIds": []
+      }
     },
     "fallback": "NO_HARDWARE_ADVANTAGE"
   },
