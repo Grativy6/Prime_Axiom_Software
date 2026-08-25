@@ -1,0 +1,55 @@
+{
+  "schema": "prime-axiom-build004-fusion-v1",
+  "protocolId": "PAS-BUILD004-EXACT-LINEAGE-0001",
+  "exactCycle": {
+    "ab": "0E0B33672EC980F0CAE3F194DE0515954AEF1D1D9E6DD885744CCB4D5238228C",
+    "bc": "FEDA66331F3F50856A2CDF7594F17BE3F13FBF50223B49B841854210EB49C249",
+    "ac": "CC9DE6398C0611796C28E8545B98F18CE50372EB423D96A4F3C3281E2F804804",
+    "abc": "52C81B14617EBF951C4A09EB2E9116BA247D3DA15D69E7DCBB8AA9C63448F242",
+    "stabilized": "52C81B14617EBF951C4A09EB2E9116BA247D3DA15D69E7DCBB8AA9C63448F242",
+    "probabilityOfOne": {
+      "numerator": "1",
+      "denominator": "3"
+    }
+  },
+  "failureReceipts": [
+    {
+      "case": "OVERLAP_IDENTIFIED_PAYLOAD_EVICTED_FROM_BOTH_STATES",
+      "status": "OverlapPayloadUnavailable",
+      "detail": "Overlap build004-lineage/epoch-1/a was identified, but neither state retains its exact shared likelihood."
+    },
+    {
+      "case": "ATOM_ID_PAYLOAD_CONFLICT",
+      "status": "ConflictingAtomPayload",
+      "detail": "Atomic failure; no destination state issued."
+    },
+    {
+      "case": "PARTIAL_LINEAGE",
+      "status": "PartialLineage",
+      "detail": "Lower-bound support cannot earn exact overlap."
+    },
+    {
+      "case": "RECYCLED_EPOCH",
+      "status": "RegistryEpochMismatch",
+      "detail": "Explicit migration required."
+    },
+    {
+      "case": "AUTHENTICATION_REQUIRED_NOT_PROVIDED",
+      "status": "AuthenticationNotProvided",
+      "detail": "Exact arithmetic and replay do not provide issuer authentication."
+    }
+  ],
+  "independentAxes": {
+    "lineage": "Exact",
+    "payload": "ReplayableExact",
+    "authenticity": "NotProvided"
+  },
+  "opaqueUniqueLeaf": {
+    "status": "Success",
+    "externalOracleMatched": true,
+    "payloadReplayability": "DigestOnly",
+    "boundary": "RETAINED_AGGREGATE_PLUS_REPLAYABLE_OVERLAP__EXTERNAL_ORACLE_REQUIRED_FOR_DIGEST_ONLY_UNIQUE_LEAF"
+  },
+  "securityBoundary": "Semantic SHA-256 IDs provide replayable integrity evidence only. No signature, issuer authentication, privacy, encryption, zero knowledge, or accumulator security is provided.",
+  "claimCeiling": "Bounded exact-software and abstract-structure evidence under PAS-BUILD004-EXACT-LINEAGE-0001 only; no source-authenticity, empirical-validity, privacy, cryptographic-security, PAL-conformance, universal-performance, or hardware-PPA claim."
+}

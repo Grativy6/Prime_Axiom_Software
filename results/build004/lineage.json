@@ -1,0 +1,162 @@
+{
+  "schema": "prime-axiom-build004-lineage-v1",
+  "protocolId": "PAS-BUILD004-EXACT-LINEAGE-0001",
+  "canonicalJsonContract": "COMPACT_UTF8_JSON_V1__CAMEL_CASE__ENUM_STRINGS__ALL_NUMBERS_AS_CANONICAL_STRINGS__BIGINTEGER_DECIMAL__NO_BOM",
+  "registry": {
+    "registryId": "67FB575E892A60B9D3AE23A23F17A54C27E12F50BFD13BF641F7D8AB84491881",
+    "namespaceId": "build004-lineage",
+    "assignmentEpoch": "epoch-1",
+    "universeSize": "8"
+  },
+  "projectionContracts": [
+    {
+      "name": "EXACT_ACTIVE_SOURCE_SUPPORT",
+      "preserves": "Atom occurrence identity and exact membership when completeness is Exact.",
+      "discards": "Multiplicity, joint-versus-alternative structure, operation order, payload, authenticity, and authority.",
+      "replayabilitySemantics": "Carries an explicit payload-replayability declaration; the projection does not prove that declaration."
+    },
+    {
+      "name": "TOTAL_ATOM_OCCURRENCE_MULTIPLICITY",
+      "preserves": "Atom identity and total syntactic occurrence count across the positive derivation expression.",
+      "discards": "Grouping into joint terms, alternative branches, operation order, payload, authenticity, and authority.",
+      "replayabilitySemantics": "Carries an explicit payload-replayability declaration; the projection does not prove that declaration."
+    },
+    {
+      "name": "RAW_PRIME_PRODUCT_SUPPORT",
+      "preserves": "Active support with declared completeness; exact only when completeness is Exact under one injective prime registry.",
+      "discards": "Joint-versus-alternative structure, operation history, payload, issuer authenticity, and registry-free meaning.",
+      "replayabilitySemantics": "Carries the embedded support projection\u0027s explicit payload-replayability declaration; the product does not prove it."
+    },
+    {
+      "name": "SPARSE_ATOM_EXPONENTS",
+      "preserves": "Registered atom identity and nonzero multiplicity with declared completeness; exact only when completeness is Exact.",
+      "discards": "Joint-versus-alternative grouping, operation history, payload, authenticity, and unregistered atoms.",
+      "replayabilitySemantics": "Carries an explicit payload-replayability declaration; the sparse exponents do not prove it."
+    },
+    {
+      "name": "DENSE_BINARY_PEV_SUPPORT",
+      "preserves": "Exact active support under a fixed registry when completeness is Exact.",
+      "discards": "Multiplicity, joint-versus-alternative structure, operation history, payload, authenticity, and cross-epoch meaning.",
+      "replayabilitySemantics": "Carries an explicit payload-replayability declaration; the bitset does not prove it."
+    }
+  ],
+  "projectionInstances": [
+    {
+      "representation": "EXACT_ACTIVE_SOURCE_SUPPORT",
+      "registryId": "67FB575E892A60B9D3AE23A23F17A54C27E12F50BFD13BF641F7D8AB84491881",
+      "completeness": "Exact",
+      "payloadReplayability": "DigestOnly"
+    },
+    {
+      "representation": "TOTAL_ATOM_OCCURRENCE_MULTIPLICITY",
+      "registryId": "67FB575E892A60B9D3AE23A23F17A54C27E12F50BFD13BF641F7D8AB84491881",
+      "completeness": "Exact",
+      "payloadReplayability": "DigestOnly"
+    },
+    {
+      "representation": "RAW_PRIME_PRODUCT_SUPPORT",
+      "registryId": "67FB575E892A60B9D3AE23A23F17A54C27E12F50BFD13BF641F7D8AB84491881",
+      "completeness": "Exact",
+      "payloadReplayability": "DigestOnly"
+    },
+    {
+      "representation": "SPARSE_ATOM_EXPONENTS",
+      "registryId": "67FB575E892A60B9D3AE23A23F17A54C27E12F50BFD13BF641F7D8AB84491881",
+      "completeness": "Exact",
+      "payloadReplayability": "DigestOnly"
+    },
+    {
+      "representation": "DENSE_BINARY_PEV_SUPPORT",
+      "registryId": "67FB575E892A60B9D3AE23A23F17A54C27E12F50BFD13BF641F7D8AB84491881",
+      "completeness": "Exact",
+      "payloadReplayability": "DigestOnly"
+    }
+  ],
+  "structuralCounterexample": {
+    "first": "a*b \u002B c*d",
+    "firstRoot": "A510D7E3808DB28C6CFE045B3EE1E7ACC8B9283E8986B8D5126A4B4E2662D178",
+    "second": "a*c \u002B b*d",
+    "secondRoot": "90C2CCC41ACA8B657F2C02D50D565DBC0726364B3B51DC9D544116562664F4B1",
+    "sameSupport": true,
+    "sameMultiplicity": true,
+    "sameDerivation": false,
+    "metrics": {
+      "nodeCount": "7",
+      "edgeCount": "6",
+      "maximumDepth": "3",
+      "hashConsReuseCount": "7"
+    }
+  },
+  "replayabilityAxis": {
+    "sameAtoms": true,
+    "sameCompleteness": true,
+    "replayable": "ReplayableExact",
+    "digestOnly": "DigestOnly",
+    "distinctProjectionIdentity": true,
+    "boundary": "DECLARATION_PRESERVED__NOT_PROOF_OF_PAYLOAD_AVAILABILITY"
+  },
+  "canonicalDiagnostic": {
+    "scope": "CONSTRUCT_A_B_PLUS_C_D__PROJECT_SUPPORT_AND_MULTIPLICITY__VERIFY_BOTH_CACHES",
+    "countingContract": "INSTANCE_COUNTERS__MAP_ACCESS_AT_INSTRUMENTED_DAG_DICTIONARY_BOUNDARIES__NODE_VISIT_AFTER_MEMO_MISS__ONE_HASH_PER_SEMANTIC_HASH_CALL",
+    "diagnostics": {
+      "mapReads": "123",
+      "mapWrites": "86",
+      "semanticHashComputations": "14",
+      "dagNodeVisits": "35",
+      "projectionQueries": "4",
+      "cacheVerificationRequests": "2",
+      "cacheVerificationPasses": "2"
+    }
+  },
+  "evidenceEnvelope": {
+    "snapshot": {
+      "schema": "prime-axiom-lineage-evidence-envelope-v1",
+      "envelopeId": "A0B05B7B1AA0CAFB0FACFBBDC1B927BBDBC9EFF40AF8774BCA05A7246EBCAAC7",
+      "rootNodeId": "A510D7E3808DB28C6CFE045B3EE1E7ACC8B9283E8986B8D5126A4B4E2662D178",
+      "registryId": "67FB575E892A60B9D3AE23A23F17A54C27E12F50BFD13BF641F7D8AB84491881",
+      "lineageCompleteness": "Exact",
+      "payloadReplayability": "DigestOnly",
+      "issuerAuthenticity": "NotProvided",
+      "evidenceReferences": [
+        {
+          "kind": "Source",
+          "referenceId": "fixture:build004/source-catalog-v1",
+          "contentSha256": "8A4E16F4C92A74CEFF00C7100004372AA9C6B29FE15025BE1F2F1BDE79ED4FD1"
+        },
+        {
+          "kind": "CalibrationValidity",
+          "referenceId": "fixture:build004/calibration-validity-v1",
+          "contentSha256": "DC7A7AF07FA29441CDDB60915C6193A17842B2B36292A6FCD04F4CF3229B4EDA"
+        },
+        {
+          "kind": "Uncertainty",
+          "referenceId": "fixture:build004/uncertainty-v1",
+          "contentSha256": "E82A9DB1B8C8D5A9F723E22D7E7382996C79324DC983272F3E8FE79BC38356FC"
+        },
+        {
+          "kind": "Residual",
+          "referenceId": "fixture:build004/residual-v1",
+          "contentSha256": "4D6BB774876F2BA11F96F82D257685AA28512DBB451E66A2E5687F6C348B87A6"
+        }
+      ]
+    },
+    "verification": {
+      "status": "ValidIntegrityOnly",
+      "envelopeHashMatches": true,
+      "registryBindingMatches": true,
+      "dagReplay": {
+        "status": "Valid",
+        "detail": "All reachable node shapes, canonical normal forms, references, hashes, and requested DigestOnly structural projection caches replayed exactly. This does not establish payload availability or issuer authentication.",
+        "isValid": true
+      },
+      "detail": "The envelope content address, registry binding, and derivation replay are valid. This integrity result establishes no issuer authentication or empirical validity.",
+      "isValid": true
+    },
+    "securityBoundary": "CONTENT_ADDRESS_INTEGRITY_ONLY__NO_SIGNATURE_ISSUER_AUTHENTICATION_EMPIRICAL_VALIDITY_OR_AUTHORITY",
+    "establishesIssuerAuthentication": false,
+    "scope": "BINDS_DAG_ROOT_REGISTRY_AND_EXTERNAL_REFERENCE_DIGESTS__NUMERIC_FACTOR_AND_UNIT_DIMENSION_PROBES_REMAIN_SEPARATE"
+  },
+  "databaseBoundary": "PROVENANCE_IS_IRREDUCIBLE_RELATIVE_TO_SCALAR_EVALUATION__POSITIVE_ALGEBRA_ONLY",
+  "authentication": "NotProvided",
+  "claimCeiling": "Bounded exact-software and abstract-structure evidence under PAS-BUILD004-EXACT-LINEAGE-0001 only; no source-authenticity, empirical-validity, privacy, cryptographic-security, PAL-conformance, universal-performance, or hardware-PPA claim."
+}

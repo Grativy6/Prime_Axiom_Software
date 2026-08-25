@@ -1,8 +1,34 @@
 # Prime Axiom Software
 
-Prime Axiom Software asks what mathematics becomes inexpensive when two machines are built from the same binary state, NAND logic, and DFF-delimited memory but diverge at numeric representation.
+Prime Axiom Software experimentally asks which structures become representation-local when conventional magnitude arithmetic is no longer the only abstraction immediately above binary state.
 
-Build 003 now exposes the narrow structure that survived those lower-level experiments as a usable software tool:
+Build 004 follows the useful part of prime structure into provenance. Its bounded candidate status, earned for a checkout only when the external verifier passes, is **`BOUNDED_EXACT_LINEAGE_TOOLKIT_VALIDATED`**. The committed generator output deliberately remains **`PARTIAL — FINAL DECISION NOT EARNED`** until that replay:
+
+```text
+exact payload
++ replaceable active-source projection
++ persistent typed derivation DAG
++ independent evidence/calibration envelope
+```
+
+The prime projection is useful but deliberately incomplete. Raw squarefree products and dense binary prime-exponent vectors answer exact support, overlap, and union questions under a validated registry; sparse exponent maps can additionally preserve total multiplicity. None can recover whether sources were jointly used or offered as alternatives, how transforms were grouped, or which payload belongs to a duplicated ancestor. The receipt DAG retains those tested structural facts, while the evidence envelope can record authentication status; actual source authenticity remains external and `NOT_PROVIDED` here.
+
+The Build 004 envelope content-addresses the DAG root, registry, declared knowledge axes, and typed external-reference digests. It proves only integrity replay. Numeric-factor and physical-dimension projections are separately tested boundary probes; Build 004 does not yet bind them into one integrated measurement receipt.
+
+The frozen campaign passed 887,072 assertions with zero failures. It exhaustively compared product, bitset, and sparse support encodings with an explicit-set control over every pair of subsets in an eight-source universe, then compared sparse exponent operations with multiplicity projections over every pair of four-lane ternary vectors. It also checked exact combinatorial probabilities, projection collisions/topology counterexamples, DAG mutation failures, duplicate-cycle fusion, typed partial/conflict/epoch/authentication/retraction failures, calibration/unit refusals, transparent non-cryptographic accumulation, a BOM toy, and deterministic just-intonation audio. These are exact software/structural results. Runtime advantage and physical hardware remain `NOT_MEASURED`.
+
+```powershell
+dotnet run --project src/PrimeAxiom.Cli --configuration Release -- binomial-receipt 1000 413
+dotnet run --project src/PrimeAxiom.Cli --configuration Release -- hypergeometric-receipt 1000 413 271 117
+dotnet run --project src/PrimeAxiom.Cli --configuration Release -- lineage-demo
+dotnet run --project src/PrimeAxiom.Cli --configuration Release -- render-just-interval 3 2 220 artifacts/perfect-fifth.wav
+```
+
+The audio command above renders a separate one-second 48 kHz listening demo; the compact deterministic campaign fixture is an independently declared 8 kHz/8,000-sample WAV.
+
+The central boundary is addition. A hypergeometric point probability is constructed and retained as a signed prime-exponent ratio, then reconstructed once for exact magnitude/output; no completed result is factored. An event/tail probability is a sum of points, so it needs exact rational addition and retains an additive event receipt (or, in a general lineage DAG, an additive node). Build 004 therefore supports the user's ETL intuition with one qualification: some topology-preserving receipt is irreducible relative to a scalar result; the persistent typed DAG is the tested implementation, while its PEV is a verified, discardable query projection—not the whole receipt. See the [Build 004 report](BUILD_004_REPORT.md) and [provenance architecture](docs/PROVENANCE_ARCHITECTURE.md).
+
+Build 003 previously exposed the narrow structure that survived those lower-level experiments as a usable software tool:
 
 ```text
 integer in -> certified prime powers + exact residual + receipt out
@@ -46,6 +72,13 @@ The generated terminal receipt contains 656,810 arithmetic checks with zero fail
 
 ## Evidence map
 
+- [Build 004 final report](BUILD_004_REPORT.md)
+- [Frozen Build 004 protocol](research/build004_experiment_plan.md)
+- [Provenance architecture](docs/PROVENANCE_ARCHITECTURE.md)
+- [Build 004 boundary probes](docs/BUILD004_BOUNDARY_PROBES.md)
+- [Build 004 prior art](docs/PRIOR_ART_BUILD004.md)
+- [Generated Build 004 evidence](results/build004/README.md)
+- [Build 004 manifest](results/build004/manifest.json)
 - [Build 003 final report](BUILD_003_REPORT.md)
 - [Frozen Build 003 protocol](research/build003_experiment_plan.md)
 - [Prime Receipt Calculator contract](docs/PRIME_RECEIPT_CALCULATOR.md)
@@ -65,6 +98,12 @@ The generated terminal receipt contains 656,810 arithmetic checks with zero fail
 - [Build 000 report](BUILD_000_REPORT.md)
 
 ## Reproduce
+
+The Build 004 verifier protects every inherited Build 000-003 report, plan, and result tree; requires formatting, a clean Release build, a complete zero-skip test run, exact registered campaign counts, two isolated byte-identical generations, committed manifest integrity, and the declared audio/cost/security boundaries:
+
+```powershell
+& .\scripts\verify-build004.ps1
+```
 
 The Build 003 verifier is software-only. It protects every inherited report/result directory, runs the complete zero-skip test assembly, requires the exact registered check/row/family/conclusion set, generates the new evidence twice, compares bytes, and validates the committed manifest. Verifier-owned output is restricted to `artifacts/` or `.artifacts/`; one generator invocation cannot certify deterministic replay:
 
