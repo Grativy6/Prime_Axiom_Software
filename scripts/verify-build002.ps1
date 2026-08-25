@@ -70,12 +70,18 @@ try {
     )
     dotnet @generatorArguments
     if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
-    $firstManifest = Get-Content -LiteralPath (Join-Path $outputFull 'manifest.json') -Raw | ConvertFrom-Json
+    $manifestPath = Join-Path $outputFull 'manifest.json'
+    $firstManifestSha256 = (Get-FileHash -LiteralPath $manifestPath -Algorithm SHA256).Hash
+    $firstManifest = Get-Content -LiteralPath $manifestPath -Raw | ConvertFrom-Json
     $firstHashes = @{}
     foreach ($file in $firstManifest.files) { $firstHashes[[string]$file.path] = [string]$file.sha256 }
 
     dotnet @generatorArguments
     if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+    $secondManifestSha256 = (Get-FileHash -LiteralPath $manifestPath -Algorithm SHA256).Hash
+    if ($firstManifestSha256 -ne $secondManifestSha256) {
+        throw "Generated manifest is not deterministic across an immediate replay: first=$firstManifestSha256 second=$secondManifestSha256"
+    }
     $coverage = Get-Content -LiteralPath (Join-Path $outputFull 'protocol_coverage.json') -Raw | ConvertFrom-Json
     if ($coverage.classification -ne 'NO_HARDWARE_ADVANTAGE' -or -not $coverage.decisionEarned) {
         throw "Build 002 terminal classification was not earned: $($coverage.classification)"
@@ -114,6 +120,7 @@ try {
         formal_cases = [int]$coverage.hdl.formalCaseCount
         synthesis_rows = [int]$coverage.hdl.synthesisRowCount
         deterministic_replay = $true
+        manifest_sha256 = $secondManifestSha256
     }
     $receiptPath = $outputFull + '-verification.json'
     [System.IO.File]::WriteAllText(

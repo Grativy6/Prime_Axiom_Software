@@ -84,8 +84,7 @@ jobs:
           path: |
             artifacts/build002-ci
             artifacts/build002-ci-verification.json
-            .artifacts/build002-hdl-ci/manifest.json
-            .artifacts/build002-hdl-ci/verification-summary.json
-            .artifacts/build002-hdl-ci/synthesis-metrics.csv
-            .artifacts/build002-hdl-ci/toolchain-bootstrap.json
+            .artifacts/build002-test-results/test-results.trx
+            .artifacts/build002-hdl-ci
+          include-hidden-files: true
           if-no-files-found: error
