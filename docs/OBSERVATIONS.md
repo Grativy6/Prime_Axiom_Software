@@ -336,3 +336,72 @@ Build 003 is a user-directed software exposure probe above exact ordinary intege
 4. Would succinct deterministic primality certificates, a stronger factor engine, or producer-supplied factors improve auditability without hiding computational cost?
 5. Which receipt fields are necessary for reliable tool use, and which merely add token/context burden?
 6. Do real software traces justify reopening the deferred radix-aware demand-driven valuation hardware service?
+
+---
+
+# Build 004 observations — `PAS-BUILD004-EXACT-LINEAGE-0001`
+
+Build 004 asks whether computation can preserve multiplicative provenance and where that preservation is actually useful. Its generated evidence is under `results/build004/` and deliberately remains `PARTIAL — FINAL DECISION NOT EARNED`; `BOUNDED_EXACT_LINEAGE_TOOLKIT_VALIDATED` is a candidate status earned for a checkout only by the external verifier. The build does not claim source authenticity, empirical calibration, privacy, cryptographic security, PAL conformance, general performance, or hardware advantage.
+
+## Established mathematics
+
+1. Legendre's factorial-valuation formula constructs binomial and hypergeometric point probabilities as signed prime-exponent ratios. Normalization by coordinate cancellation preserves the exact rational value without factoring a completed numerator or denominator.
+2. Multiplicative support is set union; multiplicity is componentwise exponent addition; shared support is intersection or componentwise minimum. A raw prime product, sparse exponent vector, and dense binary presence vector are equivalent for unique-source support under one injective registry.
+3. A probability of an event containing multiple outcomes is a sum of exact point probabilities. That sum is not an exponent-vector merge; it requires ordinary rational addition or another representation carrying additive structure.
+4. Provenance semirings distinguish joint contribution from alternative derivations. Multiplication-like composition and addition-like alternatives therefore require different constructors even when both expressions have the same source support and multiplicity.
+5. Rational just-intonation intervals form a multiplicative ratio structure. Prime-coordinate or monzo addition composes intervals, while audible frequency generation additionally requires a declared sampling and rounding policy.
+6. Multiplicative unit dimensions can be represented as signed exponent vectors independently of the numeric coefficient. Affine, logarithmic, and nonlinear conversions do not fit plain exponent-vector multiplication.
+
+## Historical observation and prior art
+
+1. PRIMEX-PEV already assigns primes to information sources, detects duplicated ancestry through shared factors, and moves from impractically large raw prime products to binary prime-exponent vectors. Its published evidence is simulation/proof-of-concept work and leaves large-scale real validation and secure distributed integration open.
+2. Database provenance semirings already make the decisive distinction between joint use and alternative derivation. A support projection is flat source lineage (`Lin(X)`-like), not `Why(X)`; it discards both witness-set grouping and the richer polynomial expression topology needed for full positive-provenance replay.
+3. UCUM and established dimensional-analysis systems support the separation of magnitude from dimension while treating affine and logarithmic units as explicit conversion cases.
+4. Cryptographic accumulators are defined together with a security model and witness properties. A publicly factorable prime product is a transparent structural index, not a privacy mechanism or cryptographic accumulator merely because membership can be tested algebraically.
+
+## Engineering observation
+
+1. The architecture that survived the break tests is dual: an authoritative immutable derivation DAG plus a replaceable active-source projection whose `DigestOnly` support/multiplicity can be structurally checked against the DAG. The projection makes overlap and multiplicity queries representation-local; no latency claim was measured. The DAG retains identity, grouping, alternatives, transforms, payload references, replay paths, and retraction witnesses. Structural cache verification does not prove payload availability.
+2. A lineage source must be occurrence-scoped, not merely assigned a reusable prime by name. Namespace, registry epoch, payload digest, and conflict state prevent recycled positions from silently changing the meaning of a cached product or PEV.
+3. Duplicate-aware exact fusion needs two independent capabilities: detect shared ancestry and recover the shared payload/state. A correct overlap mask cannot repair an evicted duplicated likelihood. The hostile fixture retains each aggregate while omitting the shared per-atom likelihood from both states, and returns a typed failure rather than permission to approximate silently.
+4. Provenance completeness, replayability, authenticity, calibration validity, and confidentiality are orthogonal. A complete DAG can replay unauthenticated inputs, while an authenticated source can still have incomplete lineage.
+5. The database/ETL receipt layer is irreducible relative to a scalar output, but no one physical encoding is irreducible. A DAG, append-only event log, or equivalent expression-preserving form may be authoritative; a PEV is a cache that can be recomputed and checked.
+6. Exact calibration records need separate fields for numeric coefficient, unit dimension, derivation lineage, uncertainty/evidence state, and validity interval. Factoring a measured constant reveals arithmetic structure but does not establish measurement provenance or trust.
+7. Abstract representation costs, host-software costs, and physical-hardware costs must remain separate. Build 004 records exact coordinate/DAG operation counts and representation widths; it performs no elapsed-time, energy, area, timing, or gate comparison.
+
+## Experimental result
+
+1. The frozen campaign passed 887,072 assertions with zero failures. It included exhaustive equivalence over all 65,536 ordered pairs of subsets in an eight-source universe and all 6,561 ordered pairs of four-lane ternary multiplicity vectors.
+2. The combinatorial campaign exhaustively checked factorials through 512, all binomial coefficients through row 256, point probabilities through population 24, and normalization through population 32; it also checked 10,000 seeded cases through population 4,096 and 40,426 adjacent streams containing 271,229 point/recurrence comparisons.
+3. The named hypergeometric point `(N=5000, K=1200, n=900, x=225)` was constructed in prime coordinates with 2,891 coordinate reads, 5,548 coordinate writes, and 2,222 nonzero existing-coordinate exponent merges, then reconstructed once for exact magnitude/output with zero rational additions. The named tail `(N=1000, K=413, n=271, X>=117)` required 155 exact point terms and 155 rational additions plus an explicit additive event receipt at the exact-magnitude crossing; it did not add a node to the multiplicative lineage DAG.
+4. Two expressions, `a*b + c*d` and `a*c + b*d`, had identical support and multiplicity projections but distinct canonical DAG roots. This is a concrete counterexample to treating a PEV or exponent multiset as a complete derivation receipt.
+5. Duplicate-cycle fusion of three exact rational likelihood sources stabilized to one semantic root and the centralized unique-source result `1/3`. Missing overlap payload, partial lineage, conflicting identity, registry-epoch mismatch, absent external authentication, and missing retraction witness were exercised as distinct failure states.
+6. Raw prime-product width grew from 24 bits for eight sources to 417 bits for 64, 2,290 bits for 256, and 11,583 bits for 1,024, versus one presence bit per source for a dense PEV. The raw product remains exact abstract notation but is a poor default storage encoding at scale.
+7. The deterministic just-intonation probe rendered a 3:2 interval from 220 Hz to nominal 330 Hz as 8,000 PCM16 samples without clipping. The exact ratio and lineage remain distinct from the rounded physical waveform.
+8. The structural-accumulator probe recovered shared membership correctly while openly leaking its members; it is marked `NOT_CRYPTOGRAPHIC` and `NO_PRIVACY`. The BOM probe showed equal computed quantity with different derivation lineage and preserved a shared component.
+
+## Conjecture
+
+1. A DAG plus a structurally verified `DigestOnly` PEV cache may earn its storage cost in distributed fusion or ETL workloads with frequent duplicate-overlap queries, repeated replay, and meaningful retraction—but only a realistic persistence and failure experiment can establish that trade.
+2. Residual-triggered reopening may provide a useful policy for compressed provenance: query the representation-local projection first, then reopen the topology-preserving receipt only when conflict, missing payload, uncertainty, or proof obligations require it.
+3. Prime-coordinate combinatorics may be useful when many related point probabilities are generated or compared before a smaller number of additive event reductions, because exact multiplicative structure can be retained across the recurrence.
+4. Just-intonation is a natural human-facing demonstration of prime-coordinate composition because the multiplicative structure is the musical object rather than an implementation artifact.
+
+## Dead end
+
+1. **One giant prime product as the universal provenance object.** It is mathematically exact for bounded multiplicities but grows poorly, depends on registry semantics, and still loses derivation topology and payload.
+2. **A PEV as a complete receipt.** It detects shared active support but cannot distinguish joint use from alternatives, recover grouping, identify transforms, or replay missing state.
+3. **Addition as exponent-vector composition.** Exact event probabilities and provenance alternatives require additive structure outside the coordinate merge law.
+4. **Prime factorization as calibration evidence.** Arithmetic decomposition of an exact constant does not authenticate an observation, establish uncertainty, or validate a calibration chain.
+5. **Transparent products as privacy encryption.** Public divisibility and factor recovery reveal membership. No threat model, hiding property, signature, non-membership proof, or zero-knowledge property emerges from the structural encoding alone.
+6. **Framework analogy as validation.** BLA, CLEF, BRT&AIC, and PAL supplied useful questions about residuals, apertures, traces, and reopening, but correspondence neither proves the software nor grants the software authority over those frameworks.
+
+## Open question
+
+1. Under duplication, delay, omission, registry migration, payload eviction, conflict, and retraction, when does a structurally verified PEV cache repay its bytes and verification cost relative to a DAG-only store?
+2. Which lineage fragments must remain online for exact distributed fusion, and what approximation contract is honest when a duplicated payload has been evicted?
+3. Can an append-only ETL derivation store support compaction and garbage collection without losing alternative derivations, retraction witnesses, or replayability?
+4. How should multi-parent merge semantics be stated without claiming PAL conformance or closing PAL's still-open joint-child questions?
+5. Which established authenticated accumulator, signature, or zero-knowledge construction belongs beside—not inside—the transparent lineage layer under a concrete threat model?
+6. Can correlation and covariance provenance be made compositional for calibration chains without treating uncertainty labels as independent multiplicative factors?
+7. Does prime-coordinate probability retain a practical advantage in real exact-inference workloads once memory locality, cache behavior, rational-addition cost, and conversion boundaries are measured?

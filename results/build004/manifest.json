@@ -1,0 +1,82 @@
+{
+  "schema": "prime-axiom-build004-manifest-v1",
+  "protocolId": "PAS-BUILD004-EXACT-LINEAGE-0001",
+  "frozenPlanSha256": "2482698A57E857F07DBDEB7103B09EC36317661A0413ABBC2B20FAB7F44B53D1",
+  "baselineCommit": "31dd150540bac79de3ee5925b44afdb7abaf327a",
+  "masterSeed": "0000000050415334",
+  "runtimeContract": "net8.0",
+  "sdkPolicy": "8.0.423 with rollForward=latestPatch",
+  "canonicalReproductionCommand": "dotnet run --project src/PrimeAxiom.Cli --configuration Release -- experiment-build004 --output results/build004",
+  "status": "PARTIAL \u2014 FINAL DECISION NOT EARNED",
+  "candidateFrameworkStatus": "BOUNDED_EXACT_LINEAGE_TOOLKIT_VALIDATED",
+  "externalVerificationRequired": true,
+  "checks": "887072",
+  "failures": "0",
+  "familyCases": {
+    "FACTORIAL_0_512": "513",
+    "BINOMIAL_ALL_0_256": "33153",
+    "HYPERGEOMETRIC_POINTS_0_24": "20475",
+    "HYPERGEOMETRIC_NORMALIZATION_0_32": "12529",
+    "SEEDED_POINTS_N_LE_4096": "10000",
+    "ADJACENT_STREAMS_0_48_PLUS_N2000": "40426",
+    "NAMED_COMBINATORIAL_CONTROLS": "8",
+    "SUPPORT_PROJECTION_U8": "65536",
+    "MULTIPLICITY_PROJECTION_U4_E0_2": "6561",
+    "DERIVATION_DAG_AND_MUTATIONS": "12",
+    "EXACT_FUSION_CYCLES": "2",
+    "SEEDED_ASYNC_FUSION_SCHEDULES": "512",
+    "FUSION_FAILURE_AND_RETRACTION_BOUNDARIES": "9",
+    "CALIBRATION_AUDIO_ACCUMULATOR_BOM_PROBES": "12"
+  },
+  "includedWallClockMeasurements": false,
+  "includedHardwareMeasurements": false,
+  "files": [
+    {
+      "path": "README.md",
+      "sha256": "BB8D9BCA4891EAE77B822B98C1576195BCC8CCF782B8E33057FAEBDA75858E78",
+      "bytes": "3562"
+    },
+    {
+      "path": "combinatorics.json",
+      "sha256": "30A573AC4ABC4FF1B1AE8A8728BE78D742D47D19CE0211C6BBB2BF4AC9335CE2",
+      "bytes": "2089561"
+    },
+    {
+      "path": "lineage.json",
+      "sha256": "53D6B27CCD99070538F5448B7700E6125AF75715AD3D7FA1629DE241CD67DB5F",
+      "bytes": "7874"
+    },
+    {
+      "path": "fusion.json",
+      "sha256": "A9B1CDDEFE260DBF71F731B98C3F341B84DC5A96DC93CD6506840E3413D8B1F8",
+      "bytes": "2342"
+    },
+    {
+      "path": "boundary_probes.json",
+      "sha256": "AED5AA44EED937F7EDCDD24AC269C644E20C02259695923C6DE4FF66F22E0336",
+      "bytes": "20457"
+    },
+    {
+      "path": "just_intonation_demo.wav",
+      "sha256": "67F75DFB9E57D156BD320DCC8E56F070BFD89C014773366694FFA063C4BFE0B4",
+      "bytes": "16044"
+    },
+    {
+      "path": "structural_costs.csv",
+      "sha256": "016A9B3DFEB94D0B9502B9F2CBA933D026443DFF542E0098E5913BA7991270A6",
+      "bytes": "32203"
+    },
+    {
+      "path": "correctness.json",
+      "sha256": "16ECC8928252350D9D5B3CD95E8AE409AF1D7C521171164755441DDE0D3DDE33",
+      "bytes": "4107"
+    },
+    {
+      "path": "protocol_coverage.json",
+      "sha256": "8B4D339EE1599B32613634F3C7166E3E1497E40E37352CBEDBDA9A4B7F3AE01E",
+      "bytes": "6109"
+    }
+  ],
+  "claimCeiling": "Bounded exact-software and abstract-structure evidence under PAS-BUILD004-EXACT-LINEAGE-0001 only; no source-authenticity, empirical-validity, privacy, cryptographic-security, PAL-conformance, universal-performance, or hardware-PPA claim.",
+  "notes": "manifest.json intentionally excludes itself; generated text is LF and UTF-8 without BOM; the WAV is deterministic binary PCM on the recorded verifier host/runtime."
+}

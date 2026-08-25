@@ -1,0 +1,575 @@
+{
+  "schema": "prime-axiom-build004-boundary-probes-v1",
+  "protocolId": "PAS-BUILD004-EXACT-LINEAGE-0001",
+  "projectionContracts": [
+    {
+      "name": "SIGNED_PRIME_COORDINATE_NUMERIC_FACTOR_PROJECTION",
+      "preserves": "Nonzero exact rational sign and prime exponents under the declared basis; Exact plus ReplayableExact declarations reconstruct the numeric coefficient.",
+      "discards": "Unit dimensions, derivation topology, source occurrence identity, calibration evidence, authenticity, authority, and physical realization.",
+      "replayabilitySemantics": "PayloadReplayability concerns the projected numeric coefficient only; it does not claim that a measurement, derivation, or evidence envelope remains replayable."
+    },
+    {
+      "name": "SIGNED_UNIT_DIMENSION_PROJECTION",
+      "preserves": "Signed unit-axis exponents under the declared basis identity; exact declarations preserve the supplied dimension vector.",
+      "discards": "Numeric coefficient, unit scale or offset, derivation topology, source payload, calibration evidence, authenticity, uncertainty, and physical realization.",
+      "replayabilitySemantics": "PayloadReplayability concerns the underlying source or measurement payload, which the dimension vector does not itself retain or authenticate."
+    }
+  ],
+  "projectionInstances": [
+    {
+      "projection": "SIGNED_PRIME_COORDINATE_NUMERIC_FACTOR_PROJECTION",
+      "basisId": "PROBE_SIGNED_RATIONAL_PRIME_BASIS__ALL_POSITIVE_PRIMES__V1",
+      "completeness": "Exact",
+      "payloadReplayability": "ReplayableExact"
+    },
+    {
+      "projection": "SIGNED_UNIT_DIMENSION_PROJECTION",
+      "basisId": "PROBE_UNIT_DIMENSION_BASIS__CALLER_DECLARED_CASE_SENSITIVE_AXES__V1",
+      "completeness": "Exact",
+      "payloadReplayability": "MissingDependency"
+    }
+  ],
+  "calibration": {
+    "ratioScaleComposition": {
+      "receiptId": "ratio-10-21",
+      "transformKind": "ExactRatioScale",
+      "disposition": "ExactRepresentationLocal",
+      "nominalCoefficient": {
+        "numerator": "10",
+        "denominator": "21",
+        "sign": "1"
+      },
+      "numericFactors": {
+        "sign": "1",
+        "basisId": "PROBE_SIGNED_RATIONAL_PRIME_BASIS__ALL_POSITIVE_PRIMES__V1",
+        "completeness": "Exact",
+        "payloadReplayability": "ReplayableExact",
+        "exponents": {
+          "2": "1",
+          "3": "-1",
+          "5": "1",
+          "7": "-1"
+        }
+      },
+      "dimension": {
+        "basisId": "PROBE_UNIT_DIMENSION_BASIS__CALLER_DECLARED_CASE_SENSITIVE_AXES__V1",
+        "completeness": "Exact",
+        "payloadReplayability": "MissingDependency",
+        "axes": {}
+      },
+      "derivationReceiptId": "derive-ratio-10-21",
+      "parentDerivationReceiptIds": [
+        "derive-ratio-2-3",
+        "derive-ratio-5-7"
+      ],
+      "evidence": [
+        {
+          "evidenceId": "defined-ratio",
+          "sourceReference": "BUILD004_BOUNDED_FIXTURE",
+          "validFrom": "2025-01-01T00:00:00+00:00",
+          "validThrough": "2027-01-01T00:00:00+00:00",
+          "coefficientStatus": "ExactDefined",
+          "uncertaintyKind": "NoneDeclared",
+          "uncertaintyStatement": "No empirical uncertainty: exact defined fixture.",
+          "authentication": "Unauthenticated",
+          "residual": ""
+        },
+        {
+          "evidenceId": "defined-ratio",
+          "sourceReference": "BUILD004_BOUNDED_FIXTURE",
+          "validFrom": "2025-01-01T00:00:00+00:00",
+          "validThrough": "2027-01-01T00:00:00+00:00",
+          "coefficientStatus": "ExactDefined",
+          "uncertaintyKind": "NoneDeclared",
+          "uncertaintyStatement": "No empirical uncertainty: exact defined fixture.",
+          "authentication": "Unauthenticated",
+          "residual": ""
+        }
+      ],
+      "evaluatedAt": "2026-01-01T00:00:00+00:00",
+      "crossingReason": ""
+    },
+    "elementaryChargeDefinitionFixture": {
+      "receiptId": "si-elementary-charge-definition",
+      "transformKind": "ExactRatioScale",
+      "disposition": "ExactRepresentationLocal",
+      "nominalCoefficient": {
+        "numerator": "801088317",
+        "denominator": "5000000000000000000000000000",
+        "sign": "1"
+      },
+      "numericFactors": {
+        "sign": "1",
+        "basisId": "PROBE_SIGNED_RATIONAL_PRIME_BASIS__ALL_POSITIVE_PRIMES__V1",
+        "completeness": "Exact",
+        "payloadReplayability": "ReplayableExact",
+        "exponents": {
+          "2": "-27",
+          "3": "2",
+          "5": "-28",
+          "19": "1",
+          "389": "1",
+          "12043": "1"
+        }
+      },
+      "dimension": {
+        "basisId": "PROBE_UNIT_DIMENSION_BASIS__CALLER_DECLARED_CASE_SENSITIVE_AXES__V1",
+        "completeness": "Exact",
+        "payloadReplayability": "MissingDependency",
+        "axes": {
+          "I": "1",
+          "T": "1"
+        }
+      },
+      "derivationReceiptId": "bipm-si-defining-constant-e",
+      "parentDerivationReceiptIds": [],
+      "evidence": [
+        {
+          "evidenceId": "bipm-e",
+          "sourceReference": "https://www.bipm.org/en/measurement-units/si-defining-constants",
+          "validFrom": "2025-01-01T00:00:00+00:00",
+          "validThrough": "2027-01-01T00:00:00+00:00",
+          "coefficientStatus": "ExactDefined",
+          "uncertaintyKind": "NoneDeclared",
+          "uncertaintyStatement": "No empirical uncertainty: exact defined fixture.",
+          "authentication": "Unauthenticated",
+          "residual": ""
+        }
+      ],
+      "evaluatedAt": "2026-01-01T00:00:00+00:00",
+      "crossingReason": ""
+    },
+    "affine": {
+      "receiptId": "affine-crossing",
+      "transformKind": "Affine",
+      "disposition": "ExplicitTransformCrossing",
+      "nominalCoefficient": null,
+      "numericFactors": null,
+      "dimension": {
+        "basisId": "PROBE_UNIT_DIMENSION_BASIS__CALLER_DECLARED_CASE_SENSITIVE_AXES__V1",
+        "completeness": "Exact",
+        "payloadReplayability": "MissingDependency",
+        "axes": {
+          "I": "1",
+          "T": "1"
+        }
+      },
+      "derivationReceiptId": "derive-affine",
+      "parentDerivationReceiptIds": [],
+      "evidence": [
+        {
+          "evidenceId": "defined-ratio",
+          "sourceReference": "BUILD004_BOUNDED_FIXTURE",
+          "validFrom": "2025-01-01T00:00:00+00:00",
+          "validThrough": "2027-01-01T00:00:00+00:00",
+          "coefficientStatus": "ExactDefined",
+          "uncertaintyKind": "NoneDeclared",
+          "uncertaintyStatement": "No empirical uncertainty: exact defined fixture.",
+          "authentication": "Unauthenticated",
+          "residual": ""
+        }
+      ],
+      "evaluatedAt": "2026-01-01T00:00:00+00:00",
+      "crossingReason": "CELSIUS_OFFSET_FUNCTION_REQUIRED"
+    },
+    "logarithmic": {
+      "receiptId": "logarithmic-crossing",
+      "transformKind": "Logarithmic",
+      "disposition": "ExplicitTransformCrossing",
+      "nominalCoefficient": null,
+      "numericFactors": null,
+      "dimension": {
+        "basisId": "PROBE_UNIT_DIMENSION_BASIS__CALLER_DECLARED_CASE_SENSITIVE_AXES__V1",
+        "completeness": "Exact",
+        "payloadReplayability": "MissingDependency",
+        "axes": {
+          "I": "1",
+          "T": "1"
+        }
+      },
+      "derivationReceiptId": "derive-logarithmic",
+      "parentDerivationReceiptIds": [],
+      "evidence": [
+        {
+          "evidenceId": "defined-ratio",
+          "sourceReference": "BUILD004_BOUNDED_FIXTURE",
+          "validFrom": "2025-01-01T00:00:00+00:00",
+          "validThrough": "2027-01-01T00:00:00+00:00",
+          "coefficientStatus": "ExactDefined",
+          "uncertaintyKind": "NoneDeclared",
+          "uncertaintyStatement": "No empirical uncertainty: exact defined fixture.",
+          "authentication": "Unauthenticated",
+          "residual": ""
+        }
+      ],
+      "evaluatedAt": "2026-01-01T00:00:00+00:00",
+      "crossingReason": "DECIBEL_LOG_FUNCTION_REQUIRED"
+    },
+    "nonlinear": {
+      "receiptId": "nonlinear-crossing",
+      "transformKind": "Nonlinear",
+      "disposition": "ExplicitTransformCrossing",
+      "nominalCoefficient": null,
+      "numericFactors": null,
+      "dimension": {
+        "basisId": "PROBE_UNIT_DIMENSION_BASIS__CALLER_DECLARED_CASE_SENSITIVE_AXES__V1",
+        "completeness": "Exact",
+        "payloadReplayability": "MissingDependency",
+        "axes": {
+          "I": "1",
+          "T": "1"
+        }
+      },
+      "derivationReceiptId": "derive-nonlinear",
+      "parentDerivationReceiptIds": [],
+      "evidence": [
+        {
+          "evidenceId": "defined-ratio",
+          "sourceReference": "BUILD004_BOUNDED_FIXTURE",
+          "validFrom": "2025-01-01T00:00:00+00:00",
+          "validThrough": "2027-01-01T00:00:00+00:00",
+          "coefficientStatus": "ExactDefined",
+          "uncertaintyKind": "NoneDeclared",
+          "uncertaintyStatement": "No empirical uncertainty: exact defined fixture.",
+          "authentication": "Unauthenticated",
+          "residual": ""
+        }
+      ],
+      "evaluatedAt": "2026-01-01T00:00:00+00:00",
+      "crossingReason": "POLYNOMIAL_OR_LOOKUP_REPLAY_REQUIRED"
+    },
+    "rounded": {
+      "receiptId": "rounded-ratio",
+      "transformKind": "ExactRatioScale",
+      "disposition": "ExplicitTransformCrossing",
+      "nominalCoefficient": {
+        "numerator": "617",
+        "denominator": "500",
+        "sign": "1"
+      },
+      "numericFactors": {
+        "sign": "1",
+        "basisId": "PROBE_SIGNED_RATIONAL_PRIME_BASIS__ALL_POSITIVE_PRIMES__V1",
+        "completeness": "Exact",
+        "payloadReplayability": "ReplayableExact",
+        "exponents": {
+          "2": "-2",
+          "5": "-3",
+          "617": "1"
+        }
+      },
+      "dimension": {
+        "basisId": "PROBE_UNIT_DIMENSION_BASIS__CALLER_DECLARED_CASE_SENSITIVE_AXES__V1",
+        "completeness": "Exact",
+        "payloadReplayability": "MissingDependency",
+        "axes": {}
+      },
+      "derivationReceiptId": "rounded-regression",
+      "parentDerivationReceiptIds": [],
+      "evidence": [
+        {
+          "evidenceId": "rounded",
+          "sourceReference": "BUILD004_BOUNDED_FIXTURE",
+          "validFrom": "2025-01-01T00:00:00+00:00",
+          "validThrough": "2027-01-01T00:00:00+00:00",
+          "coefficientStatus": "Rounded",
+          "uncertaintyKind": "NoneDeclared",
+          "uncertaintyStatement": "Synthetic rounded nominal; exact pre-rounding value and rounding error are not supplied.",
+          "authentication": "Unauthenticated",
+          "residual": ""
+        }
+      ],
+      "evaluatedAt": "2026-01-01T00:00:00+00:00",
+      "crossingReason": "ROUNDED_COEFFICIENT__NOMINAL_RATIO_IS_NOT_AN_EXACT_CALIBRATION_CLAIM"
+    },
+    "correlated": {
+      "receiptId": "correlated-ratio",
+      "transformKind": "ExactRatioScale",
+      "disposition": "ExplicitTransformCrossing",
+      "nominalCoefficient": {
+        "numerator": "1",
+        "denominator": "1",
+        "sign": "1"
+      },
+      "numericFactors": {
+        "sign": "1",
+        "basisId": "PROBE_SIGNED_RATIONAL_PRIME_BASIS__ALL_POSITIVE_PRIMES__V1",
+        "completeness": "Exact",
+        "payloadReplayability": "ReplayableExact",
+        "exponents": {}
+      },
+      "dimension": {
+        "basisId": "PROBE_UNIT_DIMENSION_BASIS__CALLER_DECLARED_CASE_SENSITIVE_AXES__V1",
+        "completeness": "Exact",
+        "payloadReplayability": "MissingDependency",
+        "axes": {}
+      },
+      "derivationReceiptId": "correlated-calibration",
+      "parentDerivationReceiptIds": [],
+      "evidence": [
+        {
+          "evidenceId": "correlated",
+          "sourceReference": "BUILD004_BOUNDED_FIXTURE",
+          "validFrom": "2025-01-01T00:00:00+00:00",
+          "validThrough": "2027-01-01T00:00:00+00:00",
+          "coefficientStatus": "ExactDefined",
+          "uncertaintyKind": "Correlated",
+          "uncertaintyStatement": "Synthetic correlated uncertainty; covariance data are required and not supplied by this fixture.",
+          "authentication": "Unauthenticated",
+          "residual": ""
+        }
+      ],
+      "evaluatedAt": "2026-01-01T00:00:00+00:00",
+      "crossingReason": "CORRELATED_UNCERTAINTY__COVARIANCE_PROPAGATION_REQUIRED"
+    },
+    "expired": {
+      "receiptId": "expired-ratio",
+      "transformKind": "ExactRatioScale",
+      "disposition": "Unresolved",
+      "nominalCoefficient": {
+        "numerator": "1",
+        "denominator": "1",
+        "sign": "1"
+      },
+      "numericFactors": null,
+      "dimension": {
+        "basisId": "PROBE_UNIT_DIMENSION_BASIS__CALLER_DECLARED_CASE_SENSITIVE_AXES__V1",
+        "completeness": "Conflict",
+        "payloadReplayability": "MissingDependency",
+        "axes": {}
+      },
+      "derivationReceiptId": "expired-calibration",
+      "parentDerivationReceiptIds": [],
+      "evidence": [
+        {
+          "evidenceId": "expired",
+          "sourceReference": "BUILD004_BOUNDED_FIXTURE",
+          "validFrom": "2025-01-01T00:00:00+00:00",
+          "validThrough": "2025-12-31T00:00:00+00:00",
+          "coefficientStatus": "ExactDefined",
+          "uncertaintyKind": "NoneDeclared",
+          "uncertaintyStatement": "No empirical uncertainty: exact defined fixture.",
+          "authentication": "Unauthenticated",
+          "residual": ""
+        }
+      ],
+      "evaluatedAt": "2026-01-01T00:00:00+00:00",
+      "crossingReason": "EXPIRED_VALIDITY"
+    },
+    "note": "Exact arithmetic does not establish empirical calibration truth."
+  },
+  "audio": {
+    "fifth": {
+      "intervalId": "perfect-fifth",
+      "derivationReceiptId": "music-source-3-2",
+      "parentDerivationReceiptIds": [],
+      "ratio": {
+        "numerator": "3",
+        "denominator": "2",
+        "sign": "1"
+      },
+      "coordinates": {
+        "sign": "1",
+        "basisId": "PROBE_SIGNED_RATIONAL_PRIME_BASIS__ALL_POSITIVE_PRIMES__V1",
+        "completeness": "Exact",
+        "payloadReplayability": "ReplayableExact",
+        "exponents": {
+          "2": "-1",
+          "3": "1"
+        }
+      }
+    },
+    "majorThird": {
+      "intervalId": "major-third",
+      "derivationReceiptId": "music-source-5-4",
+      "parentDerivationReceiptIds": [],
+      "ratio": {
+        "numerator": "5",
+        "denominator": "4",
+        "sign": "1"
+      },
+      "coordinates": {
+        "sign": "1",
+        "basisId": "PROBE_SIGNED_RATIONAL_PRIME_BASIS__ALL_POSITIVE_PRIMES__V1",
+        "completeness": "Exact",
+        "payloadReplayability": "ReplayableExact",
+        "exponents": {
+          "2": "-2",
+          "5": "1"
+        }
+      }
+    },
+    "majorSeventh": {
+      "intervalId": "major-seventh",
+      "derivationReceiptId": "music-compose-15-8",
+      "parentDerivationReceiptIds": [
+        "music-source-3-2",
+        "music-source-5-4"
+      ],
+      "ratio": {
+        "numerator": "15",
+        "denominator": "8",
+        "sign": "1"
+      },
+      "coordinates": {
+        "sign": "1",
+        "basisId": "PROBE_SIGNED_RATIONAL_PRIME_BASIS__ALL_POSITIVE_PRIMES__V1",
+        "completeness": "Exact",
+        "payloadReplayability": "ReplayableExact",
+        "exponents": {
+          "2": "-3",
+          "3": "1",
+          "5": "1"
+        }
+      }
+    },
+    "wave": {
+      "renderReceiptId": "render-perfect-fifth",
+      "requestedRatio": {
+        "numerator": "3",
+        "denominator": "2",
+        "sign": "1"
+      },
+      "baseFrequencyHertz": {
+        "numerator": "220",
+        "denominator": "1",
+        "sign": "1"
+      },
+      "nominalFrequencyHertz": {
+        "numerator": "330",
+        "denominator": "1",
+        "sign": "1"
+      },
+      "renderedFrequencyHertz": "330",
+      "policy": {
+        "sampleRate": "8000",
+        "sampleCount": "8000",
+        "phaseRadians": "0",
+        "peakAmplitude": "0.25",
+        "linearAttackSamples": "80",
+        "linearReleaseSamples": "80",
+        "roundingPolicy": "NearestAwayFromZero",
+        "clippingPolicy": "Saturate",
+        "exactDurationSeconds": {
+          "numerator": "1",
+          "denominator": "1",
+          "sign": "1"
+        }
+      },
+      "clippedSampleCount": "0",
+      "wavByteLength": "16044",
+      "wavSha256": "67F75DFB9E57D156BD320DCC8E56F070BFD89C014773366694FFA063C4BFE0B4",
+      "approximationDeclaration": "EXACT_RATIONAL_FREQUENCY__BINARY64_PHASE__SINE__LINEAR_ENVELOPE__PCM16_LE"
+    }
+  },
+  "structuralAccumulator": {
+    "left": {
+      "structuralProduct": "10",
+      "structuralToken": "10",
+      "publiclyDecodableSupport": [
+        "sensor-a",
+        "sensor-c"
+      ],
+      "integrityDigestSha256": "FB16C0425D974751F1A76086E44A6805FD5B339BD81566D97620847242B33325",
+      "registryId": "transparent-demo",
+      "assignmentEpoch": "1",
+      "registryBindingSha256": "792D0AEDD9BF531BCEE5D56B79664CE56288A8B3945C5972720A0CC1E17033A6"
+    },
+    "right": {
+      "structuralProduct": "15",
+      "structuralToken": "15",
+      "publiclyDecodableSupport": [
+        "sensor-b",
+        "sensor-c"
+      ],
+      "integrityDigestSha256": "019FDC5CDC71E3E9ADA1AA6C621C9B7E6E1C6E9C4D2CB18FA2DE94918DC5364A",
+      "registryId": "transparent-demo",
+      "assignmentEpoch": "1",
+      "registryBindingSha256": "792D0AEDD9BF531BCEE5D56B79664CE56288A8B3945C5972720A0CC1E17033A6"
+    },
+    "intersection": {
+      "structuralProduct": "5",
+      "structuralToken": "5",
+      "publiclyDecodableSupport": [
+        "sensor-c"
+      ],
+      "integrityDigestSha256": "C33AD06A11767C3728E6FBE1F81B2659B260B425425A3044E4209D11B0ADC8EC",
+      "registryId": "transparent-demo",
+      "assignmentEpoch": "1",
+      "registryBindingSha256": "792D0AEDD9BF531BCEE5D56B79664CE56288A8B3945C5972720A0CC1E17033A6"
+    },
+    "leakageStatement": "PUBLIC_REGISTRY_PLUS_STRUCTURAL_TOKEN_REVEALS_EACH_REGISTERED_MEMBERSHIP_BY_DIVISIBILITY",
+    "security": {
+      "cryptographicClassification": "NOT_CRYPTOGRAPHIC",
+      "privacyClassification": "NO_PRIVACY",
+      "authenticatedCommitment": "NotProvided",
+      "membershipProof": "NotProvided",
+      "zeroKnowledgeProof": "NotProvided"
+    }
+  },
+  "bom": {
+    "first": {
+      "receiptId": "bom-a",
+      "computedQuantity": "10",
+      "lines": [
+        {
+          "supplierId": "supplier-a",
+          "componentId": "housing-a",
+          "lotId": "lot-2",
+          "quantity": "6",
+          "localProvenanceLabel": "receipt-a2"
+        },
+        {
+          "supplierId": "supplier-a",
+          "componentId": "shared-fastener",
+          "lotId": "lot-1",
+          "quantity": "4",
+          "localProvenanceLabel": "receipt-a1"
+        }
+      ],
+      "componentSupport": [
+        "housing-a",
+        "shared-fastener"
+      ],
+      "lineageDigestSha256": "032AECB468A66CB9718B8C3EF635EE9FBB18FC00C7C5D7362AFC5209CB66A6B9"
+    },
+    "second": {
+      "receiptId": "bom-b",
+      "computedQuantity": "10",
+      "lines": [
+        {
+          "supplierId": "supplier-b",
+          "componentId": "housing-b",
+          "lotId": "lot-8",
+          "quantity": "8",
+          "localProvenanceLabel": "receipt-b2"
+        },
+        {
+          "supplierId": "supplier-b",
+          "componentId": "shared-fastener",
+          "lotId": "lot-9",
+          "quantity": "2",
+          "localProvenanceLabel": "receipt-b1"
+        }
+      ],
+      "componentSupport": [
+        "housing-b",
+        "shared-fastener"
+      ],
+      "lineageDigestSha256": "E084D843AF279A919254634887247D5DA37917525372D431B99E15D49383CC8D"
+    },
+    "sameValueDifferentLineage": true,
+    "sharedComponents": [
+      "shared-fastener"
+    ],
+    "integrationBoundary": "TOPOLOGY_PRESERVING_RECEIPT_REQUIRED__PERSISTENT_TYPED_DAG_TESTED"
+  },
+  "frameworkComparison": {
+    "status": "AFTER_THE_FACT_REMOVABLE_LENSES_ONLY",
+    "pal": "Multi-parent account semantics remain open in PAL v2.2; this DAG does not amend canon.",
+    "bla": "Residual-triggered reopening lens; does not infer cause or authority.",
+    "clef": "Observable, aperture, noise, cost, uncertainty, and stopping-rule checklist; not validation evidence.",
+    "brtAic": "Exact-symbolic to trace/readout boundary lens; not a physics or computation proof."
+  },
+  "claimCeiling": "Bounded exact-software and abstract-structure evidence under PAS-BUILD004-EXACT-LINEAGE-0001 only; no source-authenticity, empirical-validity, privacy, cryptographic-security, PAL-conformance, universal-performance, or hardware-PPA claim."
+}

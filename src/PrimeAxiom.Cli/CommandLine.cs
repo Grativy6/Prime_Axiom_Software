@@ -1,6 +1,10 @@
 using System.Globalization;
 using System.Numerics;
+using System.Text;
 using System.Text.Json;
+using PrimeAxiom.Core.Build004.Combinatorics;
+using PrimeAxiom.Core.Build004.Lineage;
+using PrimeAxiom.Core.Build004.Probes;
 using PrimeAxiom.Core.Circuits;
 using PrimeAxiom.Core.Calculator;
 using PrimeAxiom.Core.Machine;
@@ -10,6 +14,8 @@ namespace PrimeAxiom.Cli;
 
 internal static class CommandLine
 {
+    private static readonly string[] LineageDemoOccurrenceIds = ["a", "b", "c", "d"];
+
     public static int Run(string[] args)
     {
         if (args.Length == 0 || args[0] is "help" or "--help" or "-h")
@@ -25,8 +31,13 @@ internal static class CommandLine
             "experiment-build001" => RunBuild001Experiment(args[1..]),
             "experiment-build002" => RunBuild002Experiment(args[1..]),
             "experiment-build003" => RunBuild003Experiment(args[1..]),
+            "experiment-build004" => RunBuild004Experiment(args[1..]),
             "prime-receipt" => RunPrimeReceipt(args[1..]),
             "compare-arithmetic" => RunArithmeticComparison(args[1..]),
+            "binomial-receipt" => RunBinomialReceipt(args[1..]),
+            "hypergeometric-receipt" => RunHypergeometricReceipt(args[1..]),
+            "lineage-demo" => RunLineageDemo(args[1..]),
+            "render-just-interval" => RunJustIntervalRenderer(args[1..]),
             _ => Unknown(args[0]),
         };
     }
@@ -240,6 +251,181 @@ internal static class CommandLine
         return 0;
     }
 
+    private static int RunBuild004Experiment(string[] args)
+    {
+        var output = "results/build004";
+        for (var index = 0; index < args.Length; index++)
+        {
+            switch (args[index])
+            {
+                case "--output" when index + 1 < args.Length:
+                    output = args[++index];
+                    break;
+                default:
+                    Console.Error.WriteLine($"Unknown Build 004 experiment option: {args[index]}");
+                    return 2;
+            }
+        }
+
+        try
+        {
+            var receipt = Build004ExperimentRunner.Run(
+                Directory.GetCurrentDirectory(),
+                Path.GetFullPath(output));
+            Console.WriteLine($"Wrote Build 004 evidence to {receipt.OutputDirectory}");
+            Console.WriteLine(
+                 $"Checks: {receipt.CheckCount.ToString(CultureInfo.InvariantCulture)}; " +
+                 $"failures: {receipt.FailureCount.ToString(CultureInfo.InvariantCulture)}; " +
+                 $"generated status: {receipt.Status}; " +
+                 $"candidate after external verification: {receipt.CandidateFrameworkStatus}");
+            return receipt.FailureCount == 0 &&
+                receipt.Status == Build004Protocol.PartialStatus &&
+                receipt.CandidateFrameworkStatus == Build004Protocol.FrameworkStatus
+                ? 0
+                : 1;
+        }
+        catch (InvalidOperationException exception)
+        {
+            Console.Error.WriteLine(exception.Message);
+            return 2;
+        }
+    }
+
+    private static int RunBinomialReceipt(string[] args)
+    {
+        if (args.Length != 2 ||
+            !int.TryParse(args[0], NumberStyles.None, CultureInfo.InvariantCulture, out var n) ||
+            !int.TryParse(args[1], NumberStyles.None, CultureInfo.InvariantCulture, out var k) ||
+            n < 0 || k < 0 || k > n || n > 1_000_000)
+        {
+            Console.Error.WriteLine("Usage: binomial-receipt N K (0 <= K <= N <= 1000000)");
+            return 2;
+        }
+
+        var receipt = new PrimeCombinatorics(n).Binomial(n, k);
+        Console.WriteLine(JsonSerializer.Serialize(receipt, Build004Protocol.JsonOptions));
+        return 0;
+    }
+
+    private static int RunHypergeometricReceipt(string[] args)
+    {
+        if (args.Length != 4 ||
+            !int.TryParse(args[0], NumberStyles.None, CultureInfo.InvariantCulture, out var population) ||
+            !int.TryParse(args[1], NumberStyles.None, CultureInfo.InvariantCulture, out var successes) ||
+            !int.TryParse(args[2], NumberStyles.None, CultureInfo.InvariantCulture, out var draws) ||
+            !int.TryParse(args[3], NumberStyles.Integer, CultureInfo.InvariantCulture, out var observed) ||
+            population < 0 || population > 1_000_000 ||
+            successes < 0 || successes > population ||
+            draws < 0 || draws > population)
+        {
+            Console.Error.WriteLine("Usage: hypergeometric-receipt POPULATION SUCCESS_STATES DRAWS OBSERVED (population <= 1000000)");
+            return 2;
+        }
+
+        var receipt = new PrimeCombinatorics(population).HypergeometricPoint(
+            population,
+            successes,
+            draws,
+            observed);
+        Console.WriteLine(JsonSerializer.Serialize(receipt, Build004Protocol.JsonOptions));
+        return 0;
+    }
+
+    private static int RunLineageDemo(string[] args)
+    {
+        if (args.Length != 0)
+        {
+            Console.Error.WriteLine("Usage: lineage-demo");
+            return 2;
+        }
+
+        var registry = LineageRegistry.CreateSequential(
+            "cli-demo",
+            "epoch-1",
+            LineageDemoOccurrenceIds);
+        var descriptors = registry.Registrations.Select((registration, index) => new AtomDescriptor(
+            registration.Key,
+            $"source-{index.ToString(CultureInfo.InvariantCulture)}",
+            Build004Protocol.BytesSha256(Encoding.UTF8.GetBytes($"payload-{index.ToString(CultureInfo.InvariantCulture)}")))).ToArray();
+        var dag = new DerivationDag();
+        var nodes = descriptors.Select(dag.AddAtom).ToArray();
+        var first = dag.AddAlternative(dag.AddJoint(nodes[0], nodes[1]), dag.AddJoint(nodes[2], nodes[3]));
+        var second = dag.AddAlternative(dag.AddJoint(nodes[0], nodes[2]), dag.AddJoint(nodes[1], nodes[3]));
+        var firstSupport = dag.ProjectSupport(first, registry);
+        var secondSupport = dag.ProjectSupport(second, registry);
+        var firstMultiplicity = dag.ProjectMultiplicity(first, registry);
+        var secondMultiplicity = dag.ProjectMultiplicity(second, registry);
+
+        Console.WriteLine("first:  a*b + c*d");
+        Console.WriteLine($"root:   {first}");
+        Console.WriteLine("second: a*c + b*d");
+        Console.WriteLine($"root:   {second}");
+        Console.WriteLine($"same source support: {firstSupport.Equals(secondSupport)}");
+        Console.WriteLine($"same source multiplicity: {firstMultiplicity.Equals(secondMultiplicity)}");
+        Console.WriteLine($"same derivation root: {first == second}");
+        Console.WriteLine("PEV/set support loses the pairing; the retained DAG does not.");
+        return 0;
+    }
+
+    private static int RunJustIntervalRenderer(string[] args)
+    {
+        if (args.Length != 4 ||
+            !BigInteger.TryParse(args[0], NumberStyles.None, CultureInfo.InvariantCulture, out var numerator) ||
+            !BigInteger.TryParse(args[1], NumberStyles.None, CultureInfo.InvariantCulture, out var denominator) ||
+            !BigInteger.TryParse(args[2], NumberStyles.None, CultureInfo.InvariantCulture, out var baseHertz) ||
+            numerator <= 0 || denominator <= 0 || baseHertz <= 0)
+        {
+            Console.Error.WriteLine("Usage: render-just-interval NUMERATOR DENOMINATOR BASE_HZ OUTPUT.wav");
+            return 2;
+        }
+
+        var output = Path.GetFullPath(args[3]);
+        if (File.Exists(output))
+        {
+            Console.Error.WriteLine($"Refusing to overwrite existing file: {output}");
+            return 2;
+        }
+
+        var interval = ProbeJustIntervalReceipt.FromRatio(
+            "cli-interval",
+            "cli-supplied-ratio",
+            new ProbeExactRatio(numerator, denominator));
+        var policy = new ProbeAudioApproximationPolicy(
+            sampleRate: 48_000,
+            sampleCount: 48_000,
+            phaseRadians: 0,
+            peakAmplitude: 0.25,
+            linearAttackSamples: 480,
+            linearReleaseSamples: 480);
+        ProbePcmWaveReceipt receipt;
+        try
+        {
+            receipt = ProbePcmWaveRenderer.RenderSine(
+                "cli-render",
+                interval,
+                new ProbeExactRatio(baseHertz, 1),
+                policy);
+        }
+        catch (ArgumentOutOfRangeException exception)
+        {
+            Console.Error.WriteLine(exception.Message);
+            return 2;
+        }
+
+        var parent = Path.GetDirectoryName(output);
+        if (!string.IsNullOrEmpty(parent))
+        {
+            Directory.CreateDirectory(parent);
+        }
+
+        File.WriteAllBytes(output, receipt.GetWavBytes());
+        Console.WriteLine($"Wrote {receipt.WavByteLength.ToString(CultureInfo.InvariantCulture)} bytes to {output}");
+        Console.WriteLine($"exact nominal frequency: {receipt.NominalFrequencyHertz}");
+        Console.WriteLine($"rendered binary64 frequency: {receipt.RenderedFrequencyHertz.ToString("R", CultureInfo.InvariantCulture)}");
+        Console.WriteLine($"SHA-256: {receipt.WavSha256}");
+        return 0;
+    }
+
     private static int RunArithmeticComparison(string[] args)
     {
         if (!TryParseCalculatorArguments(args, out var positionals, out var policy, out var json, out var error))
@@ -442,8 +628,13 @@ internal static class CommandLine
         Console.WriteLine("  experiment-build001 [--output DIRECTORY] [--skip-benchmarks]");
         Console.WriteLine("  experiment-build002 [--output DIRECTORY] [--hdl-verification-summary FILE] [--hdl-synthesis-metrics FILE] [--hdl-toolchain FILE]");
         Console.WriteLine("  experiment-build003 [--output DIRECTORY]");
+        Console.WriteLine("  experiment-build004 [--output DIRECTORY]");
         Console.WriteLine("  prime-receipt INTEGER [--max-odd-candidates N] [--format text|json]");
         Console.WriteLine("  compare-arithmetic add A B [--max-odd-candidates N] [--format text|json]");
         Console.WriteLine("  compare-arithmetic multiply A B [C ...] [--max-odd-candidates N] [--format text|json]");
+        Console.WriteLine("  binomial-receipt N K");
+        Console.WriteLine("  hypergeometric-receipt POPULATION SUCCESS_STATES DRAWS OBSERVED");
+        Console.WriteLine("  lineage-demo");
+        Console.WriteLine("  render-just-interval NUMERATOR DENOMINATOR BASE_HZ OUTPUT.wav");
     }
 }

@@ -1,0 +1,153 @@
+{
+  "schema": "prime-axiom-build004-correctness-v1",
+  "protocolId": "PAS-BUILD004-EXACT-LINEAGE-0001",
+  "masterSeed": "0000000050415334",
+  "status": "BOUNDED_PASS",
+  "checks": "887072",
+  "failures": "0",
+  "families": [
+    {
+      "family": "FACTORIAL_0_512",
+      "expectedCases": "513",
+      "expectedChecks": "1026",
+      "cases": "513",
+      "checks": "1026",
+      "failureCount": "0",
+      "failureDetails": [],
+      "status": "BOUNDED_PASS"
+    },
+    {
+      "family": "BINOMIAL_ALL_0_256",
+      "expectedCases": "33153",
+      "expectedChecks": "66306",
+      "cases": "33153",
+      "checks": "66306",
+      "failureCount": "0",
+      "failureDetails": [],
+      "status": "BOUNDED_PASS"
+    },
+    {
+      "family": "HYPERGEOMETRIC_POINTS_0_24",
+      "expectedCases": "20475",
+      "expectedChecks": "40950",
+      "cases": "20475",
+      "checks": "40950",
+      "failureCount": "0",
+      "failureDetails": [],
+      "status": "BOUNDED_PASS"
+    },
+    {
+      "family": "HYPERGEOMETRIC_NORMALIZATION_0_32",
+      "expectedCases": "12529",
+      "expectedChecks": "25058",
+      "cases": "12529",
+      "checks": "25058",
+      "failureCount": "0",
+      "failureDetails": [],
+      "status": "BOUNDED_PASS"
+    },
+    {
+      "family": "SEEDED_POINTS_N_LE_4096",
+      "expectedCases": "10000",
+      "expectedChecks": "10000",
+      "cases": "10000",
+      "checks": "10000",
+      "failureCount": "0",
+      "failureDetails": [],
+      "status": "BOUNDED_PASS"
+    },
+    {
+      "family": "ADJACENT_STREAMS_0_48_PLUS_N2000",
+      "expectedCases": "40426",
+      "expectedChecks": "271229",
+      "cases": "40426",
+      "checks": "271229",
+      "failureCount": "0",
+      "failureDetails": [],
+      "status": "BOUNDED_PASS"
+    },
+    {
+      "family": "NAMED_COMBINATORIAL_CONTROLS",
+      "expectedCases": "8",
+      "expectedChecks": "8",
+      "cases": "8",
+      "checks": "8",
+      "failureCount": "0",
+      "failureDetails": [],
+      "status": "BOUNDED_PASS"
+    },
+    {
+      "family": "SUPPORT_PROJECTION_U8",
+      "expectedCases": "65536",
+      "expectedChecks": "393216",
+      "cases": "65536",
+      "checks": "393216",
+      "failureCount": "0",
+      "failureDetails": [],
+      "status": "BOUNDED_PASS"
+    },
+    {
+      "family": "MULTIPLICITY_PROJECTION_U4_E0_2",
+      "expectedCases": "6561",
+      "expectedChecks": "78732",
+      "cases": "6561",
+      "checks": "78732",
+      "failureCount": "0",
+      "failureDetails": [],
+      "status": "BOUNDED_PASS"
+    },
+    {
+      "family": "DERIVATION_DAG_AND_MUTATIONS",
+      "expectedCases": "12",
+      "expectedChecks": "12",
+      "cases": "12",
+      "checks": "12",
+      "failureCount": "0",
+      "failureDetails": [],
+      "status": "BOUNDED_PASS"
+    },
+    {
+      "family": "EXACT_FUSION_CYCLES",
+      "expectedCases": "2",
+      "expectedChecks": "2",
+      "cases": "2",
+      "checks": "2",
+      "failureCount": "0",
+      "failureDetails": [],
+      "status": "BOUNDED_PASS"
+    },
+    {
+      "family": "SEEDED_ASYNC_FUSION_SCHEDULES",
+      "expectedCases": "512",
+      "expectedChecks": "512",
+      "cases": "512",
+      "checks": "512",
+      "failureCount": "0",
+      "failureDetails": [],
+      "status": "BOUNDED_PASS"
+    },
+    {
+      "family": "FUSION_FAILURE_AND_RETRACTION_BOUNDARIES",
+      "expectedCases": "9",
+      "expectedChecks": "9",
+      "cases": "9",
+      "checks": "9",
+      "failureCount": "0",
+      "failureDetails": [],
+      "status": "BOUNDED_PASS"
+    },
+    {
+      "family": "CALIBRATION_AUDIO_ACCUMULATOR_BOM_PROBES",
+      "expectedCases": "12",
+      "expectedChecks": "12",
+      "cases": "12",
+      "checks": "12",
+      "failureCount": "0",
+      "failureDetails": [],
+      "status": "BOUNDED_PASS"
+    }
+  ],
+  "zeroFailure": true,
+  "exactFrozenCaseCounts": true,
+  "claimCeiling": "Bounded exact-software and abstract-structure evidence under PAS-BUILD004-EXACT-LINEAGE-0001 only; no source-authenticity, empirical-validity, privacy, cryptographic-security, PAL-conformance, universal-performance, or hardware-PPA claim."
+}
