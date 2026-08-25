@@ -2,6 +2,33 @@
 
 Prime Axiom Software asks what mathematics becomes inexpensive when two machines are built from the same binary state, NAND logic, and DFF-delimited memory but diverge at numeric representation.
 
+Build 003 now exposes the narrow structure that survived those lower-level experiments as a usable software tool:
+
+```text
+integer in -> certified prime powers + exact residual + receipt out
+```
+
+Its framework status is **`BOUNDED_TOOL_PATH_VALIDATED`**: 52,914 deterministic checks passed with zero failures across complete, partial, signed, zero/unit, seeded, parser-boundary, and six frozen arithmetic-path cases. Calculator-issued receipts are immutable, distinguish complete structure from an exact unresolved residual, and expose construction, integrity-replay, and egress work separately. Complete multiplication receipts compose by exponent-map merge after explicit acquisition; general addition still performs ordinary magnitude addition and fresh output factor discovery. No LLM-cognition, runtime, or hardware advantage is claimed.
+
+```powershell
+dotnet run --project src/PrimeAxiom.Cli --configuration Release -- prime-receipt 360
+dotnet run --project src/PrimeAxiom.Cli --configuration Release -- compare-arithmetic multiply 218 489 175 17
+```
+
+The user examples produce:
+
+```text
+125891290390 + 12589127501265
+= 12715018791655
+= 5 * 23 * 31 * 103 * 34627429
+
+218 * 489 * 175 * 17
+= 317140950
+= 2 * 3 * 5^2 * 7 * 17 * 109 * 163
+```
+
+The comparison uses replayable public arithmetic traces, not a claimed view of an LLM's private chain of thought. See the [Build 003 report](BUILD_003_REPORT.md) and [calculator contract](docs/PRIME_RECEIPT_CALCULATOR.md).
+
 Build 002’s frozen terminal classification is **`NO_HARDWARE_ADVANTAGE`**. This is a strict Pareto result for the bounded W4/W6/W8 experiment matrix—not a claim that valuation hardware has no local use.
 
 The machine found two different kinds of natural mathematics:
@@ -19,6 +46,11 @@ The generated terminal receipt contains 656,810 arithmetic checks with zero fail
 
 ## Evidence map
 
+- [Build 003 final report](BUILD_003_REPORT.md)
+- [Frozen Build 003 protocol](research/build003_experiment_plan.md)
+- [Prime Receipt Calculator contract](docs/PRIME_RECEIPT_CALCULATOR.md)
+- [Generated Build 003 evidence](results/build003/README.md)
+- [Build 003 manifest](results/build003/manifest.json)
 - [Build 002 final report](BUILD_002_REPORT.md)
 - [Frozen Build 002 protocol](research/build002_experiment_plan.md)
 - [Generated terminal coverage](results/build002/protocol_coverage.json)
@@ -33,6 +65,14 @@ The generated terminal receipt contains 656,810 arithmetic checks with zero fail
 - [Build 000 report](BUILD_000_REPORT.md)
 
 ## Reproduce
+
+The Build 003 verifier is software-only. It protects every inherited report/result directory, runs the complete zero-skip test assembly, requires the exact registered check/row/family/conclusion set, generates the new evidence twice, compares bytes, and validates the committed manifest. Verifier-owned output is restricted to `artifacts/` or `.artifacts/`; one generator invocation cannot certify deterministic replay:
+
+```powershell
+& .\scripts\verify-build003.ps1
+```
+
+Build 003 deliberately defers Build 002's proposed physical valuation-service experiment. To reproduce the existing Build 002 hardware result, use the separate pinned HDL path below.
 
 The repository pins .NET 8 and OSS CAD Suite 2026-08-24. The complete verifier preserves Build 000/001, runs formatting/build/tests with zero skips, executes the HDL simulation/formal/synthesis matrix, generates Build 002 twice, and verifies deterministic manifest hashes:
 

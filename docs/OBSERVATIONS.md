@@ -274,3 +274,65 @@ Observation-ledger revision: `BUILD002-OBS-v1` (2026-08-25). The controlling rec
 5. Do placed-and-routed area, frequency, routing congestion, and power measurements preserve or reverse the declared/optimized logical tradeoffs on one common technology and constraint set?
 6. Would a sequential, pipelined, or throughput-batched architecture find a Pareto point that the transparent one-cycle circuits cannot, once latency, initiation interval, registers, and controller transitions are all charged?
 7. Is there a representation above binary state whose native operation family covers both multiplicative structure and common additive workloads without recreating a full authoritative magnitude datapath?
+
+---
+
+# Build 003 observations — `PAS-BUILD003-PRIME-RECEIPT-0001`
+
+Build 003 is a user-directed software exposure probe above exact ordinary integers. Its generated receipts are under `results/build003/`; its status is `BOUNDED_TOOL_PATH_VALIDATED`. It does not change Build 002's bounded hardware classification, execute the deferred physical valuation-service experiment, or measure private model reasoning.
+
+## Established mathematics
+
+1. A complete prime factorization of a nonzero integer consists of an explicit unit/sign and a unique finite multiset of positive prime powers. Zero remains exceptional; `1` and `-1` have empty prime-power lists.
+2. Complete factorizations compose under multiplication by taking the union of prime identities and adding equal-prime exponents. Exact division would subtract exponents when defined.
+3. General integer addition is not determined by prime exponents alone. Common factors can be preserved, but the residual sum may have unrelated prime support and requires additional magnitude/residue information or fresh factor discovery.
+4. A partial factorization can remain an exact integer representation when it retains an exact unresolved cofactor. Incompleteness of structural knowledge is not approximation of magnitude.
+
+## Engineering observation
+
+1. A useful AI-facing prime object is a receipt, not a naked factor list. It needs canonical input identity, sign/zero/unit state, completeness, an exact residual, factor evidence, deterministic work counters, reconstruction, origin, parent IDs, and a claim ceiling.
+2. Budget exhaustion is a normal knowledge state. Returning certified factors plus `UNRESOLVED(cofactor)` preserves exactness and prevents an unfinished search from masquerading as a primality result.
+3. A composed multiplication receipt can cite exact parent receipts and perform zero factor discovery on the product. This exposes retained structural provenance; it does not erase the parents' cold acquisition cost or a required magnitude reconstruction.
+4. A public decimal-column or sequential-magnitude trace is an auditable algorithmic comparator. It must not be relabeled as a model's hidden chain of thought or evidence about internal understanding.
+5. The CLI's 4,096-digit input bound and factor candidate budget are resource policies. They do not imply that every accepted input can be fully factored within the default budget.
+6. Evidence-bearing receipt objects should be calculator-issued, opaque, and immutable. Read-only copied collections and restricted composition provenance prevent ordinary callers from constructing a value that merely looks derived; semantic SHA-256 plus replay detects tampering but does not authenticate an issuer.
+7. Reconstruction has distinct causes: receipt construction, integrity replay, and requested magnitude egress. Collapsing them into one conceptual count hides real boundary work.
+8. A zero tag can short-circuit multiplication before exponent reads/merges, but not before charged input acquisition. Same-sign column addition cannot honestly stand in for mixed-sign subtraction; the comparison rejects that case until a borrow trace exists.
+9. Deterministic generation and external replay are different evidence. A generator can declare its own bytes; only an external verifier comparing two isolated generations with committed artifacts can establish replay.
+
+## Experimental result
+
+1. The generated campaign passed 52,914 bounded checks with zero failures: every signed integer in `[-4096,4096]`, 5,000 seeded factored products, explicit named cases, partial budgets `0`, `1`, and `3`, strict decimal grammar, the digit boundary, and six frozen arithmetic paths.
+2. The complete local assembly passed 244/244 xUnit tests with zero skipped. The Build 003 evidence generator produced manifest-addressed LF/BOM-free output and byte-identical replays after the verifier's inventory-comparison defect was repaired.
+3. `125891290390 + 12589127501265` produced exact result `12715018791655 = 5 * 23 * 31 * 103 * 34627429`. The ordinary trace used 14 decimal columns and 5 carry events. The receipt path made three factor calls, examined 60,445 odd candidates, read nine input factor entries and wrote one derived common factor, performed one magnitude addition, freshly acquired the output receipt, and recorded six reconstructions: three construction, two integrity replay, and one egress. The exponent counters cover the common-factor projection only, not the new output factorization.
+4. `218 * 489 * 175 * 17` produced exact result `317140950 = 2 * 3 * 5^2 * 7 * 17 * 109 * 163`. The ordinary trace used three sequential magnitude multiplications. The prime path acquired four input receipts, composed seven factor entries without output factor discovery, and recorded ten reconstructions: five construction, four integrity replay, and one egress.
+5. The user multiplication had no prime identity shared across operands, so its composition made zero duplicate-key exponent additions. The factor-rich control `360360 * 720720 * 17` recorded 13 factor-entry reads, seven output writes, and six exponent merges before reconstruction.
+6. The addition adversary `9999999967 + 33` changed a prime-plus-small-composite input into `10,000,000,000 = 2^10 * 5^10`; the radix boundary `2^32 + 1` produced `641 * 6700417`. Both required fresh output discovery.
+7. In frozen protocol order, the reconstruction ledgers were `6 = 3+2+1`, `10 = 5+4+1`, `6 = 3+2+1`, `5 = 2+2+1`, `10 = 5+4+1`, and `8 = 4+3+1`, where the components are receipt construction, integrity replay, and egress.
+8. Adversarial review exposed and regression-tested mutable/forgeable receipts, incomplete exact-set completion gates, overly broad verifier output ownership, runtime-patch contamination of deterministic bytes, a mixed-sign trace mismatch, zero-product exponent overcounting, and omitted reconstruction categories. The repaired verifier enforces the exact counts, IDs, families, conclusions, safe leaf manifest, artifact-only output, external replay boundary, and recursive inherited-evidence snapshot.
+
+## Conjecture
+
+1. An exact prime-receipt tool may reduce plausible numeric guessing on multiplicative, divisibility, cancellation, GCD/LCM, and provenance tasks when a model is allowed to inspect and reuse receipts.
+2. Persistent receipt DAGs may be more valuable than one-shot factorization because derived multiplication nodes can inherit structure without rediscovery.
+3. A normal exact calculator will remain the stronger general control for magnitude-only addition and one-shot multiplication; prime receipts may add audit value without adding performance value.
+
+## Dead end
+
+1. **Integer in, factors out as new computation.** This is conventional factor discovery with an explicit receipt contract. The build's interest lies in honest knowledge state and reuse, not novelty of factorization.
+2. **Prime receipts as a shortcut for general addition.** Every frozen addition path used ordinary magnitude addition and a new output factor search.
+3. **Cold factorization as free AI understanding.** Producing structure has work and a resource ceiling. A model's ability to read the JSON is not established by the calculator's correctness.
+4. **Visible arithmetic trace as chain-of-thought measurement.** Build 003 records public algorithms only. It neither requests nor infers private model cognition.
+5. **A local composition law as an end-to-end speedup.** One-shot ordinary multiplication avoided all input factor discovery. No runtime, hardware, or universal cost advantage was measured.
+6. **Publicly constructible or mutable receipts as evidence.** A matching payload shape is not earned provenance. The implemented object is calculator-issued and immutable, and exact composition rechecks its integrity and origin contract.
+7. **A generator declaring its own replay evidence.** One invocation cannot establish cross-run identity. Replay is an external-verifier claim only.
+8. **Carry-only addition as a mixed-sign trace.** Magnitude subtraction needs borrow semantics. Mixed-sign comparison is rejected until that trace exists.
+
+## Open question
+
+1. Under fixed black-box final-answer evaluation, does prime-receipt tool access improve exactness over both no-tool and ordinary-calculator controls on tasks where factor structure is relevant?
+2. Can a model use `PartialBudget` correctly, preserving an unresolved cofactor rather than treating it as prime or complete?
+3. How much receipt reuse in a persistent expression graph is required before acquisition and reconstruction are amortized?
+4. Would succinct deterministic primality certificates, a stronger factor engine, or producer-supplied factors improve auditability without hiding computational cost?
+5. Which receipt fields are necessary for reliable tool use, and which merely add token/context burden?
+6. Do real software traces justify reopening the deferred radix-aware demand-driven valuation hardware service?

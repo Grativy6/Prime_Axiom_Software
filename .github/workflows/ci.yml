@@ -44,6 +44,42 @@ jobs:
           path: artifacts/build001-ci
           if-no-files-found: error
 
+  build003:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 20
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Install pinned .NET SDK
+        uses: actions/setup-dotnet@v6
+        with:
+          global-json-file: global.json
+          cache: true
+          cache-dependency-path: '**/packages.lock.json'
+
+      - name: Verify Build 003 calculator and inherited evidence
+        shell: pwsh
+        run: >-
+          & ./scripts/verify-build003.ps1
+          -OutputDirectory artifacts/build003-ci
+
+      - name: Upload Build 003 receipts
+        uses: actions/upload-artifact@v6
+        with:
+          name: build003-${{ runner.os }}-receipts
+          path: |
+            artifacts/build003-ci
+            .artifacts/build003-test-results/test-results.trx
+          include-hidden-files: true
+          if-no-files-found: error
+
   build002:
     strategy:
       fail-fast: false
