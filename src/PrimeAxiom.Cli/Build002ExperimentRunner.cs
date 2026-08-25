@@ -2170,6 +2170,7 @@ internal static class Build002ExperimentRunner
             var smoothCases = SmoothStates(width).Count;
             var coldEncoder = RepresentationAdapterHardware.BuildMagnitudeToBinaryExponent(width);
             var reconstruction = RepresentationAdapterHardware.BuildBinaryExponentToMagnitude(width);
+            var sidecar = SidecarDatapathHardware.Build(width);
             rows.Add(new Build002IngressEgressRow(
                 "BIN-FU",
                 width,
@@ -2211,13 +2212,13 @@ internal static class Build002ExperimentRunner
                 width,
                 "INGRESS",
                 "EXACT_THRESHOLD_SIDECAR_ENCODE",
-                "NOT_MEASURED",
+                sidecar.EvidenceClass,
                 cases,
-                NotMeasured,
-                NotMeasured,
-                NotMeasured,
-                "SEMANTIC_ENCODER_ONLY",
-                "All magnitude encodings are checked; acquisition hardware and its cycles remain unmeasured."));
+                cases,
+                cases,
+                checked((long)cases * sidecar.Netlist.Metrics.Nand2Static),
+                "FULL_BINARY_TO_EXACT_S4_INTEGRATED_LOAD",
+                "Every W-bit magnitude is acquired by the integrated NAND LOAD path; authoritative magnitude and exact sidecar state update together."));
         }
 
         return rows;
