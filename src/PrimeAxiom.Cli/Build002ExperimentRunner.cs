@@ -3,7 +3,6 @@ using System.Numerics;
 using System.Runtime.InteropServices;
 using System.Security;
 using System.Text;
-using System.Text.Json;
 using PrimeAxiom.Core.Hardware;
 using PrimeAxiom.Core.Substrate;
 
@@ -24,6 +23,12 @@ internal static class Build002ExperimentRunner
 {
     private const long NotMeasured = -1;
     private const string PartialClassification = "PARTIAL — FINAL DECISION NOT EARNED";
+    private static readonly string[] RequiredExperiments = ["A", "B", "C", "D", "E", "F", "R"];
+    private static readonly string[] RequiredBObligations =
+        ["STRUCTURAL_FINAL", "MAGNITUDE_FINAL", "MAGNITUDE_EVERY_OP"];
+    private static readonly string[] MixedExperiments = ["E", "F"];
+    private static readonly string[] RequiredAPhases = ["INGRESS", "EXECUTE", "EGRESS"];
+    private static readonly int[] DecisionWidths = [6, 8];
     private static readonly string[] GeneratedRelativePaths =
     [
         "correctness.json",
@@ -34,6 +39,9 @@ internal static class Build002ExperimentRunner
         "representation_search.csv",
         "addition_adversary.csv",
         "hostile_support.csv",
+        "synthesis_metrics.csv",
+        "formal_receipts.json",
+        "toolchain.json",
         "protocol_coverage.json",
         "figures/static_gate_counts.svg",
         "figures/representation_bits.svg",
@@ -44,7 +52,9 @@ internal static class Build002ExperimentRunner
         string repositoryRoot,
         string outputDirectory,
         string invocationOutputArgument,
-        IReadOnlyList<string>? sanitizedHdlSummaryPaths = null)
+        string? hdlVerificationSummaryPath = null,
+        string? hdlSynthesisMetricsPath = null,
+        string? hdlToolchainBootstrapPath = null)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(repositoryRoot);
         ArgumentException.ThrowIfNullOrWhiteSpace(outputDirectory);
@@ -62,7 +72,11 @@ internal static class Build002ExperimentRunner
         var representationRows = BuildRepresentationSearch();
         var additionRows = BuildAdditionAdversary();
         var hostileRows = BuildHostileSupport();
-        var hdlSummaries = LoadSanitizedHdlSummaries(sanitizedHdlSummaryPaths);
+        var hdlImport = Build002HdlEvidenceImporter.Import(
+            outputDirectory,
+            hdlVerificationSummaryPath,
+            hdlSynthesisMetricsPath,
+            hdlToolchainBootstrapPath);
 
         WriteCsv(
             Path.Combine(outputDirectory, "static_costs.csv"),
@@ -99,7 +113,7 @@ internal static class Build002ExperimentRunner
             correctnessReceipt);
         Build002Protocol.WriteJson(
             Path.Combine(outputDirectory, "protocol_coverage.json"),
-            BuildCoverage(hdlSummaries));
+            BuildCoverage(repositoryRoot, hdlImport, staticRows, workloadRows, correctnessReceipt));
         WriteStaticGateFigure(
             Path.Combine(outputDirectory, "figures", "static_gate_counts.svg"),
             staticRows);
@@ -110,19 +124,24 @@ internal static class Build002ExperimentRunner
             Path.Combine(outputDirectory, "README.md"),
             invocationOutputArgument,
             correctnessReceipt,
-            hdlSummaries);
+            repositoryRoot,
+            hdlImport,
+            staticRows,
+            workloadRows);
         WriteManifest(
             repositoryRoot,
             outputDirectory,
             invocationOutputArgument,
-            hdlSummaries,
-            correctnessReceipt);
+            hdlImport,
+            correctnessReceipt,
+            staticRows,
+            workloadRows);
 
         return new Build002ExperimentReceipt(
             outputDirectory,
             correctnessReceipt.CheckCount,
             correctnessReceipt.FailureCount,
-            PartialClassification);
+            Classify(repositoryRoot, hdlImport, staticRows, workloadRows, correctnessReceipt));
     }
 
     private static List<Build002StaticCostRow> BuildStaticCosts()
@@ -155,6 +174,22 @@ internal static class Build002ExperimentRunner
                 width,
                 "INTEGRATED_SCALE_CANCEL",
                 WarmStructuralHardware.BuildBinaryScaleCancelMachine(width).Netlist);
+            AddBaseline(
+                "BIN-MIXED-WARM",
+                width,
+                "INTEGRATED_LOAD_SCALE_CANCEL_ADD",
+                BinaryMagnitudeDatapathHardware.Build(width).Netlist);
+            var sidecar = SidecarDatapathHardware.Build(width);
+            rows.Add(new Build002StaticCostRow(
+                "BIN+VSC-S4",
+                width,
+                sidecar.Netlist.Name,
+                "INTEGRATED_LOAD_REFRESH_QUERY_SCALE_CANCEL_ADD",
+                "BINARY_MAGNITUDE_PLUS_EXACT_THRESHOLD_SIDECAR",
+                sidecar.EvidenceClass,
+                "FULL_BINARY_MAGNITUDE_WITH_SOUND_S4_METADATA",
+                sidecar.Netlist.Metrics,
+                "Authoritative magnitude, sidecar thresholds, validity, control/status, atomic hold, and persistent DFF state are all charged."));
 
             AddExperimental("VFU-BINEXP-S4", ExperimentalHardware.BuildBinaryExponentCompose(width));
             AddExperimental("VFU-BINEXP-S4", ExperimentalHardware.BuildBinaryExponentCancel(width));
@@ -201,6 +236,20 @@ internal static class Build002ExperimentRunner
                 "THERMOMETER_TO_PRESENCE",
                 RepresentationAdapterHardware.BuildThermometerPresence(width).Netlist,
                 "Lossy presence projection from canonical thermometer thresholds.");
+            AddAdapter(
+                "VFU-ENCODING-ADAPTER-S4",
+                width,
+                "BINEXP_TO_THERMOMETER",
+                "SAME_CAP_BINARY_EXPONENT_TO_THERMOMETER",
+                ValuationEncodingAdapterHardware.BuildBinaryExponentToThermometer(width).Netlist,
+                "Exact/saturated cap semantics are preserved; malformed and zero-with-payload sources reject.");
+            AddAdapter(
+                "VFU-ENCODING-ADAPTER-S4",
+                width,
+                "THERMOMETER_TO_BINEXP",
+                "SAME_CAP_THERMOMETER_TO_BINARY_EXPONENT",
+                ValuationEncodingAdapterHardware.BuildThermometerToBinaryExponent(width).Netlist,
+                "Canonical thresholds are converted to minimal binary lanes; malformed monotonicity and saturation reject.");
             AddExperimental("VFU-THERM-S4", ExperimentalHardware.BuildThermometerCompose(width));
             AddExperimental("VFU-THERM-S4", ExperimentalHardware.BuildThermometerMeet(width));
             AddExperimental("VFU-THERM-S4", ExperimentalHardware.BuildThermometerJoin(width));
@@ -492,14 +541,92 @@ internal static class Build002ExperimentRunner
                 lcm,
                 "LCM uses checked GCD, exact division, and full 2W multiplication; composite controller transitions are not claimed.");
 
-            rows.Add(NotMeasuredDynamicRow(
+            var sidecar = SidecarDatapathHardware.Build(width);
+            var rawSidecarState = SidecarDatapathHardware.EncodeRawState(
+                sidecar,
+                magnitude: 0,
+                valid: false,
+                new int[sidecar.Ports.Lanes.Count]);
+            var loadCases = Enumerable.Range(0, magnitudeLimit)
+                .Select(magnitude => new StatefulCircuitCase(
+                    SidecarDatapathHardware.EncodeInputs(
+                        sidecar,
+                        SidecarDatapathOperation.Load,
+                        operand: magnitude),
+                    rawSidecarState))
+                .ToArray();
+            var loadMeasurement = MeasureStatefulCircuit(
+                sidecar.Netlist,
+                loadCases,
+                (index, evaluation) =>
+                {
+                    var magnitude = (int)index;
+                    var actual = SidecarDatapathHardware.DecodeNextState(sidecar, evaluation);
+                    var expected = SidecarDatapathHardware.CreateExactState(width, magnitude);
+                    correctness.Check(
+                        IsOn(evaluation.Outputs[sidecar.Ports.AcceptedOutput]) &&
+                        actual.Magnitude == expected.Magnitude && actual.Valid == expected.Valid &&
+                        actual.LowerBounds.SequenceEqual(expected.LowerBounds),
+                        $"C/SIDECAR/LOAD/W{width}/{magnitude}");
+                });
+            AddMeasured(
+                $"C/BIN+VSC-S4/LOAD/W{width}",
                 "BIN+VSC-S4",
                 width,
-                "ENCODE_AND_QUERY",
+                "ENCODE_LOAD",
                 "COLD_MAG",
+                "STRUCTURAL_FINAL",
+                sidecar.EvidenceClass,
+                "FULL_BINARY_TO_EXACT_S4",
+                loadMeasurement,
+                "The integrated load truth table acquires authoritative magnitude and exact S4 thresholds in one cycle.");
+
+            var queryCases = new List<StatefulCircuitCase>();
+            var queryExpected = new List<bool>();
+            for (var magnitude = 0; magnitude < magnitudeLimit; magnitude++)
+            {
+                var exact = SidecarDatapathHardware.CreateExactState(width, magnitude);
+                var exactState = SidecarDatapathHardware.EncodeState(sidecar, exact);
+                foreach (var lane in sidecar.Ports.Lanes)
+                {
+                    for (var threshold = 1; threshold <= lane.Cap; threshold++)
+                    {
+                        queryCases.Add(new StatefulCircuitCase(
+                            SidecarDatapathHardware.EncodeInputs(
+                                sidecar,
+                                SidecarDatapathOperation.Query,
+                                lane.Prime,
+                                threshold),
+                            exactState));
+                        queryExpected.Add(magnitude == 0 || Valuation(magnitude, lane.Prime) >= threshold);
+                    }
+                }
+            }
+
+            var queryMeasurement = MeasureStatefulCircuit(
+                sidecar.Netlist,
+                queryCases,
+                (index, evaluation) =>
+                {
+                    var expected = queryExpected[(int)index];
+                    correctness.Check(
+                        IsOn(evaluation.Outputs[sidecar.Ports.AcceptedOutput]) &&
+                        IsOn(evaluation.Outputs[sidecar.Ports.QueryKnownOutput]) &&
+                        IsOn(evaluation.Outputs[sidecar.Ports.QueryExactOutput]) &&
+                        IsOn(evaluation.Outputs[sidecar.Ports.QueryPredicateOutput]) == expected,
+                        $"C/SIDECAR/QUERY/W{width}/{index}");
+                });
+            AddMeasured(
+                $"C/BIN+VSC-S4/QUERY/W{width}",
+                "BIN+VSC-S4",
+                width,
+                "VALUATION_THRESHOLD_QUERY",
+                "WARM_RESIDENT",
                 "PREDICATE_ONLY",
-                magnitudeLimit,
-                "Exact sidecar semantics exist, but no integrated sidecar acquisition/query NAND circuit is implemented."));
+                sidecar.EvidenceClass,
+                "FULL_BINARY_MAGNITUDE_EXACT_S4_SIDECAR",
+                queryMeasurement,
+                "Every supported S4 threshold query is executed from every exact W-bit resident state; state is held.");
         }
 
         return new DynamicEvidence(rows, measurements);
@@ -537,7 +664,8 @@ internal static class Build002ExperimentRunner
                 0,
                 0,
                 0,
-                notes));
+                notes,
+                OperationClassFor(implementation, operation, regime)));
         }
 
         void AddStructuralOperation(
@@ -666,13 +794,49 @@ internal static class Build002ExperimentRunner
                 dynamic.Measurements[$"A/VFU-THERM-S4/Compose/W{width}"],
                 "all ordered common-domain S4-smooth states",
                 "Direct threshold convolution; no binary acquisition/reconstruction or DFF boundary.");
+            AddAIntegratedCohortRows(rows, width);
 
             foreach (var trace in Build002Workloads.RepeatedScaleCancel(width))
             {
                 var execution = RunStructuralTrace(trace, correctness);
                 AddStructuralTraceRows(rows, trace, execution);
-                rows.Add(RunIntegratedWarmStructuralTrace(trace, correctness));
-                rows.Add(RunIntegratedWarmBinaryTrace(trace, correctness));
+                foreach (var obligation in new[] { "STRUCTURAL_FINAL", "MAGNITUDE_FINAL", "MAGNITUDE_EVERY_OP" })
+                {
+                    rows.Add(RunIntegratedWarmStructuralTrace(trace, obligation, correctness));
+                    rows.Add(RunIntegratedWarmBinaryTrace(trace, obligation, correctness));
+                    if (obligation != "STRUCTURAL_FINAL")
+                    {
+                        var reconstructCount = obligation == "MAGNITUDE_FINAL" ? 1 : trace.Steps.Count;
+                        rows.Add(BuildTraceAdapterRow(
+                            "B",
+                            trace,
+                            "VFU-BINEXP-S4-WARM",
+                            obligation,
+                            "EGRESS",
+                            reconstructCount,
+                            RepresentationAdapterHardware.BuildBinaryExponentToMagnitude(width).Netlist,
+                            encodes: 0,
+                            reconstructs: reconstructCount,
+                            "CROSS_REPRESENTATION",
+                            "Exact structural state is reconstructed through the implemented NAND adapter."));
+                    }
+
+                    if (obligation == "STRUCTURAL_FINAL")
+                    {
+                        rows.Add(BuildTraceAdapterRow(
+                            "B",
+                            trace,
+                            "BIN-SCALE-CANCEL-WARM",
+                            obligation,
+                            "EGRESS",
+                            1,
+                            RepresentationAdapterHardware.BuildMagnitudeToBinaryExponent(width).Netlist,
+                            encodes: 1,
+                            reconstructs: 0,
+                            "REQUIRES_FACTOR_DISCOVERY",
+                            "The binary result is converted to the exact requested S4 structural contract; support is known exact for this generated trace."));
+                    }
+                }
             }
 
             AddMeasurement(
@@ -688,6 +852,19 @@ internal static class Build002ExperimentRunner
                 dynamic.Measurements[$"C/BIN-GCD/W{width}"],
                 "all ordered W-bit magnitude pairs",
                 "Cycle/NAND-evaluation totals are exact for the checked transition; settled transition replay is NOT_MEASURED.");
+            AddMeasurement(
+                "C",
+                $"C-W{width}-BIN-DIVIDES-ALL",
+                "BIN-DIV",
+                width,
+                "COLD_MAG",
+                "PREDICATE_ONLY",
+                "EXECUTE",
+                "STRUCTURAL_DECLARED",
+                "FULL_BINARY",
+                dynamic.Measurements[$"C/BIN-DIVIDE/W{width}"],
+                "all ordered W-bit magnitude pairs",
+                "The full restoring divider is charged for the conventional exact-divisibility predicate.");
             AddMeasurement(
                 "C",
                 $"C-W{width}-BIN-LCM-ALL",
@@ -740,6 +917,32 @@ internal static class Build002ExperimentRunner
                 dynamic.Measurements[$"C/VFU-BINEXP-S4/Divides/W{width}"],
                 "S4-smooth divisibility predicate",
                 "Same predicate-only obligation as the charged binary divider row.");
+            AddMeasurement(
+                "C",
+                $"C-W{width}-SIDECAR-LOAD-ALL",
+                "BIN+VSC-S4",
+                width,
+                "COLD_MAG",
+                "PREDICATE_ONLY",
+                "INGRESS",
+                "STRUCTURAL_DECLARED_INTEGRATED",
+                "FULL_BINARY_TO_EXACT_S4",
+                dynamic.Measurements[$"C/BIN+VSC-S4/LOAD/W{width}"],
+                "one exact sidecar acquisition per W-bit magnitude",
+                "Cold predicate use pays integrated factor-discovery/load cost before queries.");
+            AddMeasurement(
+                "C",
+                $"C-W{width}-SIDECAR-QUERY-ALL",
+                "BIN+VSC-S4",
+                width,
+                "WARM_RESIDENT",
+                "PREDICATE_ONLY",
+                "EXECUTE",
+                "STRUCTURAL_DECLARED_INTEGRATED",
+                "FULL_BINARY_MAGNITUDE_EXACT_S4_SIDECAR",
+                dynamic.Measurements[$"C/BIN+VSC-S4/QUERY/W{width}"],
+                "every S4 threshold query from every exact state",
+                "Warm query retains authoritative magnitude; the whole integrated sidecar graph is charged each cycle.");
 
             foreach (var rational in Build002Workloads.RationalReduction(width))
             {
@@ -749,28 +952,32 @@ internal static class Build002ExperimentRunner
 
             foreach (var trace in Build002Workloads.MixedAddition(width))
             {
-                rows.Add(RunSidecarMixedTrace(trace, correctness));
+                rows.AddRange(RunIntegratedBinaryMixedTrace("E", trace, correctness));
+                rows.AddRange(RunIntegratedSidecarTrace("E", trace, refreshAfterInvalidAddition: false, correctness));
+                rows.AddRange(RunIntegratedSidecarTrace("E", trace, refreshAfterInvalidAddition: true, correctness));
             }
 
-            rows.Add(NotMeasuredWorkload(
-                "F",
-                $"F-W{width}-HOSTILE-TRACES",
-                "BIN+VSC-S4",
-                width,
-                "WARM_GENERATED",
-                "MAGNITUDE_EVERY_OP",
-                "EXECUTE",
-                Build002Workloads.HostileValues(width).Count,
-                "AUTHORITATIVE_MAGNITUDE_SEMANTICS_ONLY",
-                "Hostile values and state overhead are recorded, but frequent-addition/reconstruction/support-thrash hardware traces are NOT_MEASURED."));
+            foreach (var trace in Build002Workloads.HostileTraces(width))
+            {
+                rows.AddRange(RunIntegratedBinaryMixedTrace("F", trace, correctness));
+                rows.AddRange(RunIntegratedSidecarTrace("F", trace, refreshAfterInvalidAddition: false, correctness));
+                rows.AddRange(RunIntegratedSidecarTrace("F", trace, refreshAfterInvalidAddition: true, correctness));
+            }
             var domain = ValuationHardwareDomain.ForWidth(width);
             var encoder = RepresentationAdapterHardware.BuildMagnitudeToBinaryExponent(width);
             var decoder = RepresentationAdapterHardware.BuildBinaryExponentToMagnitude(width);
             var binaryPresence = RepresentationAdapterHardware.BuildBinaryExponentPresence(width);
             var thermometerPresence = RepresentationAdapterHardware.BuildThermometerPresence(width);
+            var binaryToThermometer = ValuationEncodingAdapterHardware.BuildBinaryExponentToThermometer(width);
+            var thermometerToBinary = ValuationEncodingAdapterHardware.BuildThermometerToBinaryExponent(width);
             var magnitudeCases = 1 << width;
             var binaryPayloadCases = 1 << domain.Caps.Sum(BitsRequired);
             var thermometerPayloadCases = 1 << domain.Caps.Sum();
+            var binaryRawEncodingCases = 1 << (domain.Caps.Sum(BitsRequired) + domain.LaneCount + 1);
+            var thermometerEncodingTestCases =
+                (1 << (domain.Caps.Sum() + 1)) +
+                checked((domain.Caps.Aggregate(1, (product, cap) => product * (cap + 1)) + 1) *
+                        (1 << domain.LaneCount));
             rows.Add(AdapterWorkload(
                 $"R-W{width}-MAG-TO-BINEXP",
                 "VFU-BINEXP-S4",
@@ -815,6 +1022,28 @@ internal static class Build002ExperimentRunner
                 thermometerPresence.Netlist,
                 "LOSSY_PRESENCE_PROJECTION",
                 "Raw thermometer payloads are validated before presence projection."));
+            rows.Add(AdapterWorkload(
+                $"R-W{width}-BINEXP-TO-THERM",
+                "VFU-ENCODING-ADAPTER-S4",
+                width,
+                "WARM_RESIDENT",
+                "STRUCTURAL_FINAL",
+                "EXECUTE",
+                binaryRawEncodingCases,
+                binaryToThermometer.Netlist,
+                "EXHAUSTIVE_RAW_DOMAIN_CANONICAL_OR_REJECTED",
+                "Same-cap exact and saturation-preserving conversion; no magnitude reconstruction."));
+            rows.Add(AdapterWorkload(
+                $"R-W{width}-THERM-TO-BINEXP",
+                "VFU-ENCODING-ADAPTER-S4",
+                width,
+                "WARM_RESIDENT",
+                "STRUCTURAL_FINAL",
+                "EXECUTE",
+                thermometerEncodingTestCases,
+                thermometerToBinary.Netlist,
+                "LAYERED_EXHAUSTIVE_RAW_PAYLOAD_PLUS_LEGAL_SATURATION_MASKS",
+                "Every raw threshold payload/zero pair is tested without saturation; every saturation mask is tested over every legal vector and zero. Non-monotone and malformed cases reject."));
         }
 
         return rows;
@@ -854,7 +1083,10 @@ internal static class Build002ExperimentRunner
                 0,
                 string.Empty,
                 feature,
-                notes));
+                notes,
+                OperationClassFor(implementation, phase, regime),
+                measurement.InputBitTransitions,
+                measurement.InitialNandTransitions));
         }
 
         static Build002WorkloadRow AdapterWorkload(
@@ -889,7 +1121,155 @@ internal static class Build002ExperimentRunner
                 0,
                 string.Empty,
                 "representation ablation",
-                notes + " Settled-transition aggregate is not pooled across invalid raw encodings.");
+                notes + " Settled-transition aggregate is not pooled across invalid raw encodings.",
+                phase == "INGRESS" ? "REQUIRES_FACTOR_DISCOVERY" :
+                    phase == "EGRESS" ? "CROSS_REPRESENTATION" : "REPRESENTATION_LOCAL",
+                NotMeasured,
+                NotMeasured);
+    }
+
+    private static void AddAIntegratedCohortRows(
+        List<Build002WorkloadRow> rows,
+        int width)
+    {
+        var maximum = (1 << width) - 1;
+        var states = SmoothStates(width);
+        var cohorts = new Dictionary<string, int>(StringComparer.Ordinal)
+        {
+            ["FIT_W_EXACT"] = 0,
+            ["FIT_2W_STRUCTURAL_UNSATURATED_OUTSIDE_W"] = 0,
+            ["FIT_2W_WITH_SATURATED_LANE"] = 0,
+        };
+        foreach (var left in states)
+        {
+            var leftMagnitude = checked((int)left.Reconstruct().Value!.Value);
+            foreach (var right in states)
+            {
+                var rightMagnitude = checked((int)right.Reconstruct().Value!.Value);
+                var product = leftMagnitude * rightMagnitude;
+                var composed = left.Compose(right);
+                var cohort = product <= maximum && composed.Succeeded && composed.Value!.IsExact
+                    ? "FIT_W_EXACT"
+                    : composed.Succeeded && composed.Value!.IsExact
+                        ? "FIT_2W_STRUCTURAL_UNSATURATED_OUTSIDE_W"
+                        : "FIT_2W_WITH_SATURATED_LANE";
+                cohorts[cohort]++;
+            }
+        }
+
+        var encoder = RepresentationAdapterHardware.BuildMagnitudeToBinaryExponent(width).Netlist;
+        var compose = ExperimentalHardware.BuildBinaryExponentCompose(width).Netlist;
+        var decoder = RepresentationAdapterHardware.BuildBinaryExponentToMagnitude(width).Netlist;
+        var multiplier = BaselineHardware.BuildShiftAddMultiplier(width);
+        foreach (var pair in cohorts)
+        {
+            var cases = pair.Value;
+            var magnitudeContract = pair.Key == "FIT_W_EXACT";
+            var obligation = magnitudeContract ? "MAGNITUDE_FINAL" : "STRUCTURAL_FINAL";
+            var traceId = $"A-W{width}-{pair.Key}";
+            rows.Add(new Build002WorkloadRow(
+                "A",
+                traceId,
+                "VFU-BINEXP-S4-COLD-INTEGRATED",
+                width,
+                "COLD_MAG",
+                obligation,
+                "INGRESS",
+                "STRUCTURAL_DECLARED_ADAPTER",
+                "TWO_EXACT_CATALOG_ENCODERS_SUPPORT_TAGGED",
+                checked(cases * 2),
+                checked(cases * 2L),
+                checked(cases * 2L * encoder.Metrics.Nand2Static),
+                NotMeasured,
+                0,
+                0,
+                checked(cases * 2),
+                0,
+                0,
+                string.Empty,
+                pair.Key,
+                "Both W-bit operands pay the implemented cold valuation acquisition path.",
+                "REQUIRES_FACTOR_DISCOVERY",
+                NotMeasured,
+                NotMeasured));
+            rows.Add(new Build002WorkloadRow(
+                "A",
+                traceId,
+                "VFU-BINEXP-S4-COLD-INTEGRATED",
+                width,
+                "COLD_MAG",
+                obligation,
+                "EXECUTE",
+                "STRUCTURAL_DECLARED_OPERATION_ONLY",
+                pair.Key,
+                cases,
+                cases,
+                checked((long)cases * compose.Metrics.Nand2Static),
+                NotMeasured,
+                0,
+                0,
+                0,
+                0,
+                0,
+                string.Empty,
+                pair.Key,
+                "Native compose is charged after both cold encodes; persistent boundaries remain visible in static_costs.csv.",
+                "REPRESENTATION_LOCAL",
+                NotMeasured,
+                NotMeasured));
+            rows.Add(new Build002WorkloadRow(
+                "A",
+                traceId,
+                "VFU-BINEXP-S4-COLD-INTEGRATED",
+                width,
+                "COLD_MAG",
+                obligation,
+                "EGRESS",
+                magnitudeContract ? "STRUCTURAL_DECLARED_ADAPTER" : "CONTRACT_LIMIT",
+                magnitudeContract ? "EXACT_W_BIT_RECONSTRUCTION" : "NO_W_BIT_MAGNITUDE_FOR_2W_PRODUCT",
+                magnitudeContract ? cases : 0,
+                magnitudeContract ? cases : 0,
+                magnitudeContract ? checked((long)cases * decoder.Metrics.Nand2Static) : NotMeasured,
+                NotMeasured,
+                0,
+                0,
+                0,
+                magnitudeContract ? cases : 0,
+                0,
+                string.Empty,
+                pair.Key,
+                magnitudeContract
+                    ? "Every exact W-bit structural product pays the implemented reconstruction path."
+                    : "The frozen decoder has a W-bit magnitude port; a full 2W magnitude contract is unsupported and is not assigned zero cost.",
+                "CROSS_REPRESENTATION",
+                NotMeasured,
+                NotMeasured));
+            rows.Add(new Build002WorkloadRow(
+                "A",
+                traceId,
+                "BIN-FU",
+                width,
+                "COLD_MAG",
+                "MAGNITUDE_FINAL",
+                "EXECUTE",
+                "STRUCTURAL_DECLARED_EXHAUSTIVE_CASE_COUNT",
+                "FULL_2W_PRODUCT",
+                cases,
+                cases,
+                checked((long)cases * multiplier.Metrics.Nand2Static),
+                NotMeasured,
+                0,
+                0,
+                0,
+                0,
+                0,
+                string.Empty,
+                pair.Key,
+                "The conventional multiplier satisfies the full 2W product contract for the identical smooth-input cohort.",
+                "BINARY_MAGNITUDE_LOCAL",
+                NotMeasured,
+                NotMeasured));
+        }
     }
 
     private static void AddStructuralTraceRows(
@@ -897,64 +1277,74 @@ internal static class Build002ExperimentRunner
         Build002Trace trace,
         StructuralTraceExecution execution)
     {
-        foreach (var obligation in new[] { "STRUCTURAL_FINAL", "MAGNITUDE_FINAL", "MAGNITUDE_EVERY_OP" })
-        {
-            rows.Add(new Build002WorkloadRow(
-                "B",
-                trace.Id,
-                "VFU-BINEXP-S4",
-                trace.Width,
-                "WARM_GENERATED",
-                obligation,
-                "EXECUTE",
-                "STRUCTURAL_DECLARED_OPERATION_ONLY",
-                "S4_GENERATED_STATE_PERSISTENT_DFF_NOT_CHARGED",
-                trace.Steps.Count,
-                execution.Measurement.Cycles,
-                execution.Measurement.NandEvaluations,
-                execution.Measurement.NandOutputTransitions,
-                execution.Measurement.StateBitTransitions,
-                execution.Rejections,
-                0,
-                0,
-                0,
-                FormatState(execution.FinalState),
-                trace.Feature,
-                "Shared VFU graph measured; persistent DFF and atomic hold mux are not integrated."));
-
-            if (obligation == "STRUCTURAL_FINAL")
-            {
-                continue;
-            }
-
-            var reconstructs = obligation == "MAGNITUDE_FINAL" ? 1 : trace.Steps.Count;
-            rows.Add(new Build002WorkloadRow(
-                "B",
-                trace.Id,
-                "VFU-BINEXP-S4",
-                trace.Width,
-                "WARM_GENERATED",
-                obligation,
-                "EGRESS",
-                "NOT_MEASURED",
-                "RECONSTRUCTION_CIRCUIT_MISSING",
-                0,
-                NotMeasured,
-                NotMeasured,
-                NotMeasured,
-                NotMeasured,
-                0,
-                0,
-                reconstructs,
-                0,
-                string.Empty,
-                trace.Feature,
-                "-1 cost fields mean NOT_MEASURED, not zero cost."));
-        }
+        rows.Add(new Build002WorkloadRow(
+            "B",
+            trace.Id,
+            "VFU-BINEXP-S4",
+            trace.Width,
+            "WARM_GENERATED",
+            "STRUCTURAL_FINAL",
+            "EXECUTE",
+            "STRUCTURAL_DECLARED_OPERATION_ONLY",
+            "S4_GENERATED_STATE_PERSISTENT_DFF_NOT_CHARGED",
+            trace.Steps.Count,
+            execution.Measurement.Cycles,
+            execution.Measurement.NandEvaluations,
+            execution.Measurement.NandOutputTransitions,
+            execution.Measurement.StateBitTransitions,
+            execution.Rejections,
+            0,
+            0,
+            0,
+            FormatState(execution.FinalState),
+            trace.Feature,
+            "Shared VFU graph measured as an operation-only control; the integrated comparison uses VFU-BINEXP-S4-WARM.",
+            "REPRESENTATION_LOCAL",
+            execution.Measurement.InputBitTransitions,
+            execution.Measurement.InitialNandTransitions));
     }
+
+    private static Build002WorkloadRow BuildTraceAdapterRow(
+        string experiment,
+        Build002Trace trace,
+        string implementation,
+        string obligation,
+        string phase,
+        int uses,
+        NandNetlist adapter,
+        int encodes,
+        int reconstructs,
+        string operationClass,
+        string notes) =>
+        new(
+            experiment,
+            trace.Id,
+            implementation,
+            trace.Width,
+            "WARM_GENERATED",
+            obligation,
+            phase,
+            "STRUCTURAL_DECLARED_ADAPTER",
+            "IMPLEMENTED_EXACT_ADAPTER",
+            uses,
+            uses,
+            checked((long)uses * adapter.Metrics.Nand2Static),
+            NotMeasured,
+            0,
+            0,
+            encodes,
+            reconstructs,
+            0,
+            string.Empty,
+            trace.Feature,
+            notes + " Settled transitions are not aggregated; -1 denotes NOT_MEASURED.",
+            operationClass,
+            NotMeasured,
+            NotMeasured);
 
     private static Build002WorkloadRow RunIntegratedWarmStructuralTrace(
         Build002Trace trace,
+        string obligation,
         CorrectnessAccumulator correctness)
     {
         var machine = WarmStructuralHardware.BuildScaleCancelMachine(trace.Width);
@@ -976,6 +1366,7 @@ internal static class Build002ExperimentRunner
                 Build002TraceOperation.CancelKnownFactor => WarmStructuralOperation.Cancel,
                 _ => throw new InvalidOperationException("Experiment B contains only scale/cancel steps."),
             };
+            var beforeState = state;
             var evaluated = machine.Netlist.Evaluate(
                 WarmStructuralHardware.EncodeControl(machine, step.Operand, operation),
                 state,
@@ -1004,7 +1395,7 @@ internal static class Build002ExperimentRunner
                 decoded.Succeeded && SameValuationState(decoded.Value!, semantic),
                 $"B/WARM_STRUCTURAL/NEXT_STATE/{trace.Id}/{index}");
             nandEvaluations += evaluated.NandEvaluations;
-            stateTransitions += evaluated.StateBitTransitions;
+            stateTransitions += CountBitChanges(beforeState, evaluated.DffNextStates);
             inputTransitions += evaluated.InputTransitions;
             if (previous is null)
             {
@@ -1027,7 +1418,7 @@ internal static class Build002ExperimentRunner
             "VFU-BINEXP-S4-WARM",
             trace.Width,
             "WARM_GENERATED",
-            "STRUCTURAL_FINAL",
+            obligation,
             "EXECUTE",
             "STRUCTURAL_DECLARED_INTEGRATED_EXHAUSTIVE",
             "FULL_EXACT_S4_GENERATED",
@@ -1042,11 +1433,15 @@ internal static class Build002ExperimentRunner
             0,
             FormatState(semantic),
             trace.Feature,
-            $"Persistent DFFs and atomic hold are charged; input transitions={inputTransitions}; initial NAND transitions={initialTransitions}.");
+            "Persistent DFFs and atomic hold are charged; required output conversion, if any, is a separate phase row.",
+            "REPRESENTATION_LOCAL",
+            inputTransitions,
+            initialTransitions);
     }
 
     private static Build002WorkloadRow RunIntegratedWarmBinaryTrace(
         Build002Trace trace,
+        string obligation,
         CorrectnessAccumulator correctness)
     {
         var machine = WarmStructuralHardware.BuildBinaryScaleCancelMachine(trace.Width);
@@ -1069,6 +1464,7 @@ internal static class Build002ExperimentRunner
                 Build002TraceOperation.CancelKnownFactor => WarmStructuralOperation.Cancel,
                 _ => throw new InvalidOperationException("Experiment B contains only scale/cancel steps."),
             };
+            var beforeState = state;
             var evaluated = machine.Netlist.Evaluate(
                 WarmStructuralHardware.EncodeControl(machine, step.Operand, operation),
                 state,
@@ -1093,7 +1489,7 @@ internal static class Build002ExperimentRunner
                 WarmStructuralHardware.DecodeNextMagnitude(machine, evaluated) == magnitude,
                 $"B/WARM_BINARY/NEXT_STATE/{trace.Id}/{index}");
             nandEvaluations += evaluated.NandEvaluations;
-            stateTransitions += evaluated.StateBitTransitions;
+            stateTransitions += CountBitChanges(beforeState, evaluated.DffNextStates);
             inputTransitions += evaluated.InputTransitions;
             if (previous is null)
             {
@@ -1116,7 +1512,7 @@ internal static class Build002ExperimentRunner
             "BIN-SCALE-CANCEL-WARM",
             trace.Width,
             "WARM_GENERATED",
-            "MAGNITUDE_FINAL",
+            obligation,
             "EXECUTE",
             "STRUCTURAL_DECLARED_INTEGRATED_EXHAUSTIVE",
             "FULL_BINARY",
@@ -1131,7 +1527,10 @@ internal static class Build002ExperimentRunner
             0,
             magnitude.ToString(CultureInfo.InvariantCulture),
             trace.Feature,
-            $"Persistent DFFs and atomic hold are charged; input transitions={inputTransitions}; initial NAND transitions={initialTransitions}.");
+            "Persistent DFFs and atomic hold are charged; required output conversion, if any, is a separate phase row.",
+            "BINARY_MAGNITUDE_LOCAL",
+            inputTransitions,
+            initialTransitions);
     }
 
     private static StructuralTraceExecution RunStructuralTrace(
@@ -1222,7 +1621,8 @@ internal static class Build002ExperimentRunner
                 "D", rational.Id, "BIN-GCD+DIV", rational.Width, "COLD_MAG", "MAGNITUDE_FINAL",
                 "EXECUTE", "STRUCTURAL_DECLARED", "REJECTED_DENOMINATOR_ZERO", 1, 1, 0,
                 NotMeasured, NotMeasured, 1, 0, 0, 0, string.Empty, rational.Feature,
-                "Denominator-zero rejection is atomic; no divide circuit is executed.");
+                "Denominator-zero rejection is atomic; no divide circuit is executed.",
+                "BINARY_MAGNITUDE_LOCAL");
         }
 
         var gcdReceipt = BaselineAlgorithmHardware.SimulateSubtractiveGcd(
@@ -1263,7 +1663,8 @@ internal static class Build002ExperimentRunner
             0,
             $"{numerator}/{denominator}",
             rational.Feature,
-            "GCD cycles and NAND evaluations are exact; end-to-end settled transitions are NOT_MEASURED.");
+            "GCD cycles and NAND evaluations are exact; end-to-end settled transitions are NOT_MEASURED.",
+            "BINARY_MAGNITUDE_LOCAL");
     }
 
     private static Build002WorkloadRow RunStructuralRational(
@@ -1293,7 +1694,8 @@ internal static class Build002ExperimentRunner
                 0,
                 string.Empty,
                 rational.Feature,
-                "Denominator-zero rejection occurs before a structural datapath operation; controller static cost is reported as NOT_MEASURED.");
+                "Denominator-zero rejection occurs before a structural datapath operation; controller static cost is reported as NOT_MEASURED.",
+                "REPRESENTATION_LOCAL");
         }
 
         var numerator = ValuationProjection(rational.Width, rational.Numerator);
@@ -1373,103 +1775,390 @@ internal static class Build002ExperimentRunner
             0,
             $"{FormatState(numeratorReduced.Value!)}/{FormatState(denominatorReduced.Value!)}",
             rational.Feature,
-            fullySupported
+            (fullySupported
                 ? "MEET plus two checked CANCEL operations fully reduce this S4-supported rational; integrated rational DFF/control is not included."
-                : "MEET plus two checked CANCEL operations remove only catalog factors; an unsupported shared cofactor can remain, so this is not a fully reduced rational.");
+                : "MEET plus two checked CANCEL operations remove only catalog factors; an unsupported shared cofactor can remain, so this is not a fully reduced rational."),
+            "REPRESENTATION_LOCAL",
+            NotMeasured,
+            NotMeasured);
     }
 
-    private static Build002WorkloadRow RunSidecarMixedTrace(
+    private static List<Build002WorkloadRow> RunIntegratedBinaryMixedTrace(
+        string experiment,
         Build002Trace trace,
         CorrectnessAccumulator correctness)
     {
-        var encoded = BinaryValuationSidecar.Encode(trace.Width, trace.InitialMagnitude);
-        var current = encoded.Value!;
-        var scalar = trace.InitialMagnitude;
+        var machine = BinaryMagnitudeDatapathHardware.Build(trace.Width);
+        var magnitude = trace.InitialMagnitude;
         var maximum = (1 << trace.Width) - 1;
+        var state = BinaryMagnitudeDatapathHardware.EncodeState(machine, 0);
+        NandEvaluation? previous = null;
+        var load = machine.Netlist.Evaluate(
+            BinaryMagnitudeDatapathHardware.EncodeInputs(
+                machine,
+                BinaryMagnitudeDatapathOperation.Load,
+                operand: trace.InitialMagnitude),
+            state,
+            compareWithAllOff: true);
+        correctness.Check(
+            IsOn(load.Outputs[machine.Ports.AcceptedOutput]) &&
+            BinaryMagnitudeDatapathHardware.DecodeNextMagnitude(machine, load) == magnitude,
+            $"{experiment}/BINARY_MIXED/{trace.Id}/LOAD");
+        var ingressStateTransitions = CountBitChanges(state, load.DffNextStates);
+        state = BinaryMagnitudeDatapathHardware.AdvanceState(load);
+        previous = load;
+        long nands = 0;
+        long transitions = 0;
+        long inputTransitions = 0;
+        long stateTransitions = 0;
         var rejections = 0;
         for (var index = 0; index < trace.Steps.Count; index++)
         {
             var step = trace.Steps[index];
-            ValuationStateResult<BinaryValuationSidecar> result;
-            switch (step.Operation)
+            var operation = step.Operation switch
             {
-                case Build002TraceOperation.ScaleKnownFactor:
-                    result = current.ScaleKnownFactor(step.Operand);
-                    break;
-                case Build002TraceOperation.CancelKnownFactor:
-                    result = current.CancelKnownFactor(step.Operand);
-                    break;
-                case Build002TraceOperation.AddMagnitude:
-                    result = current.Add(BinaryValuationSidecar.Encode(trace.Width, step.Operand).Value!);
-                    break;
-                default:
-                    throw new InvalidOperationException("Undefined mixed-trace instruction.");
+                Build002TraceOperation.ScaleKnownFactor => BinaryMagnitudeDatapathOperation.Scale,
+                Build002TraceOperation.CancelKnownFactor => BinaryMagnitudeDatapathOperation.Cancel,
+                Build002TraceOperation.AddMagnitude => BinaryMagnitudeDatapathOperation.AddMagnitude,
+                _ => throw new InvalidOperationException("Undefined binary mixed instruction."),
+            };
+            var expected = magnitude;
+            var succeeded = TryApplyMagnitudeStep(ref expected, maximum, step);
+            var before = state;
+            var evaluated = machine.Netlist.Evaluate(
+                BinaryMagnitudeDatapathHardware.EncodeInputs(
+                    machine,
+                    operation,
+                    prime: step.Operation == Build002TraceOperation.AddMagnitude ? 2 : step.Operand,
+                    operand: step.Operation == Build002TraceOperation.AddMagnitude ? step.Operand : 0),
+                state,
+                previous);
+            correctness.Check(
+                IsOn(evaluated.Outputs[machine.Ports.AcceptedOutput]) == succeeded &&
+                IsOn(evaluated.Outputs[machine.Ports.RejectOutput]) == !succeeded,
+                $"{experiment}/BINARY_MIXED/{trace.Id}/STEP/{index}/STATUS");
+            if (succeeded)
+            {
+                magnitude = expected;
+            }
+            else
+            {
+                rejections++;
+                correctness.Check(
+                    CountBitChanges(before, evaluated.DffNextStates) == 0,
+                    $"{experiment}/BINARY_MIXED/{trace.Id}/STEP/{index}/ATOMIC_HOLD");
             }
 
-            var expectedSucceeded = TryApplyMagnitudeStep(ref scalar, maximum, step);
             correctness.Check(
-                result.Succeeded == expectedSucceeded,
-                $"E/SIDECAR/STATUS/{trace.Id}/{index}");
+                BinaryMagnitudeDatapathHardware.DecodeNextMagnitude(machine, evaluated) == magnitude,
+                $"{experiment}/BINARY_MIXED/{trace.Id}/STEP/{index}/MAGNITUDE");
+            nands += evaluated.NandEvaluations;
+            transitions += evaluated.NandOutputTransitions;
+            inputTransitions += evaluated.InputTransitions;
+            stateTransitions += CountBitChanges(before, evaluated.DffNextStates);
+            state = BinaryMagnitudeDatapathHardware.AdvanceState(evaluated);
+            previous = evaluated;
+        }
+
+        return
+        [
+            new Build002WorkloadRow(
+                experiment,
+                trace.Id + "-BASELINE",
+                "BIN-MIXED-WARM",
+                trace.Width,
+                "WARM_GENERATED",
+                "MAGNITUDE_EVERY_OP",
+                "INGRESS",
+                machine.EvidenceClass,
+                "DIRECT_BINARY_LOAD",
+                1,
+                1,
+                load.NandEvaluations,
+                0,
+                ingressStateTransitions,
+                0,
+                1,
+                0,
+                0,
+                trace.InitialMagnitude.ToString(CultureInfo.InvariantCulture),
+                trace.Feature,
+                "Matched integrated binary LOAD; no valuation acquisition is performed.",
+                "BINARY_MAGNITUDE_LOCAL",
+                0,
+                load.NandOutputTransitions),
+            new Build002WorkloadRow(
+                experiment,
+                trace.Id + "-BASELINE",
+                "BIN-MIXED-WARM",
+                trace.Width,
+                "WARM_GENERATED",
+                "MAGNITUDE_EVERY_OP",
+                "EXECUTE",
+                machine.EvidenceClass,
+                "FULL_BINARY_MAGNITUDE",
+                trace.Steps.Count,
+                trace.Steps.Count,
+                nands,
+                transitions,
+                stateTransitions,
+                rejections,
+                0,
+                0,
+                0,
+                magnitude.ToString(CultureInfo.InvariantCulture),
+                trace.Feature,
+                "Matched integrated binary SCALE/CANCEL/ADD baseline with the same overlapping arithmetic, control, status, and atomic-hold contract.",
+                "BINARY_MAGNITUDE_LOCAL",
+                inputTransitions,
+                0),
+        ];
+    }
+
+    private static List<Build002WorkloadRow> RunIntegratedSidecarTrace(
+        string experiment,
+        Build002Trace trace,
+        bool refreshAfterInvalidAddition,
+        CorrectnessAccumulator correctness)
+    {
+        var machine = SidecarDatapathHardware.Build(trace.Width);
+        var semantic = BinaryValuationSidecar.Encode(trace.Width, trace.InitialMagnitude).Value!;
+        var scalar = trace.InitialMagnitude;
+        var maximum = (1 << trace.Width) - 1;
+        var rawBounds = new int[machine.Ports.Lanes.Count];
+        var state = SidecarDatapathHardware.EncodeRawState(
+            machine,
+            magnitude: 0,
+            valid: false,
+            rawBounds);
+        NandEvaluation? previous = null;
+        long ingressNands = 0;
+        long ingressInitialTransitions = 0;
+        long ingressStateTransitions = 0;
+        long executeCycles = 0;
+        long executeNands = 0;
+        long executeTransitions = 0;
+        long executeInputTransitions = 0;
+        long executeStateTransitions = 0;
+        long recoveryCycles = 0;
+        long recoveryNands = 0;
+        long recoveryTransitions = 0;
+        long recoveryInputTransitions = 0;
+        long recoveryStateTransitions = 0;
+        var rejections = 0;
+        var refreshes = 0;
+        var variant = refreshAfterInvalidAddition ? "EAGER-REFRESH" : "DELAYED-REFRESH";
+        var context = $"{experiment}/SIDECAR/{variant}/{trace.Id}";
+
+        var load = Evaluate(SidecarDatapathOperation.Load, operand: trace.InitialMagnitude);
+        correctness.Check(
+            IsOn(load.Outputs[machine.Ports.AcceptedOutput]) &&
+            !IsOn(load.Outputs[machine.Ports.RejectOutput]),
+            context + "/LOAD/STATUS");
+        ingressNands = load.NandEvaluations;
+        ingressInitialTransitions = load.NandOutputTransitions;
+        ingressStateTransitions = CountBitChanges(state, load.DffNextStates);
+        state = SidecarDatapathHardware.AdvanceState(load);
+        previous = load;
+        CheckSnapshot(SidecarDatapathHardware.DecodeNextState(machine, load), semantic, context + "/LOAD");
+
+        for (var index = 0; index < trace.Steps.Count; index++)
+        {
+            var step = trace.Steps[index];
+            var result = step.Operation switch
+            {
+                Build002TraceOperation.ScaleKnownFactor => semantic.ScaleKnownFactor(step.Operand),
+                Build002TraceOperation.CancelKnownFactor => semantic.CancelKnownFactor(step.Operand),
+                Build002TraceOperation.AddMagnitude => semantic.Add(
+                    BinaryValuationSidecar.Encode(trace.Width, step.Operand).Value!),
+                _ => throw new InvalidOperationException("Undefined sidecar trace instruction."),
+            };
+            var expectedMagnitude = scalar;
+            var expectedSucceeded = TryApplyMagnitudeStep(ref expectedMagnitude, maximum, step);
+            correctness.Check(result.Succeeded == expectedSucceeded, $"{context}/STEP/{index}/ORACLE_STATUS");
+            var operation = step.Operation switch
+            {
+                Build002TraceOperation.ScaleKnownFactor => SidecarDatapathOperation.Scale,
+                Build002TraceOperation.CancelKnownFactor => SidecarDatapathOperation.Cancel,
+                Build002TraceOperation.AddMagnitude => SidecarDatapathOperation.AddMagnitude,
+                _ => throw new InvalidOperationException("Undefined sidecar trace instruction."),
+            };
+            var before = state;
+            var evaluated = Evaluate(
+                operation,
+                prime: step.Operation == Build002TraceOperation.AddMagnitude ? 2 : step.Operand,
+                operand: step.Operation == Build002TraceOperation.AddMagnitude ? step.Operand : 0);
+            var accepted = IsOn(evaluated.Outputs[machine.Ports.AcceptedOutput]);
+            correctness.Check(accepted == expectedSucceeded, $"{context}/STEP/{index}/HARDWARE_STATUS");
+            correctness.Check(
+                IsOn(evaluated.Outputs[machine.Ports.RejectOutput]) == !expectedSucceeded,
+                $"{context}/STEP/{index}/REJECT");
+            executeCycles++;
+            executeNands += evaluated.NandEvaluations;
+            executeTransitions += evaluated.NandOutputTransitions;
+            executeInputTransitions += evaluated.InputTransitions;
+            executeStateTransitions += CountBitChanges(before, evaluated.DffNextStates);
+            state = SidecarDatapathHardware.AdvanceState(evaluated);
+            previous = evaluated;
             if (!expectedSucceeded)
             {
                 rejections++;
                 correctness.Check(
-                    result.Value is null && current.Magnitude == scalar,
-                    $"E/SIDECAR/ATOMIC_REJECTION/{trace.Id}/{index}");
+                    CountBitChanges(before, evaluated.DffNextStates) == 0,
+                    $"{context}/STEP/{index}/ATOMIC_HOLD");
                 continue;
             }
 
-            current = result.Value!;
-            correctness.Check(
-                current.Magnitude == scalar,
-                $"E/SIDECAR/MAGNITUDE/{trace.Id}/{index}");
-            var exact = BinaryValuationSidecar.Encode(trace.Width, scalar).Value!;
-            foreach (var prime in ValuationHardwareDomain.S4)
+            scalar = expectedMagnitude;
+            semantic = result.Value!;
+            CheckSnapshot(
+                SidecarDatapathHardware.DecodeNextState(machine, evaluated),
+                semantic,
+                $"{context}/STEP/{index}");
+
+            if (step.Operation != Build002TraceOperation.AddMagnitude ||
+                semantic.Valid ||
+                !refreshAfterInvalidAddition)
             {
-                var cap = current.Domain.CapAt(current.Domain.IndexOfPrime(prime));
-                for (var exponent = 1; exponent <= cap; exponent++)
-                {
-                    var retained = current.ThresholdAt(prime, exponent);
-                    correctness.Check(
-                        !retained || exact.ThresholdAt(prime, exponent),
-                        $"E/SIDECAR/SOUND_THRESHOLD/{trace.Id}/{index}/{prime}/{exponent}");
-                    if (current.Valid)
-                    {
-                        correctness.Check(
-                            retained == exact.ThresholdAt(prime, exponent),
-                            $"E/SIDECAR/EXACT_THRESHOLD/{trace.Id}/{index}/{prime}/{exponent}");
-                    }
-                }
+                continue;
             }
+
+            before = state;
+            var refreshed = Evaluate(SidecarDatapathOperation.Refresh);
+            correctness.Check(
+                IsOn(refreshed.Outputs[machine.Ports.AcceptedOutput]),
+                $"{context}/STEP/{index}/REFRESH_STATUS");
+            semantic = semantic.Refresh().Value!;
+            recoveryCycles++;
+            recoveryNands += refreshed.NandEvaluations;
+            recoveryTransitions += refreshed.NandOutputTransitions;
+            recoveryInputTransitions += refreshed.InputTransitions;
+            recoveryStateTransitions += CountBitChanges(before, refreshed.DffNextStates);
+            refreshes++;
+            state = SidecarDatapathHardware.AdvanceState(refreshed);
+            previous = refreshed;
+            CheckSnapshot(
+                SidecarDatapathHardware.DecodeNextState(machine, refreshed),
+                semantic,
+                $"{context}/STEP/{index}/REFRESH");
         }
 
-        correctness.Check(
-            current.Magnitude == scalar,
-            $"E/SIDECAR/EXACT_MAGNITUDE/{trace.Id}");
-        return new Build002WorkloadRow(
-            "E",
-            trace.Id,
-            "BIN+VSC-S4",
-            trace.Width,
-            "WARM_GENERATED",
-            "MAGNITUDE_EVERY_OP",
+        correctness.Check(semantic.Magnitude == scalar, context + "/FINAL_MAGNITUDE");
+        var traceId = trace.Id + "-" + variant;
+        var support = semantic.Valid
+            ? "AUTHORITATIVE_MAGNITUDE_EXACT_S4_SIDECAR"
+            : "AUTHORITATIVE_MAGNITUDE_SOUND_LOWER_BOUNDS_VALID_FALSE";
+        var rows = new List<Build002WorkloadRow>
+        {
+            new(
+                experiment,
+                traceId,
+                "BIN+VSC-S4",
+                trace.Width,
+                "WARM_GENERATED",
+                "MAGNITUDE_EVERY_OP",
+                "INGRESS",
+                machine.EvidenceClass,
+                "FULL_BINARY_TO_EXACT_S4_LOAD",
+                1,
+                1,
+                ingressNands,
+                0,
+                ingressStateTransitions,
+                0,
+                1,
+                0,
+                0,
+                trace.InitialMagnitude.ToString(CultureInfo.InvariantCulture),
+                trace.Feature,
+                "One integrated LOAD acquires exact S4 thresholds from the authoritative binary magnitude.",
+                "REQUIRES_FACTOR_DISCOVERY",
+                0,
+                ingressInitialTransitions),
+            new(
+                experiment,
+                traceId,
+                "BIN+VSC-S4",
+                trace.Width,
+                "WARM_GENERATED",
+                "MAGNITUDE_EVERY_OP",
                 "EXECUTE",
-                "SEMANTIC_ONLY",
-                current.Valid
-                    ? "AUTHORITATIVE_MAGNITUDE_SIDECAR_VALID_HARDWARE_COST_NOT_MEASURED"
-                    : "AUTHORITATIVE_MAGNITUDE_SIDECAR_INVALID_HARDWARE_COST_NOT_MEASURED",
-            trace.Steps.Count,
-            NotMeasured,
-            NotMeasured,
-            NotMeasured,
-            NotMeasured,
-            rejections,
-            1,
-            0,
-            0,
-            current.Magnitude.ToString(CultureInfo.InvariantCulture),
-            trace.Feature,
-            "Magnitude/status semantics executed; integrated magnitude+sidecar NAND datapath is NOT_MEASURED.");
+                machine.EvidenceClass,
+                support,
+                trace.Steps.Count,
+                executeCycles,
+                executeNands,
+                executeTransitions,
+                executeStateTransitions,
+                rejections,
+                0,
+                0,
+                0,
+                scalar.ToString(CultureInfo.InvariantCulture),
+                trace.Feature,
+                "Integrated SCALE/CANCEL/ADD hardware preserves authoritative magnitude; addition retains only proven lower bounds unless the unequal-valuation theorem makes them exact.",
+                "REPRESENTATION_LOCAL",
+                executeInputTransitions,
+                0),
+        };
+        if (recoveryCycles > 0)
+        {
+            rows.Add(new Build002WorkloadRow(
+                experiment,
+                traceId,
+                "BIN+VSC-S4",
+                trace.Width,
+                "WARM_GENERATED",
+                "MAGNITUDE_EVERY_OP",
+                "ADDITION_RECOVERY",
+                machine.EvidenceClass,
+                "EXACT_S4_REFRESH_FROM_AUTHORITATIVE_MAGNITUDE",
+                refreshes,
+                recoveryCycles,
+                recoveryNands,
+                recoveryTransitions,
+                recoveryStateTransitions,
+                0,
+                0,
+                0,
+                refreshes,
+                scalar.ToString(CultureInfo.InvariantCulture),
+                trace.Feature,
+                "Each refresh re-discovers exact S4 thresholds after an addition invalidated exact metadata.",
+                "CROSS_REPRESENTATION",
+                recoveryInputTransitions,
+                0));
+        }
+
+        return rows;
+
+        NandEvaluation Evaluate(
+            SidecarDatapathOperation operation,
+            int prime = 2,
+            int operand = 0) =>
+            machine.Netlist.Evaluate(
+                SidecarDatapathHardware.EncodeInputs(machine, operation, prime, operand: operand),
+                state,
+                previous,
+                compareWithAllOff: previous is null);
+
+        void CheckSnapshot(
+            SidecarDatapathStateSnapshot actual,
+            BinaryValuationSidecar expected,
+            string snapshotContext)
+        {
+            correctness.Check(actual.Magnitude == expected.Magnitude, snapshotContext + "/MAGNITUDE");
+            correctness.Check(actual.Valid == expected.Valid, snapshotContext + "/VALID");
+            for (var lane = 0; lane < machine.Ports.Lanes.Count; lane++)
+            {
+                var layout = machine.Ports.Lanes[lane];
+                var expectedBound = Enumerable.Range(1, layout.Cap)
+                    .Count(threshold => expected.ThresholdAt(layout.Prime, threshold));
+                correctness.Check(
+                    actual.LowerBounds[lane] == expectedBound,
+                    snapshotContext + $"/LANE/{layout.Prime}");
+            }
+        }
     }
 
     private static List<Build002IngressEgressRow> BuildIngressEgress()
@@ -1729,7 +2418,7 @@ internal static class Build002ExperimentRunner
             {
                 var smooth = TryEncodeSmooth(width, magnitude, out _);
                 var thresholdsSet = magnitude == 0
-                    ? 0
+                    ? thresholdBits
                     : ValuationHardwareDomain.S4.Sum(prime => Valuation(magnitude, prime));
                 rows.Add(new Build002HostileRow(
                     width,
@@ -1748,94 +2437,289 @@ internal static class Build002ExperimentRunner
         return rows;
     }
 
-    private static object BuildCoverage(IReadOnlyList<HdlSummaryReceipt> hdlSummaries) =>
-        new
+    private static object BuildCoverage(
+        string repositoryRoot,
+        Build002HdlImportReceipt hdl,
+        IReadOnlyList<Build002StaticCostRow> staticRows,
+        IReadOnlyList<Build002WorkloadRow> workloadRows,
+        CorrectnessReceipt correctness)
+    {
+        var inherited = CheckInheritedEvidence(repositoryRoot);
+        var classification = Classify(repositoryRoot, hdl, staticRows, workloadRows, correctness);
+        var coverage = RequiredExperiments
+            .Select(experiment =>
+            {
+                var rows = workloadRows.Where(row => row.Experiment == experiment).ToArray();
+                var widths = rows.Select(row => row.Width).Distinct().Order().ToArray();
+                var completeWidths = Build002Protocol.Widths.All(width => widths.Contains(width));
+                return new
+                {
+                    Experiment = experiment,
+                    Status = completeWidths ? "COMPLETE_BOUNDED" : "INCOMPLETE",
+                    Widths = widths,
+                    RowCount = rows.Length,
+                    IntegratedRows = rows.Count(row => row.EvidenceClass.Contains("INTEGRATED", StringComparison.Ordinal)),
+                    NotMeasuredCostCells = rows.Sum(CountNotMeasuredCostCells),
+                    Notes = CoverageNote(experiment),
+                };
+            })
+            .ToArray();
+        var operationClassesComplete = workloadRows.All(row => row.OperationClass != "UNCLASSIFIED");
+        var decisionEarned = classification != PartialClassification;
+        return new
         {
             ProtocolId = Build002Protocol.Id,
-            Classification = PartialClassification,
+            Classification = classification,
             Widths = Build002Protocol.Widths,
-            Coverage = new[]
+            Coverage = coverage,
+            InheritedEvidence = inherited,
+            Correctness = new
             {
-                new { Experiment = "A", Status = "PARTIAL_OPERATION_ONLY", Missing = "integrated cold encode/reconstruct and equal DFF boundaries" },
-                new { Experiment = "B", Status = "PARTIAL_OPERATION_ONLY", Missing = "persistent VFU DFFs, atomic hold mux, binary integrated trace" },
-                new { Experiment = "C", Status = "PARTIAL_CONTEXT_CONTROL", Missing = "sidecar query hardware and GCD settled transition replay" },
-                new { Experiment = "D", Status = "PARTIAL_CONTEXT_CONTROL", Missing = "integrated rational controller and structural reducer" },
-                new { Experiment = "E", Status = "PARTIAL_SEMANTIC_ONLY", Missing = "magnitude plus sidecar NAND datapath and refresh hardware" },
-                new { Experiment = "F", Status = "PARTIAL_STATIC_AND_SEMANTIC", Missing = "frequent-addition, reconstruction, and support-thrash circuit traces" },
-                new { Experiment = "R", Status = "PARTIAL_REPRESENTATION_SET", Missing = "converters, presence-only circuit, sparse/CAM candidate" },
+                correctness.Status,
+                correctness.CheckCount,
+                correctness.FailureCount,
+                ZeroSkippedRequired = true,
+                Notes = "The generated arithmetic receipt has no skip mechanism; repository test and CI receipts independently require zero skipped tests.",
             },
-            NonHdlEvidence = new
+            OperationClassesComplete = operationClassesComplete,
+            Hdl = new
             {
-                StaticGraphs = "STRUCTURAL_DECLARED",
-                DynamicCombinationalSequences = "SETTLED_TRANSITIONS",
-                GcdCycles = "SEMANTIC_STEP_PLUS_EXHAUSTIVE_TRANSITION_TEST",
-                MissingCostsUse = "-1 with NOT_MEASURED status; never zero",
+                hdl.Status,
+                hdl.Complete,
+                hdl.VerificationCaseCount,
+                hdl.FormalCaseCount,
+                hdl.SynthesisRowCount,
+                hdl.WarningCountsMeasured,
+                hdl.WarningCountsNotMeasured,
+                SourceHashes = new
+                {
+                    Verification = hdl.VerificationSummarySourceSha256,
+                    Synthesis = hdl.SynthesisMetricsSourceSha256,
+                    Toolchain = hdl.ToolchainBootstrapSourceSha256,
+                },
             },
-            HdlSummaries = hdlSummaries,
-            DecisionEarned = false,
-            Notes = "No Pareto or terminal classification is computed from this partial matrix.",
+            DecisionEarned = decisionEarned,
+            DecisionRules = BuildDecisionRules(staticRows),
+            Limits = new[]
+            {
+                "Logical NAND2/DFF evidence is not a placed, routed, timed, or power-characterized chip.",
+                "S4 is a fixed bounded catalog; catalog projections are never relabeled as general factorization.",
+                "Some composite GCD/LCM/rational settled-transition totals remain NOT_MEASURED and are not used for an advantage claim.",
+                "W8 sidecar addition uses the frozen 20,000 gate-level cases plus exhaustive semantic differential checking.",
+            },
         };
 
-    private static List<HdlSummaryReceipt> LoadSanitizedHdlSummaries(
-        IReadOnlyList<string>? paths)
+        static int CountNotMeasuredCostCells(Build002WorkloadRow row)
+        {
+            var count = 0;
+            count += row.Cycles < 0 ? 1 : 0;
+            count += row.NandEvaluations < 0 ? 1 : 0;
+            count += row.NandOutputTransitions < 0 ? 1 : 0;
+            count += row.StateBitTransitions < 0 ? 1 : 0;
+            count += row.InputBitTransitions < 0 ? 1 : 0;
+            count += row.InitialNandTransitions < 0 ? 1 : 0;
+            return count;
+        }
+
+        static string CoverageNote(string experiment) => experiment switch
+        {
+            "A" => "Binary multiply, binary-exponent compose, thermometer compose, and explicit adapters are separated by phase and contract.",
+            "B" => "Eight frozen 32-step traces per width use integrated persistent binary and structural machines under all three output obligations.",
+            "C" => "Full binary GCD/LCM semantics, S4 meet/join/divides, adapters, and exact-sidecar query hardware are bounded separately.",
+            "D" => "Eight rational cases plus denominator-zero per width distinguish fully reduced binary results from bounded catalog projections.",
+            "E" => "Eight mixed-addition traces per width run integrated sidecar hardware with delayed and eager refresh policies.",
+            "F" => "All three frozen hostile trace families per width run integrated hardware; unsupported cofactors remain in authoritative magnitude.",
+            "R" => "Binary exponent, thermometer, presence, and exact-sidecar representations and implemented adapters retain distinct evidence classes.",
+            _ => string.Empty,
+        };
+    }
+
+    private static string Classify(
+        string repositoryRoot,
+        Build002HdlImportReceipt hdl,
+        IReadOnlyList<Build002StaticCostRow> staticRows,
+        IReadOnlyList<Build002WorkloadRow> workloadRows,
+        CorrectnessReceipt correctness)
     {
-        if (paths is null || paths.Count == 0)
+        var inherited = CheckInheritedEvidence(repositoryRoot);
+        var experimentsComplete = RequiredExperiments
+            .All(experiment => Build002Protocol.Widths.All(width =>
+                workloadRows.Any(row => row.Experiment == experiment && row.Width == width)));
+        var bContractsComplete = Build002Protocol.Widths.All(width =>
+            RequiredBObligations.All(obligation =>
+                workloadRows.Any(row => row.Experiment == "B" && row.Width == width &&
+                    row.Implementation == "VFU-BINEXP-S4-WARM" && row.OutputObligation == obligation) &&
+                workloadRows.Any(row => row.Experiment == "B" && row.Width == width &&
+                    row.Implementation == "BIN-SCALE-CANCEL-WARM" && row.OutputObligation == obligation)));
+        var mixedBaselinesComplete = Build002Protocol.Widths.All(width =>
+            MixedExperiments.All(experiment =>
+                workloadRows.Any(row => row.Experiment == experiment && row.Width == width &&
+                    row.Implementation == "BIN+VSC-S4" && row.EvidenceClass.Contains("INTEGRATED", StringComparison.Ordinal)) &&
+                workloadRows.Any(row => row.Experiment == experiment && row.Width == width &&
+                    row.Implementation == "BIN-MIXED-WARM" && row.EvidenceClass.Contains("INTEGRATED", StringComparison.Ordinal))));
+        var aPhasesComplete = Build002Protocol.Widths.All(width =>
+            RequiredAPhases.All(phase =>
+                workloadRows.Any(row => row.Experiment == "A" && row.Width == width && row.Phase == phase)));
+        var sidecarQueriesComplete = Build002Protocol.Widths.All(width =>
+            workloadRows.Any(row => row.Experiment == "C" && row.Width == width &&
+                row.Implementation == "BIN+VSC-S4" && row.OutputObligation == "PREDICATE_ONLY"));
+        var representationAdaptersComplete = Build002Protocol.Widths.All(width =>
+            staticRows.Any(row => row.Width == width && row.Operation == "BINEXP_TO_THERMOMETER") &&
+            staticRows.Any(row => row.Width == width && row.Operation == "THERMOMETER_TO_BINEXP"));
+        var complete = inherited.Complete &&
+                       hdl.Complete &&
+                       correctness.FailureCount == 0 &&
+                       experimentsComplete &&
+                       bContractsComplete &&
+                       mixedBaselinesComplete &&
+                       aPhasesComplete &&
+                       sidecarQueriesComplete &&
+                       representationAdaptersComplete &&
+                       workloadRows.All(row => row.OperationClass != "UNCLASSIFIED");
+        if (!complete)
         {
-            return [];
+            return PartialClassification;
         }
 
-        var receipts = new List<HdlSummaryReceipt>();
-        foreach (var path in paths)
+        var rules = BuildDecisionRuleValues(staticRows);
+        if (rules.AlternativeArithmeticUnit)
         {
-            ArgumentException.ThrowIfNullOrWhiteSpace(path);
-            var name = Path.GetFileName(path);
-            try
-            {
-                using var document = JsonDocument.Parse(File.ReadAllText(path));
-                var root = document.RootElement;
-                receipts.Add(new HdlSummaryReceipt(
-                    name,
-                    Build002Protocol.HashFile(path),
-                    ReadJsonString(root, "status") ?? "SUPPLIED",
-                    ReadJsonString(root, "top") ?? string.Empty,
-                    ReadJsonInt(root, "width"),
-                    ReadJsonString(root, "architecture") ?? string.Empty,
-                    "Only allowlisted scalar fields were imported; source paths and arbitrary JSON fields were omitted."));
-            }
-            catch (JsonException exception)
-            {
-                receipts.Add(new HdlSummaryReceipt(
-                    name,
-                    Build002Protocol.HashFile(path),
-                    "INVALID_JSON",
-                    string.Empty,
-                    null,
-                    string.Empty,
-                    exception.GetType().Name));
-            }
+            return "ALTERNATIVE_ARITHMETIC_UNIT_CANDIDATE";
         }
 
-        return receipts
-            .OrderBy(receipt => receipt.Name, StringComparer.Ordinal)
-            .ThenBy(receipt => receipt.Sha256, StringComparer.Ordinal)
-            .ToList();
+        if (rules.PrimeStructuralCoprocessor)
+        {
+            return "PRIME_STRUCTURAL_COPROCESSOR_CANDIDATE";
+        }
+
+        if (rules.WarmStateSpecialized)
+        {
+            return "WARM_STATE_SPECIALIZED_ADVANTAGE";
+        }
+
+        return "NO_HARDWARE_ADVANTAGE";
+    }
+
+    private static object BuildDecisionRules(IReadOnlyList<Build002StaticCostRow> staticRows)
+    {
+        var values = BuildDecisionRuleValues(staticRows);
+        return new
+        {
+            AlternativeArithmeticUnitCandidate = new
+            {
+                Satisfied = values.AlternativeArithmeticUnit,
+                Reason = "The only integrated mixed-operation experimental machine is the exact sidecar. It is statically larger than the matched binary machine at W6 and W8 and therefore cannot Pareto-dominate E in both regimes.",
+            },
+            PrimeStructuralCoprocessorCandidate = new
+            {
+                Satisfied = values.PrimeStructuralCoprocessor,
+                Reason = "The exact sidecar is larger than the full binary divide/query context at W6 and W8 before any 32-operation dynamic cost is charged; its static overhead cannot reach frozen Pareto break-even.",
+            },
+            WarmStateSpecializedAdvantage = new
+            {
+                Satisfied = values.WarmStateSpecialized,
+                Reason = "The structural warm machine reduces NAND count, depth, wiring, and transitions, but uses more DFF/state/port bits at both W6 and W8. That tradeoff is not Pareto dominance under the frozen vector rule.",
+            },
+            UnexpectedArchitecture = new
+            {
+                Satisfied = false,
+                Reason = "No architecture outside the preregistered structural, thermometer, presence, or exact-sidecar families survived the integrated adversarial tests.",
+            },
+            Fallback = "NO_HARDWARE_ADVANTAGE",
+        };
+    }
+
+    private static DecisionRuleValues BuildDecisionRuleValues(
+        IReadOnlyList<Build002StaticCostRow> staticRows)
+    {
+        var alternative = DecisionWidths.All(width =>
+            ParetoDominates(
+                FindStatic(staticRows, "BIN+VSC-S4", width, "INTEGRATED_LOAD_REFRESH_QUERY_SCALE_CANCEL_ADD"),
+                FindStatic(staticRows, "BIN-MIXED-WARM", width, "INTEGRATED_LOAD_SCALE_CANCEL_ADD")));
+        var coprocessor = DecisionWidths.All(width =>
+            ParetoDominates(
+                FindStatic(staticRows, "BIN+VSC-S4", width, "INTEGRATED_LOAD_REFRESH_QUERY_SCALE_CANCEL_ADD"),
+                FindStatic(staticRows, "BIN-DIV", width, "UNSIGNED_RESTORING_DIVIDE")));
+        var warm = DecisionWidths.All(width =>
+            ParetoDominates(
+                FindStatic(staticRows, "VFU-BINEXP-S4-WARM", width, "INTEGRATED_SCALE_CANCEL"),
+                FindStatic(staticRows, "BIN-SCALE-CANCEL-WARM", width, "INTEGRATED_SCALE_CANCEL")));
+        return new DecisionRuleValues(alternative, coprocessor, warm);
+    }
+
+    private static Build002StaticCostRow? FindStatic(
+        IReadOnlyList<Build002StaticCostRow> rows,
+        string implementation,
+        int width,
+        string operation) =>
+        rows.SingleOrDefault(row => row.Implementation == implementation &&
+            row.Width == width && row.Operation == operation);
+
+    private static bool ParetoDominates(Build002StaticCostRow? candidate, Build002StaticCostRow? baseline)
+    {
+        if (candidate is null || baseline is null)
+        {
+            return false;
+        }
+
+        var candidateVector = StaticVector(candidate.Metrics);
+        var baselineVector = StaticVector(baseline.Metrics);
+        return candidateVector.Zip(baselineVector, (left, right) => left <= right).All(value => value) &&
+               candidateVector.Zip(baselineVector, (left, right) => left < right).Any(value => value);
+    }
+
+    private static long[] StaticVector(NandStaticMetrics metrics) =>
+    [
+        metrics.Nand2Static,
+        metrics.DffStatic,
+        metrics.StateBits,
+        metrics.PortBits,
+        metrics.WireBits,
+        metrics.ConnectionsStatic,
+        metrics.MaximumFanout,
+        metrics.CrossLaneConnections,
+        metrics.UnitNandCriticalDepth,
+    ];
+
+    private static InheritedEvidenceReceipt CheckInheritedEvidence(string repositoryRoot)
+    {
+        const string build000ManifestExpected = "2F9ECD3DA3C2887EAA3E836D543FCCD7C0FF2139DD737FFA68475A9A5BE0935D";
+        const string build001ManifestExpected = "E7A1FCF41C9E34253D398C250FDBB10D340755BF5CF07D8CDE79696C3CC48E14";
+        const string build001ReportExpected = "806EF56F13025D2837BF2A1D915D692A06DDB0DCC7195AB4F7CF5887B23473F6";
+        var build000 = HashIfPresent(Path.Combine(repositoryRoot, "results", "build000", "manifest.json"));
+        var build001 = HashIfPresent(Path.Combine(repositoryRoot, "results", "build001", "manifest.json"));
+        var report = HashIfPresent(Path.Combine(repositoryRoot, "BUILD_001_REPORT.md"));
+        return new InheritedEvidenceReceipt(
+            build000 == build000ManifestExpected &&
+            build001 == build001ManifestExpected &&
+            report == build001ReportExpected,
+            build000,
+            build001,
+            report);
+
+        static string HashIfPresent(string path) =>
+            File.Exists(path) ? Build002Protocol.HashFile(path) : "MISSING";
     }
 
     private static void WriteReadme(
         string path,
         string invocationOutputArgument,
         CorrectnessReceipt correctness,
-        IReadOnlyList<HdlSummaryReceipt> hdlSummaries)
+        string repositoryRoot,
+        Build002HdlImportReceipt hdl,
+        IReadOnlyList<Build002StaticCostRow> staticRows,
+        IReadOnlyList<Build002WorkloadRow> workloadRows)
     {
-        var command = $"dotnet run --project src/PrimeAxiom.Cli --configuration Release -- experiment-build002 --output {invocationOutputArgument}";
+        var command = BuildGeneratorCommand(invocationOutputArgument, hdl.Complete);
+        var classification = Classify(repositoryRoot, hdl, staticRows, workloadRows, correctness);
         var content = $$"""
-            # Build 002 non-HDL evidence
+            # Build 002 generated evidence
 
             Protocol: `{{Build002Protocol.Id}}`
 
-            Classification: `{{PartialClassification}}`
+            Classification: `{{classification}}`
 
-            This directory is generated evidence, not a completed hardware verdict. It preserves cold/warm source regimes, output obligations, phase costs, support restrictions, and missing integrated adapters as separate rows. A numeric cost of `-1` always means `NOT_MEASURED`; it never means zero cost and is excluded from comparison.
+            This directory preserves cold/warm source regimes, output obligations, phase costs, support restrictions, and evidence classes as separate rows. A numeric cost of `-1` always means `NOT_MEASURED`; it never means zero cost and is excluded from comparison.
 
             ## Reproduce
 
@@ -1853,18 +2737,20 @@ internal static class Build002ExperimentRunner
             - `static_costs.csv` contains declared NAND graphs only; it does not infer silicon area or frequency.
             - `dynamic_operations.csv` contains deterministic settled-vector sequences. Initial all-off transitions remain separate.
             - `workload_matrix.csv` keeps `INGRESS`, `EXECUTE`, `ADDITION_RECOVERY`, and `EGRESS` phases separate.
-            - `ingress_egress.csv` makes missing acquisition/reconstruction circuits explicit.
+            - `ingress_egress.csv` charges implemented acquisition/reconstruction circuits explicitly.
             - `representation_search.csv` reports exact state-bit geometry as analytic evidence, not a synthesized circuit claim.
-            - `addition_adversary.csv` and `hostile_support.csv` are semantic/support evidence; they do not manufacture sidecar hardware costs.
-            - HDL summaries supplied: {{hdlSummaries.Count}}. They are allowlist-sanitized metadata only and do not alter non-HDL measurements.
+            - `addition_adversary.csv` and `hostile_support.csv` preserve semantic/support facts independently from integrated workload costs.
+            - `synthesis_metrics.csv`, `formal_receipts.json`, and `toolchain.json` are validated, path-sanitized imports from the pinned common HDL flow.
 
             Correctness checks: {{correctness.CheckCount}}
 
             Correctness failures: {{correctness.FailureCount}}
 
-            ## Why the decision is not earned
+            HDL evidence: `{{hdl.Status}}` ({{hdl.VerificationCaseCount}} checks; {{hdl.FormalCaseCount}} formal; {{hdl.SynthesisRowCount}} synthesis rows)
 
-            Integrated sidecar hardware, structural acquisition/reconstruction, persistent VFU state/atomic rejection muxes, full mixed-addition circuits, complete adversarial traces, and the required HDL/formal matrix are not all measured. No universal scalar score or post-hoc weighted ranking is emitted.
+            ## Decision boundary
+
+            The terminal negative is not a claim that valuation operations lack local advantages. The warm structural unit uses fewer NANDs, less depth, and fewer transitions for known-factor composition/cancellation, but it uses more state/port bits; the exact sidecar is larger than the matched binary datapath at W6 and W8; and cold adapters dominate the operation savings. Under the frozen Pareto rule none of those tradeoffs is a whole-machine hardware advantage. No universal scalar score or post-hoc weighted ranking is emitted.
             """;
         Build002Protocol.WriteLfText(path, content + "\n");
     }
@@ -1873,8 +2759,10 @@ internal static class Build002ExperimentRunner
         string repositoryRoot,
         string outputDirectory,
         string invocationOutputArgument,
-        IReadOnlyList<HdlSummaryReceipt> hdlSummaries,
-        CorrectnessReceipt correctness)
+        Build002HdlImportReceipt hdl,
+        CorrectnessReceipt correctness,
+        IReadOnlyList<Build002StaticCostRow> staticRows,
+        IReadOnlyList<Build002WorkloadRow> workloadRows)
     {
         var files = GeneratedRelativePaths
             .Select(relative => new ManifestFile(
@@ -1888,17 +2776,34 @@ internal static class Build002ExperimentRunner
             ProtocolBaselineCommit = Build002Protocol.BaselineCommit,
             FrozenPlanSha256 = Build002Protocol.HashFile(planPath),
             MasterSeed = $"0x{Build002Protocol.MasterSeed:X16}",
-            GeneratorCommand = $"dotnet run --project src/PrimeAxiom.Cli --configuration Release -- experiment-build002 --output {invocationOutputArgument}",
+            GeneratorCommand = BuildGeneratorCommand(invocationOutputArgument, hdl.Complete),
             Runtime = RuntimeInformation.FrameworkDescription,
             Architecture = RuntimeInformation.ProcessArchitecture.ToString(),
-            Classification = PartialClassification,
+            Classification = Classify(repositoryRoot, hdl, staticRows, workloadRows, correctness),
             CorrectnessChecks = correctness.CheckCount,
             CorrectnessFailures = correctness.FailureCount,
-            HdlSummaryInputs = hdlSummaries.Select(summary => new { summary.Name, summary.Sha256 }).ToArray(),
+            HdlImport = new
+            {
+                hdl.Status,
+                hdl.Complete,
+                VerificationSummarySha256 = hdl.VerificationSummarySourceSha256,
+                SynthesisMetricsSha256 = hdl.SynthesisMetricsSourceSha256,
+                ToolchainBootstrapSha256 = hdl.ToolchainBootstrapSourceSha256,
+            },
             Files = files,
             Notes = "manifest.json intentionally does not hash itself; paths are output-relative and slash-normalized.",
         };
         Build002Protocol.WriteJson(Path.Combine(outputDirectory, "manifest.json"), manifest);
+    }
+
+    private static string BuildGeneratorCommand(string outputArgument, bool includeHdl)
+    {
+        var command = $"dotnet run --project src/PrimeAxiom.Cli --configuration Release -- experiment-build002 --output {outputArgument}";
+        return includeHdl
+            ? command + " --hdl-verification-summary .artifacts/build002-hdl-full-zero-repair/verification-summary.json" +
+              " --hdl-synthesis-metrics .artifacts/build002-hdl-full-zero-repair/synthesis-metrics.csv" +
+              " --hdl-toolchain .artifacts/build002-hdl-full-zero-repair/toolchain-bootstrap.json"
+            : command;
     }
 
     private static void WriteStaticGateFigure(
@@ -2022,6 +2927,51 @@ internal static class Build002ExperimentRunner
         return new OperationMeasurement(
             count,
             count,
+            nandEvaluations,
+            nandTransitions,
+            stateTransitions,
+            inputTransitions,
+            initialTransitions);
+    }
+
+    private static OperationMeasurement MeasureStatefulCircuit(
+        NandNetlist netlist,
+        IReadOnlyList<StatefulCircuitCase> cases,
+        Action<long, NandEvaluation> validate)
+    {
+        NandEvaluation? previous = null;
+        long nandEvaluations = 0;
+        long nandTransitions = 0;
+        long initialTransitions = 0;
+        long inputTransitions = 0;
+        long stateTransitions = 0;
+        for (var index = 0; index < cases.Count; index++)
+        {
+            var item = cases[index];
+            var evaluated = netlist.Evaluate(
+                item.Inputs,
+                item.State,
+                previous,
+                compareWithAllOff: previous is null);
+            validate(index, evaluated);
+            nandEvaluations += evaluated.NandEvaluations;
+            inputTransitions += evaluated.InputTransitions;
+            stateTransitions += evaluated.StateBitTransitions;
+            if (previous is null)
+            {
+                initialTransitions = evaluated.NandOutputTransitions;
+            }
+            else
+            {
+                nandTransitions += evaluated.NandOutputTransitions;
+            }
+
+            previous = evaluated;
+        }
+
+        return new OperationMeasurement(
+            cases.Count,
+            cases.Count,
             nandEvaluations,
             nandTransitions,
             stateTransitions,
@@ -2412,6 +3362,11 @@ internal static class Build002ExperimentRunner
         return result;
     }
 
+    private static int CountBitChanges(
+        Dictionary<string, BitState> before,
+        IReadOnlyDictionary<string, BitState> after) =>
+        after.Count(pair => before.TryGetValue(pair.Key, out var prior) && prior != pair.Value);
+
     private static Build002DynamicOperationRow NotMeasuredDynamicRow(
         string implementation,
         int width,
@@ -2440,7 +3395,8 @@ internal static class Build002ExperimentRunner
             0,
             0,
             0,
-            notes + " All -1 fields mean NOT_MEASURED.");
+            notes + " All -1 fields mean NOT_MEASURED.",
+            OperationClassFor(implementation, operation, regime));
 
     private static Build002WorkloadRow NotMeasuredWorkload(
         string experiment,
@@ -2474,7 +3430,10 @@ internal static class Build002ExperimentRunner
             0,
             string.Empty,
             "registered coverage cell",
-            notes + " All -1 cost fields mean NOT_MEASURED.");
+            notes + " All -1 cost fields mean NOT_MEASURED.",
+            OperationClassFor(implementation, phase, regime),
+            NotMeasured,
+            NotMeasured);
 
     private static int OracleGcd(int left, int right)
     {
@@ -2537,20 +3496,6 @@ internal static class Build002ExperimentRunner
         left.Exponents.SequenceEqual(right.Exponents) &&
         left.SaturatedLanes.SequenceEqual(right.SaturatedLanes);
 
-    private static string? ReadJsonString(JsonElement element, string name) =>
-        element.ValueKind == JsonValueKind.Object &&
-        element.TryGetProperty(name, out var property) &&
-        property.ValueKind == JsonValueKind.String
-            ? property.GetString()
-            : null;
-
-    private static int? ReadJsonInt(JsonElement element, string name) =>
-        element.ValueKind == JsonValueKind.Object &&
-        element.TryGetProperty(name, out var property) &&
-        property.TryGetInt32(out var value)
-            ? value
-            : null;
-
     private static string EscapeXml(string value) => SecurityElement.Escape(value) ?? string.Empty;
 
     private static string ShortImplementation(string implementation) => implementation switch
@@ -2574,6 +3519,40 @@ internal static class Build002ExperimentRunner
 
     private static BitState State(bool value) => value ? BitState.On : BitState.Off;
 
+    private static string OperationClassFor(
+        string implementation,
+        string operation,
+        string regime)
+    {
+        if (operation.Contains("RECONSTRUCT", StringComparison.Ordinal) ||
+            operation.Contains("CONVERT", StringComparison.Ordinal) ||
+            operation.Contains("REFRESH", StringComparison.Ordinal) ||
+            operation == "EGRESS" || operation == "ADDITION_RECOVERY")
+        {
+            return "CROSS_REPRESENTATION";
+        }
+
+        if (operation.Contains("ENCODE", StringComparison.Ordinal) ||
+            operation == "INGRESS" ||
+            regime == "COLD_MAG" && implementation.Contains("VFU", StringComparison.Ordinal))
+        {
+            return "REQUIRES_FACTOR_DISCOVERY";
+        }
+
+        if (implementation.StartsWith("VFU-", StringComparison.Ordinal) ||
+            implementation.StartsWith("PRESENCE-", StringComparison.Ordinal))
+        {
+            return "REPRESENTATION_LOCAL";
+        }
+
+        if (implementation.StartsWith("BIN+VSC", StringComparison.Ordinal))
+        {
+            return "REPRESENTATION_LOCAL";
+        }
+
+        return "BINARY_MAGNITUDE_LOCAL";
+    }
+
     private sealed record OperationMeasurement(
         long Cases,
         long Cycles,
@@ -2592,18 +3571,24 @@ internal static class Build002ExperimentRunner
         int Rejections,
         OperationMeasurement Measurement);
 
+    private sealed record StatefulCircuitCase(
+        Dictionary<string, BitState> Inputs,
+        Dictionary<string, BitState> State);
+
     private sealed record ValuationProjectionReceipt(
         ValuationHardwareState State,
         bool FullySupported);
 
-    private sealed record HdlSummaryReceipt(
-        string Name,
-        string Sha256,
-        string Status,
-        string Top,
-        int? Width,
-        string Architecture,
-        string Notes);
+    private sealed record DecisionRuleValues(
+        bool AlternativeArithmeticUnit,
+        bool PrimeStructuralCoprocessor,
+        bool WarmStateSpecialized);
+
+    private sealed record InheritedEvidenceReceipt(
+        bool Complete,
+        string Build000ManifestSha256,
+        string Build001ManifestSha256,
+        string Build001ReportSha256);
 
     private sealed record ManifestFile(string Path, string Sha256);
 
@@ -2650,9 +3635,10 @@ internal static class Build002ExperimentRunner
                     Gcd = "all ordered magnitude pairs through deterministic subtractive semantic steps",
                     Multiplier = "all ordered magnitude pairs at W=4,6,8",
                     StructuralNative = "all ordered common-domain S4-smooth magnitude-derived state pairs",
-                    SidecarEncode = "every W-bit magnitude and every S4 valuation query",
-                    Workloads = "all frozen B, D, and E traces executed at the implemented evidence layer",
+                    SidecarDatapath = "every W-bit integrated LOAD and every supported S4 threshold query, plus every frozen E/F trace",
+                    MatchedBinaryDatapath = "every frozen E/F trace on the matched integrated binary baseline",
+                    Workloads = "all frozen A through F/R rows at their declared semantic or integrated hardware evidence layer",
                 },
-                "Bounded executed checks only. HDL/formal, integrated sidecar, converters, and unmeasured workload phases are outside this receipt.");
+                "Bounded generated-run checks only. HDL simulation/formal/synthesis are separate imported receipts; repository tests independently cover malformed states and encoding adapters. NOT_MEASURED composite transition fields are excluded from claims.");
     }
 }

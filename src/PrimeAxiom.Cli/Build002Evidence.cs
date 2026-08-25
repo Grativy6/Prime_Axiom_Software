@@ -81,11 +81,12 @@ internal sealed record Build002DynamicOperationRow(
     long Encodes,
     long Reconstructs,
     long Refreshes,
-    string Notes)
+    string Notes,
+    string OperationClass = "UNCLASSIFIED")
 {
     public static IReadOnlyList<string> Headers { get; } =
     [
-        "protocol_id", "implementation", "width", "operation", "regime",
+        "protocol_id", "implementation", "width", "operation", "operation_class", "regime",
         "output_obligation", "evidence_class", "support_status", "cases", "instructions",
         "cycles", "nand_evaluations", "nand_output_transitions", "state_bit_transitions",
         "input_bit_transitions", "initial_nand_transitions", "rejections", "encodes",
@@ -98,6 +99,7 @@ internal sealed record Build002DynamicOperationRow(
         Implementation,
         Build002Evidence.Number(Width),
         Operation,
+        OperationClass,
         Regime,
         OutputObligation,
         EvidenceClass,
@@ -139,14 +141,18 @@ internal sealed record Build002WorkloadRow(
     long Refreshes,
     string FinalValue,
     string Feature,
-    string Notes)
+    string Notes,
+    string OperationClass = "UNCLASSIFIED",
+    long InputBitTransitions = -1,
+    long InitialNandTransitions = -1)
 {
     public static IReadOnlyList<string> Headers { get; } =
     [
         "protocol_id", "experiment", "trace_id", "implementation", "width", "regime",
-        "output_obligation", "phase", "evidence_class", "support_status", "operations",
+        "output_obligation", "phase", "operation_class", "evidence_class", "support_status", "operations",
         "cycles", "nand_evaluations", "nand_output_transitions", "state_bit_transitions",
-        "rejections", "encodes", "reconstructs", "refreshes", "final_value", "feature", "notes",
+        "input_bit_transitions", "initial_nand_transitions", "rejections", "encodes",
+        "reconstructs", "refreshes", "final_value", "feature", "notes",
     ];
 
     public IReadOnlyList<string> ToCsv() =>
@@ -159,6 +165,7 @@ internal sealed record Build002WorkloadRow(
         Regime,
         OutputObligation,
         Phase,
+        OperationClass,
         EvidenceClass,
         SupportStatus,
         Build002Evidence.Number(Operations),
@@ -166,6 +173,8 @@ internal sealed record Build002WorkloadRow(
         Build002Evidence.Number(NandEvaluations),
         Build002Evidence.Number(NandOutputTransitions),
         Build002Evidence.Number(StateBitTransitions),
+        Build002Evidence.Number(InputBitTransitions),
+        Build002Evidence.Number(InitialNandTransitions),
         Build002Evidence.Number(Rejections),
         Build002Evidence.Number(Encodes),
         Build002Evidence.Number(Reconstructs),

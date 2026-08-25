@@ -204,6 +204,60 @@ internal static class Build002Workloads
             .ToArray();
     }
 
+    public static IReadOnlyList<Build002Trace> HostileTraces(int width)
+    {
+        ValidateWidth(width);
+        var hostile = HostileValues(width)
+            .Select(item => item.Magnitude)
+            .Where(value => value > 0)
+            .DefaultIfEmpty(Math.Min(11, (1 << width) - 1))
+            .ToArray();
+        var frequentAddition = Enumerable.Range(0, 32)
+            .Select(index => new Build002TraceStep(
+                Build002TraceOperation.AddMagnitude,
+                hostile[index % hostile.Length]))
+            .ToArray();
+        var constantReconstruction = Repeat(
+            [Scale(2), new Build002TraceStep(Build002TraceOperation.AddMagnitude, hostile[0]), Cancel(2), Scale(3)],
+            8);
+        var changingSupport = Enumerable.Range(0, 8)
+            .SelectMany(index => new[]
+            {
+                new Build002TraceStep(Build002TraceOperation.AddMagnitude, hostile[index % hostile.Length]),
+                Scale(Catalog[index % Catalog.Length]),
+                Cancel(Catalog[(index + 1) % Catalog.Length]),
+                new Build002TraceStep(Build002TraceOperation.AddMagnitude, hostile[(index + 1) % hostile.Length]),
+            })
+            .ToArray();
+        return
+        [
+            new Build002Trace(
+                "F",
+                $"F-W{width}-FREQUENT-ADDITION",
+                width,
+                0,
+                frequentAddition,
+                0,
+                "frequent arbitrary additions of unsupported-support values"),
+            new Build002Trace(
+                "F",
+                $"F-W{width}-MAGNITUDE-EVERY-OP",
+                width,
+                1,
+                constantReconstruction,
+                0,
+                "constant exact magnitude obligation across support-changing steps"),
+            new Build002Trace(
+                "F",
+                $"F-W{width}-SUPPORT-THRASH",
+                width,
+                1,
+                changingSupport,
+                0,
+                "rapidly changing catalog and unsupported factor support"),
+        ];
+    }
+
     private static Build002Trace Mixed(
         int width,
         int index,

@@ -123,7 +123,9 @@ internal static class CommandLine
     private static int RunBuild002Experiment(string[] args)
     {
         var output = "results/build002";
-        var hdlSummaries = new List<string>();
+        string? hdlVerificationSummary = null;
+        string? hdlSynthesisMetrics = null;
+        string? hdlToolchainBootstrap = null;
         for (var index = 0; index < args.Length; index++)
         {
             switch (args[index])
@@ -131,8 +133,14 @@ internal static class CommandLine
                 case "--output" when index + 1 < args.Length:
                     output = args[++index];
                     break;
-                case "--hdl-summary" when index + 1 < args.Length:
-                    hdlSummaries.Add(Path.GetFullPath(args[++index]));
+                case "--hdl-verification-summary" when index + 1 < args.Length:
+                    hdlVerificationSummary = Path.GetFullPath(args[++index]);
+                    break;
+                case "--hdl-synthesis-metrics" when index + 1 < args.Length:
+                    hdlSynthesisMetrics = Path.GetFullPath(args[++index]);
+                    break;
+                case "--hdl-toolchain" when index + 1 < args.Length:
+                    hdlToolchainBootstrap = Path.GetFullPath(args[++index]);
                     break;
                 default:
                     Console.Error.WriteLine($"Unknown Build 002 experiment option: {args[index]}");
@@ -145,7 +153,9 @@ internal static class CommandLine
             repositoryRoot,
             Path.GetFullPath(output),
             output,
-            hdlSummaries);
+            hdlVerificationSummary,
+            hdlSynthesisMetrics,
+            hdlToolchainBootstrap);
         Console.WriteLine($"Wrote Build 002 evidence to {receipt.OutputDirectory}");
         Console.WriteLine(
             $"Checks: {receipt.CheckCount.ToString(CultureInfo.InvariantCulture)}; " +
@@ -167,6 +177,6 @@ internal static class CommandLine
         Console.WriteLine("  demo");
         Console.WriteLine("  experiment [--output DIRECTORY] [--skip-benchmarks]");
         Console.WriteLine("  experiment-build001 [--output DIRECTORY] [--skip-benchmarks]");
-        Console.WriteLine("  experiment-build002 [--output DIRECTORY] [--hdl-summary FILE]...");
+        Console.WriteLine("  experiment-build002 [--output DIRECTORY] [--hdl-verification-summary FILE] [--hdl-synthesis-metrics FILE] [--hdl-toolchain FILE]");
     }
 }
