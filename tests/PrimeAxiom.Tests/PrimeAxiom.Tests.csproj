@@ -22,6 +22,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\PrimeAxiom.Core\PrimeAxiom.Core.csproj" />
+    <ProjectReference Include="..\..\src\PrimeAxiom.Cli\PrimeAxiom.Cli.csproj" />
   </ItemGroup>
 
 </Project>

@@ -1016,6 +1016,12 @@
           "xunit.extensibility.core": "[2.5.3]"
         }
       },
+      "primeaxiom.cli": {
+        "type": "Project",
+        "dependencies": {
+          "PrimeAxiom.Core": "[1.0.0, )"
+        }
+      },
       "primeaxiom.core": {
         "type": "Project"
       }
