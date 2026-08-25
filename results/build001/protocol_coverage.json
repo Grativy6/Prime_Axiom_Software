@@ -1,0 +1,46 @@
+{
+  "Schema": "prime-axiom-build001-protocol-coverage-v1",
+  "FrozenPlanSha256": "4A79873ADCBE477944FFBE1D90AD0969AD99560AA0C014F3CB1DD8639FF9DDEF",
+  "Status": "PILOT_SUBSET_COMPLETE_FULL_CONFIRMATION_NOT_RUN",
+  "Executed": {
+    "WorkloadFamilies": [
+      "A",
+      "D",
+      "M",
+      "T",
+      "X"
+    ],
+    "WorkloadIds": [
+      "A010_PILOT",
+      "D010_PILOT",
+      "M010_PILOT",
+      "T010_PILOT",
+      "X020_PILOT"
+    ],
+    "ConfigurationRows": 194,
+    "BankSizes": [
+      0,
+      4,
+      8,
+      16,
+      32
+    ],
+    "SourceMode": "MAG",
+    "FunctionalExponentWidth": 16,
+    "PilotReplicates": 1,
+    "Output": "magnitude-final or predicate"
+  },
+  "NotExecuted": [
+    "Frozen 1,800-trace confirmation matrix",
+    "FACT and BANK_CERT source-mode replay",
+    "five functional widths and eight confirmation replicates",
+    "frozen exhaustive semantic domains and raw-encoding/status enumeration",
+    "at least 10,000 randomized cases per important cell and 256 mixed sequences of length 64",
+    "executable SPARSE_FULL replay and true Build 000 sparse-operation cost replay",
+    "registered SplitMix64/FNV trace namespaces; the exploratory pilot uses seeded .NET Random under the recorded runtime",
+    "complete MANAGED/STRUCTURAL Pareto profiles",
+    "third-party PARI/FLINT/FriCAS/GMP performance baselines",
+    "hardware elaboration and synthesis"
+  ],
+  "Consequence": "Pilot receipts may locate mechanisms and failures but cannot earn a terminal Build 001 decision under the unmet frozen stop rule."
+}

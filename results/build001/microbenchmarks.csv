@@ -1,0 +1,7 @@
+benchmark,iterations_per_trial,trials,median_ns_per_operation,min_ns_per_operation,max_ns_per_operation,claim_ceiling
+host_bigint_multiply_rough,20000,7,119.295,71.040,271.690,One managed implementation and host; not hardware latency or a population claim
+hybrid_multiply_smooth_bank8,2000,7,13895.200,12229.700,15872.800,One managed implementation and host; not hardware latency or a population claim
+hybrid_multiply_rough_bank8,2000,7,13061.950,12898.950,16795.750,One managed implementation and host; not hardware latency or a population claim
+hybrid_add_lazy_bank8,2000,7,28632.700,27107.500,34524.200,One managed implementation and host; not hardware latency or a population claim
+hybrid_add_eager_bank8,1000,7,64738.600,63000.700,70825.100,One managed implementation and host; not hardware latency or a population claim
+hybrid_binary_ingress_bank8,5000,7,6175.520,6061.680,6992.140,One managed implementation and host; not hardware latency or a population claim

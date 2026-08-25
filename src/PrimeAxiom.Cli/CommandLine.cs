@@ -20,6 +20,7 @@ internal static class CommandLine
         {
             "demo" => RunDemo(),
             "experiment" => RunExperiment(args[1..]),
+            "experiment-build001" => RunBuild001Experiment(args[1..]),
             _ => Unknown(args[0]),
         };
     }
@@ -87,6 +88,37 @@ internal static class CommandLine
         return receipt.FailureCount == 0 ? 0 : 1;
     }
 
+    private static int RunBuild001Experiment(string[] args)
+    {
+        var output = "results/build001";
+        var skipBenchmarks = false;
+        for (var index = 0; index < args.Length; index++)
+        {
+            switch (args[index])
+            {
+                case "--output" when index + 1 < args.Length:
+                    output = args[++index];
+                    break;
+                case "--skip-benchmarks":
+                    skipBenchmarks = true;
+                    break;
+                default:
+                    Console.Error.WriteLine($"Unknown Build 001 experiment option: {args[index]}");
+                    return 2;
+            }
+        }
+
+        var receipt = Build001ExperimentRunner.Run(
+            Path.GetFullPath(output),
+            includeBenchmarks: !skipBenchmarks,
+            invocationOutputArgument: output);
+        Console.WriteLine($"Wrote Build 001 evidence to {receipt.OutputDirectory}");
+        Console.WriteLine(
+            $"Checks: {receipt.CheckCount.ToString(CultureInfo.InvariantCulture)}; " +
+            $"failures: {receipt.FailureCount.ToString(CultureInfo.InvariantCulture)}");
+        return receipt.FailureCount == 0 ? 0 : 1;
+    }
+
     private static int Unknown(string command)
     {
         Console.Error.WriteLine($"Unknown command: {command}");
@@ -96,8 +128,9 @@ internal static class CommandLine
 
     private static void PrintHelp()
     {
-        Console.WriteLine("Prime Axiom Software Build 000");
+        Console.WriteLine("Prime Axiom Software");
         Console.WriteLine("  demo");
         Console.WriteLine("  experiment [--output DIRECTORY] [--skip-benchmarks]");
+        Console.WriteLine("  experiment-build001 [--output DIRECTORY] [--skip-benchmarks]");
     }
 }

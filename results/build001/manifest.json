@@ -1,0 +1,80 @@
+{
+  "Schema": "prime-axiom-build001-experiment-manifest-v1",
+  "BaselineCommit": "7792b8b2a83c95693a6db48a0ed4b153bb0808f4",
+  "FrozenPlanSha256": "4A79873ADCBE477944FFBE1D90AD0969AD99560AA0C014F3CB1DD8639FF9DDEF",
+  "Build000ManifestSha256": "2F9ECD3DA3C2887EAA3E836D543FCCD7C0FF2139DD737FFA68475A9A5BE0935D",
+  "CanonicalReproductionCommand": "dotnet run --project src/PrimeAxiom.Cli --configuration Release --no-build -- experiment-build001 --output results/build001",
+  "ActualInvocationArguments": [
+    "experiment-build001",
+    "--output",
+    "results/build001"
+  ],
+  "DeterministicSeed": 99536897,
+  "IncludedWallClockBenchmarks": true,
+  "ClaimStatus": "PARTIAL",
+  "CorrectnessStatus": "BOUNDED_PASS",
+  "ProtocolCoverage": "PILOT_SUBSET_COMPLETE_FULL_CONFIRMATION_NOT_RUN",
+  "DecisionGateCeiling": "PARTIAL - PILOT_NEGATIVE; FINAL DECISION NOT EARNED. The frozen full-matrix stop condition is unmet.",
+  "WorkloadConfigurationRows": 194,
+  "Framework": ".NET 8.0.29",
+  "OperatingSystem": "Microsoft Windows 10.0.19045",
+  "ProcessArchitecture": "X64",
+  "Processor": "AMD64 Family 23 Model 8 Stepping 2, AuthenticAMD",
+  "LogicalProcessors": 12,
+  "CoreAssemblySha256": "BF5468F17B4A7A1A1769502094F1A0D8461BA4D4A061066D304F4088701D0918",
+  "CliAssemblySha256": "424185F9D9B27764F42ABF3A2333AA4FDB35496826D77EF9D7D62FE8F34F7F9E",
+  "Files": [
+    {
+      "Path": "addition_freshness.csv",
+      "Sha256": "76004DAB6D56C76BB9F1FC970EC3BA19F29333B2EBF49422BE80A0E6007685FA"
+    },
+    {
+      "Path": "bank_strategy_matrix.csv",
+      "Sha256": "9209EBA3C67FF6029060B5A58B5164401823A4689EC6874422DA2806D785BD77"
+    },
+    {
+      "Path": "correctness.json",
+      "Sha256": "6E3F0F58B61306AEC146D43353FA0747E9E7840BC3025FE1D15763AFAA8CF301"
+    },
+    {
+      "Path": "crossovers.csv",
+      "Sha256": "FBD0BB195A92A72BD196A30EF5EC2F70EC296DC537BB970C29BE43C0A676640C"
+    },
+    {
+      "Path": "figures/bank_tradeoffs.svg",
+      "Sha256": "E2D0BC34F0D1A780FDA835719898F856449888C919A9395BAD69090955584586"
+    },
+    {
+      "Path": "figures/phase_costs.svg",
+      "Sha256": "61690988849647FBA2019E44E7A7ACA6E7665C8731A1F2D6514349BEBB32F2D6"
+    },
+    {
+      "Path": "microbenchmarks.csv",
+      "Sha256": "30D1FF6FC52B31F7F114423AF2E57EA5F7B7F6DE31FE992CA64BB13ED402F1BA"
+    },
+    {
+      "Path": "migration_thrash.csv",
+      "Sha256": "CA33797C364892B20107614D2A9F7754E863E9DF2EA09DAF29E445590CD8E257"
+    },
+    {
+      "Path": "protocol_coverage.json",
+      "Sha256": "C522AE4631D61AC583096B031EB872BF91A91FB0E6A368609B18F5D2EDB5BE38"
+    },
+    {
+      "Path": "representation_contract_cases.csv",
+      "Sha256": "EFE70C0BA2B8FAAF31C93F7545A796CE586F92E84B2D5E1BAA2C42A3E78DA8DE"
+    },
+    {
+      "Path": "test-summary.json",
+      "Sha256": "3C471DE1E3046470B0B062E2D4A1CB36B5939787F6AF4C1DCAC70CFAA7DBC6E5"
+    },
+    {
+      "Path": "vm_trace.json",
+      "Sha256": "CEB95A4D5304573B89C52A22ABF07840FEFD8D6C1637FE1F07A1E1878D849506"
+    },
+    {
+      "Path": "workload_matrix.csv",
+      "Sha256": "0EAC562A1A4EC8C7472FA5DA556F36782FB2F378B925F1469E8ECEF322935214"
+    }
+  ]
+}

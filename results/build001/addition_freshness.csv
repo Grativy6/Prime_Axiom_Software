@@ -1,0 +1,6 @@
+bank_size,pairs,exact_lanes_after_add,unknown_lanes_after_add,partial_values,eager_refresh_remainders,eager_refresh_divisions,native_bank_nands,cofactor_adds,rule
+0,1000,0,0,0,0,0,0,1000,Exact when operand valuations differ; otherwise a certified lower bound until refresh
+4,1000,1814,2186,975,3513,1327,1728000,1000,Exact when operand valuations differ; otherwise a certified lower bound until refresh
+8,1000,2325,5675,1000,7251,1576,3456000,1000,Exact when operand valuations differ; otherwise a certified lower bound until refresh
+16,1000,2747,13253,1000,15035,1782,6912000,1000,Exact when operand valuations differ; otherwise a certified lower bound until refresh
+32,1000,3100,28900,1000,30868,1968,13824000,1000,Exact when operand valuations differ; otherwise a certified lower bound until refresh

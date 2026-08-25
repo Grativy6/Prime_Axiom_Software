@@ -1,0 +1,12 @@
+{
+  "StatusCeiling": "BOUNDED_PASS only if Failures is empty; no untested arithmetic domain is certified.",
+  "CheckCount": 39621,
+  "Failures": [],
+  "Domain": {
+    "ExhaustiveSignedIngress": "-128..128 at bank sizes 0,4,8",
+    "ExhaustiveOrderedPairs": "-32..32 squared at bank size 8",
+    "RandomSeed": 99536897,
+    "RandomTrials": 5000,
+    "MalformedAndZeroValuationChecks": 2
+  }
+}
