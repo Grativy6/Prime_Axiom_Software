@@ -198,7 +198,7 @@ The manifest contains 751 file entries. Its file hashes are the integrity bounda
 | yosys-smtbmc | `yosys-smtbmc-script.py [options] <yosys_smt2_output>` (recognizable script probe, not the final proof engine) |
 | Z3 | `Z3 version 4.15.5 - 64 bit` (probed, not the final proof engine) |
 
-The Linux x64 archive is locked at 741,360,658 bytes and SHA-256 `9d7f79975ef624e1119fc9690fd9b9839b67026925aff3e2a1192d861b8dbb7c`. The canonical committed HDL source receipt above is the Windows run, while [the final PR CI gate](https://github.com/Grativy6/Prime_Axiom_Software/actions/runs/32814482250) independently passed the complete verifier on Ubuntu and Windows and preserved both raw bundles. The final formal proofs used Yosys's internal MiniSAT flow, not SBY/Z3 as a second engine; no cross-platform mapped-netlist identity or physical-hardware claim follows.
+The Linux x64 archive is locked at 741,360,658 bytes and SHA-256 `9d7f79975ef624e1119fc9690fd9b9839b67026925aff3e2a1192d861b8dbb7c`. The canonical committed HDL source receipt above is the Windows run, while [the cross-platform protocol decision gate](https://github.com/Grativy6/Prime_Axiom_Software/actions/runs/32814482250) independently passed the complete verifier on Ubuntu and Windows and preserved both raw bundles. The final formal proofs used Yosys's internal MiniSAT flow, not SBY/Z3 as a second engine; no cross-platform mapped-netlist identity or physical-hardware claim follows.
 
 ### Representative measured static rows
 
