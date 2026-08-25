@@ -1,0 +1,40 @@
+{
+  "schema": "prime-axiom-build003-protocol-coverage-v1",
+  "protocolId": "PAS-BUILD003-PRIME-RECEIPT-0001",
+  "frozenPlanSha256": "8893D15E539F3750981F63AE6B6EE26FBC537D356AE7C5ACDA24F881ED766EE5",
+  "baselineCommit": "a83b660443df489c2ff218887953926a33a84c84",
+  "status": "BOUNDED_TOOL_PATH_VALIDATED",
+  "requiredFamilies": [
+    "EXHAUSTIVE_SIGNED_SMALL_DOMAIN",
+    "SEEDED_FACTORED_PRODUCTS",
+    "PARTIAL_BUDGET",
+    "CANONICAL_CLI_GRAMMAR",
+    "FROZEN_ARITHMETIC_COMPARISONS",
+    "DETERMINISTIC_REPLAY"
+  ],
+  "requiredFamilyEvidence": {
+    "exhaustiveSignedSmallDomain": "correctness.json",
+    "seededFactoredProducts": "correctness.json",
+    "partialBudget": "correctness.json",
+    "canonicalCliGrammar": "correctness.json plus xUnit canonical-integer parser regressions",
+    "frozenArithmeticComparisons": "arithmetic_comparisons.json plus correctness.json",
+    "deterministicReplay": "ESTABLISHED_BY_VERIFY_BUILD003_NOT_BY_A_SINGLE_GENERATOR_INVOCATION"
+  },
+  "frozenComparisonIds": [
+    "USER_ADD_001",
+    "USER_MUL_001",
+    "ADD_REORGANIZE_001",
+    "ADD_RADIX_BOUNDARY_001",
+    "MUL_COLD_PRIMES_001",
+    "MUL_FACTOR_RICH_001"
+  ],
+  "exactFrozenComparisonSet": true,
+  "frozenComparisonRows": "6",
+  "correctnessChecks": "52914",
+  "correctnessFailures": "0",
+  "multiplication": "LOCAL_EXPONENT_MERGE_AFTER_EXPLICIT_ACQUISITION",
+  "addition": "MAGNITUDE_ADD_THEN_FRESH_FACTOR_DISCOVERY",
+  "generalLlmImprovement": "NOT_MEASURED",
+  "hardwareClaim": "NOT_APPLICABLE",
+  "claimCeiling": "Bounded functional and deterministic-path evidence only; no hardware advantage, factoring-performance, private reasoning, model understanding, or general LLM accuracy claim."
+}

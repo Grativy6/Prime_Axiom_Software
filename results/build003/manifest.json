@@ -1,0 +1,59 @@
+{
+  "schema": "prime-axiom-build003-manifest-v1",
+  "protocolId": "PAS-BUILD003-PRIME-RECEIPT-0001",
+  "frozenPlanSha256": "8893D15E539F3750981F63AE6B6EE26FBC537D356AE7C5ACDA24F881ED766EE5",
+  "baselineCommit": "a83b660443df489c2ff218887953926a33a84c84",
+  "masterSeed": "5041534230303033",
+  "defaultPolicy": {
+    "maxOddCandidates": "1000000"
+  },
+  "cliMaximumDecimalDigits": "4096",
+  "runtimeContract": "net8.0",
+  "sdkPolicy": "8.0.423 with rollForward=latestPatch",
+  "canonicalReproductionCommand": "dotnet run --project src/PrimeAxiom.Cli --configuration Release -- experiment-build003 --output results/build003",
+  "status": "BOUNDED_TOOL_PATH_VALIDATED",
+  "correctnessChecks": "52914",
+  "correctnessFailures": "0",
+  "frozenComparisonRows": "6",
+  "frozenComparisonIds": [
+    "USER_ADD_001",
+    "USER_MUL_001",
+    "ADD_REORGANIZE_001",
+    "ADD_RADIX_BOUNDARY_001",
+    "MUL_COLD_PRIMES_001",
+    "MUL_FACTOR_RICH_001"
+  ],
+  "requiredFamilies": [
+    "EXHAUSTIVE_SIGNED_SMALL_DOMAIN",
+    "SEEDED_FACTORED_PRODUCTS",
+    "PARTIAL_BUDGET",
+    "CANONICAL_CLI_GRAMMAR",
+    "FROZEN_ARITHMETIC_COMPARISONS",
+    "DETERMINISTIC_REPLAY"
+  ],
+  "includedWallClockMeasurements": false,
+  "files": [
+    {
+      "path": "README.md",
+      "sha256": "60B9C080B48099FF4DF66732F66296238ED81963B71B07A99C242C5ECC18D593"
+    },
+    {
+      "path": "calculator_examples.json",
+      "sha256": "4AF12118C7FCD836CC3DA830941ACAAD40EDDFD3958E4D9A0D7F722705255FE9"
+    },
+    {
+      "path": "arithmetic_comparisons.json",
+      "sha256": "CDE40DBBFF1D11BD380C74181102C8E8A25BD65A2EF837610923DD4711F94C1A"
+    },
+    {
+      "path": "correctness.json",
+      "sha256": "7460D9AA525336BD6FBB455BB13F52D04A6501E94B20D1976D2AC615569113B6"
+    },
+    {
+      "path": "protocol_coverage.json",
+      "sha256": "214A39897F4D0F10435777168C814FE095FA5F4E70589D6B68E861248412A983"
+    }
+  ],
+  "claimCeiling": "Bounded functional and deterministic-path evidence only; no hardware advantage, factoring-performance, private reasoning, model understanding, or general LLM accuracy claim.",
+  "notes": "manifest.json intentionally excludes itself; all generated text is LF and UTF-8 without BOM."
+}

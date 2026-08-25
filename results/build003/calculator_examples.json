@@ -1,0 +1,223 @@
+{
+  "schema": "prime-axiom-build003-calculator-examples-v1",
+  "protocolId": "PAS-BUILD003-PRIME-RECEIPT-0001",
+  "policy": {
+    "maxOddCandidates": "1000000"
+  },
+  "receipts": [
+    {
+      "schema": "prime-axiom-prime-receipt-v1",
+      "protocolId": "PAS-BUILD003-PRIME-RECEIPT-0001",
+      "receiptId": "86B166A1AE99763A14541B4A5BD1DC38FAF02A4E37B2ED83BFAC7284DADCD9A9",
+      "algorithm": "ORDERED_TRIAL_DIVISION_V1",
+      "origin": "DiscoveredFromMagnitude",
+      "parentReceiptIds": [],
+      "policy": {
+        "maxOddCandidates": "1000000"
+      },
+      "canonicalInputDecimal": "0",
+      "inputSha256": "5FECEB66FFC86F38D952786C6D696C79C2DBC239DD4E91B46729D73A27FB57E9",
+      "sign": "0",
+      "absoluteBitLength": "0",
+      "status": "ExactZero",
+      "primePowers": [],
+      "unresolvedCofactorDecimal": "0",
+      "testedThroughOddCandidateDecimal": "1",
+      "reconstructionVerified": true,
+      "magnitudeIsPrime": false,
+      "integerIsPrime": false,
+      "work": {
+        "radixExtractions": "0",
+        "oddCandidatesExamined": "0",
+        "remainderChecks": "0",
+        "exactFactorDivisions": "0"
+      },
+      "structure": "0",
+      "claimCeiling": "Exact for this input under deterministic ordered trial division; this is not a succinct primality certificate or a general factoring-performance claim."
+    },
+    {
+      "schema": "prime-axiom-prime-receipt-v1",
+      "protocolId": "PAS-BUILD003-PRIME-RECEIPT-0001",
+      "receiptId": "F109E85513E6E316F02A80AC5846E90652EFB4620344F323A6057ABCA06399ED",
+      "algorithm": "ORDERED_TRIAL_DIVISION_V1",
+      "origin": "DiscoveredFromMagnitude",
+      "parentReceiptIds": [],
+      "policy": {
+        "maxOddCandidates": "1000000"
+      },
+      "canonicalInputDecimal": "-1",
+      "inputSha256": "1BAD6B8CF97131FCEAB8543E81F7757195FBB1D36B376EE994AD1CF17699C464",
+      "sign": "-1",
+      "absoluteBitLength": "1",
+      "status": "ExactUnit",
+      "primePowers": [],
+      "unresolvedCofactorDecimal": "1",
+      "testedThroughOddCandidateDecimal": "1",
+      "reconstructionVerified": true,
+      "magnitudeIsPrime": false,
+      "integerIsPrime": false,
+      "work": {
+        "radixExtractions": "0",
+        "oddCandidatesExamined": "0",
+        "remainderChecks": "0",
+        "exactFactorDivisions": "0"
+      },
+      "structure": "-1",
+      "claimCeiling": "Exact for this input under deterministic ordered trial division; this is not a succinct primality certificate or a general factoring-performance claim."
+    },
+    {
+      "schema": "prime-axiom-prime-receipt-v1",
+      "protocolId": "PAS-BUILD003-PRIME-RECEIPT-0001",
+      "receiptId": "C198E8141DC971AD3741C8831C89E0A53F7EEAB3B13AACB9E5DC1CFA948FCA22",
+      "algorithm": "ORDERED_TRIAL_DIVISION_V1",
+      "origin": "DiscoveredFromMagnitude",
+      "parentReceiptIds": [],
+      "policy": {
+        "maxOddCandidates": "1000000"
+      },
+      "canonicalInputDecimal": "-72",
+      "inputSha256": "DF1684E00B3677F91E4BD0A9928D98F03A1122A4A25C7439636D13A86F1C6609",
+      "sign": "-1",
+      "absoluteBitLength": "7",
+      "status": "ExactFactorization",
+      "primePowers": [
+        {
+          "primeDecimal": "2",
+          "exponent": "3",
+          "proofKind": "RadixPrime"
+        },
+        {
+          "primeDecimal": "3",
+          "exponent": "2",
+          "proofKind": "OrderedTrialDivision"
+        }
+      ],
+      "unresolvedCofactorDecimal": "1",
+      "testedThroughOddCandidateDecimal": "3",
+      "reconstructionVerified": true,
+      "magnitudeIsPrime": false,
+      "integerIsPrime": false,
+      "work": {
+        "radixExtractions": "3",
+        "oddCandidatesExamined": "1",
+        "remainderChecks": "2",
+        "exactFactorDivisions": "2"
+      },
+      "structure": "-(2^3 * 3^2)",
+      "claimCeiling": "Exact for this input under deterministic ordered trial division; this is not a succinct primality certificate or a general factoring-performance claim."
+    },
+    {
+      "schema": "prime-axiom-prime-receipt-v1",
+      "protocolId": "PAS-BUILD003-PRIME-RECEIPT-0001",
+      "receiptId": "6E83431312BCCD86774C12435414AA091577536EFAF8B2DF3B2C8533C2FE54C3",
+      "algorithm": "ORDERED_TRIAL_DIVISION_V1",
+      "origin": "DiscoveredFromMagnitude",
+      "parentReceiptIds": [],
+      "policy": {
+        "maxOddCandidates": "1000000"
+      },
+      "canonicalInputDecimal": "360",
+      "inputSha256": "838F461C2FA673CEC73E6EECDAFA88B127802D6CB0A61C53175197A122CB645A",
+      "sign": "1",
+      "absoluteBitLength": "9",
+      "status": "ExactFactorization",
+      "primePowers": [
+        {
+          "primeDecimal": "2",
+          "exponent": "3",
+          "proofKind": "RadixPrime"
+        },
+        {
+          "primeDecimal": "3",
+          "exponent": "2",
+          "proofKind": "OrderedTrialDivision"
+        },
+        {
+          "primeDecimal": "5",
+          "exponent": "1",
+          "proofKind": "TerminalResidualBound"
+        }
+      ],
+      "unresolvedCofactorDecimal": "1",
+      "testedThroughOddCandidateDecimal": "3",
+      "reconstructionVerified": true,
+      "magnitudeIsPrime": false,
+      "integerIsPrime": false,
+      "work": {
+        "radixExtractions": "3",
+        "oddCandidatesExamined": "1",
+        "remainderChecks": "3",
+        "exactFactorDivisions": "2"
+      },
+      "structure": "2^3 * 3^2 * 5",
+      "claimCeiling": "Exact for this input under deterministic ordered trial division; this is not a succinct primality certificate or a general factoring-performance claim."
+    },
+    {
+      "schema": "prime-axiom-prime-receipt-v1",
+      "protocolId": "PAS-BUILD003-PRIME-RECEIPT-0001",
+      "receiptId": "F12566C97FAEBABB6B302D62F915346D2CAA6704117FB1B85F47D4C6936EC167",
+      "algorithm": "ORDERED_TRIAL_DIVISION_V1",
+      "origin": "DiscoveredFromMagnitude",
+      "parentReceiptIds": [],
+      "policy": {
+        "maxOddCandidates": "1000000"
+      },
+      "canonicalInputDecimal": "99991",
+      "inputSha256": "30B2EBED06E5A12C599638517DB91B8CE583355E6C6B992A3E5638A03E0A79D9",
+      "sign": "1",
+      "absoluteBitLength": "17",
+      "status": "ExactFactorization",
+      "primePowers": [
+        {
+          "primeDecimal": "99991",
+          "exponent": "1",
+          "proofKind": "TerminalResidualBound"
+        }
+      ],
+      "unresolvedCofactorDecimal": "1",
+      "testedThroughOddCandidateDecimal": "315",
+      "reconstructionVerified": true,
+      "magnitudeIsPrime": true,
+      "integerIsPrime": true,
+      "work": {
+        "radixExtractions": "0",
+        "oddCandidatesExamined": "157",
+        "remainderChecks": "157",
+        "exactFactorDivisions": "0"
+      },
+      "structure": "99991",
+      "claimCeiling": "Exact for this input under deterministic ordered trial division; this is not a succinct primality certificate or a general factoring-performance claim."
+    },
+    {
+      "schema": "prime-axiom-prime-receipt-v1",
+      "protocolId": "PAS-BUILD003-PRIME-RECEIPT-0001",
+      "receiptId": "93766B1DFDAA656056EAD6007121D613615F1AA0F880063B7FBBFF9BB1F33641",
+      "algorithm": "ORDERED_TRIAL_DIVISION_V1",
+      "origin": "DiscoveredFromMagnitude",
+      "parentReceiptIds": [],
+      "policy": {
+        "maxOddCandidates": "0"
+      },
+      "canonicalInputDecimal": "1022117",
+      "inputSha256": "0FAEB4F46C8EA3A24F6B40021921CDF955FC7BE2374CA6E9B0F781B7D2118899",
+      "sign": "1",
+      "absoluteBitLength": "20",
+      "status": "PartialBudget",
+      "primePowers": [],
+      "unresolvedCofactorDecimal": "1022117",
+      "testedThroughOddCandidateDecimal": "1",
+      "reconstructionVerified": true,
+      "magnitudeIsPrime": null,
+      "integerIsPrime": null,
+      "work": {
+        "radixExtractions": "0",
+        "oddCandidatesExamined": "0",
+        "remainderChecks": "0",
+        "exactFactorDivisions": "0"
+      },
+      "structure": "UNRESOLVED(1022117)",
+      "claimCeiling": "Reported prime powers and reconstruction are exact; the residual may be prime or composite and carries no primality claim."
+    }
+  ],
+  "claimCeiling": "Bounded functional and deterministic-path evidence only; no hardware advantage, factoring-performance, private reasoning, model understanding, or general LLM accuracy claim."
+}

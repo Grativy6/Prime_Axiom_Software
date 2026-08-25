@@ -1,0 +1,32 @@
+{
+  "schema": "prime-axiom-build003-correctness-v1",
+  "protocolId": "PAS-BUILD003-PRIME-RECEIPT-0001",
+  "masterSeed": "5041534230303033",
+  "checks": "52914",
+  "failures": [],
+  "domains": {
+    "exhaustiveSignedMinimum": "-4096",
+    "exhaustiveSignedMaximum": "4096",
+    "randomizedFactoredProducts": "5000",
+    "partialBudgets": [
+      "0",
+      "1",
+      "3"
+    ],
+    "namedCases": [
+      "zero",
+      "positive-unit",
+      "negative-unit",
+      "negative-prime",
+      "repeated-power",
+      "square",
+      "semiprime",
+      "positive-prime"
+    ],
+    "calculatorExamples": "6",
+    "frozenComparisons": "6",
+    "cliMaximumDecimalDigits": "4096"
+  },
+  "status": "BOUNDED_PASS",
+  "claimCeiling": "Bounded functional and deterministic-path evidence only; no hardware advantage, factoring-performance, private reasoning, model understanding, or general LLM accuracy claim."
+}

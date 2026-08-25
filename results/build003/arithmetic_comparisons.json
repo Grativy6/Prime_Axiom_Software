@@ -1,0 +1,2055 @@
+{
+  "schema": "prime-axiom-build003-arithmetic-comparisons-v1",
+  "protocolId": "PAS-BUILD003-PRIME-RECEIPT-0001",
+  "outputContract": "MAGNITUDE_AND_RECEIPT",
+  "comparisons": [
+    {
+      "schema": "prime-axiom-arithmetic-comparison-v1",
+      "protocolId": "PAS-BUILD003-PRIME-RECEIPT-0001",
+      "id": "USER_ADD_001",
+      "operation": "ADD",
+      "expression": "125891290390 \u002B 12589127501265",
+      "operandsDecimal": [
+        "125891290390",
+        "12589127501265"
+      ],
+      "outputObligation": "MAGNITUDE_AND_RECEIPT",
+      "ordinaryPath": {
+        "strategy": "EXPLICIT_DECIMAL_BASELINE_TRACE",
+        "algorithm": "COLUMN_ADD_DECIMAL_V1",
+        "resultDecimal": "12715018791655",
+        "columnSteps": [
+          {
+            "columnFromRight": "0",
+            "leftDigit": "0",
+            "rightDigit": "5",
+            "carryIn": "0",
+            "rawTotal": "5",
+            "resultDigit": "5",
+            "carryOut": "0"
+          },
+          {
+            "columnFromRight": "1",
+            "leftDigit": "9",
+            "rightDigit": "6",
+            "carryIn": "0",
+            "rawTotal": "15",
+            "resultDigit": "5",
+            "carryOut": "1"
+          },
+          {
+            "columnFromRight": "2",
+            "leftDigit": "3",
+            "rightDigit": "2",
+            "carryIn": "1",
+            "rawTotal": "6",
+            "resultDigit": "6",
+            "carryOut": "0"
+          },
+          {
+            "columnFromRight": "3",
+            "leftDigit": "0",
+            "rightDigit": "1",
+            "carryIn": "0",
+            "rawTotal": "1",
+            "resultDigit": "1",
+            "carryOut": "0"
+          },
+          {
+            "columnFromRight": "4",
+            "leftDigit": "9",
+            "rightDigit": "0",
+            "carryIn": "0",
+            "rawTotal": "9",
+            "resultDigit": "9",
+            "carryOut": "0"
+          },
+          {
+            "columnFromRight": "5",
+            "leftDigit": "2",
+            "rightDigit": "5",
+            "carryIn": "0",
+            "rawTotal": "7",
+            "resultDigit": "7",
+            "carryOut": "0"
+          },
+          {
+            "columnFromRight": "6",
+            "leftDigit": "1",
+            "rightDigit": "7",
+            "carryIn": "0",
+            "rawTotal": "8",
+            "resultDigit": "8",
+            "carryOut": "0"
+          },
+          {
+            "columnFromRight": "7",
+            "leftDigit": "9",
+            "rightDigit": "2",
+            "carryIn": "0",
+            "rawTotal": "11",
+            "resultDigit": "1",
+            "carryOut": "1"
+          },
+          {
+            "columnFromRight": "8",
+            "leftDigit": "8",
+            "rightDigit": "1",
+            "carryIn": "1",
+            "rawTotal": "10",
+            "resultDigit": "0",
+            "carryOut": "1"
+          },
+          {
+            "columnFromRight": "9",
+            "leftDigit": "5",
+            "rightDigit": "9",
+            "carryIn": "1",
+            "rawTotal": "15",
+            "resultDigit": "5",
+            "carryOut": "1"
+          },
+          {
+            "columnFromRight": "10",
+            "leftDigit": "2",
+            "rightDigit": "8",
+            "carryIn": "1",
+            "rawTotal": "11",
+            "resultDigit": "1",
+            "carryOut": "1"
+          },
+          {
+            "columnFromRight": "11",
+            "leftDigit": "1",
+            "rightDigit": "5",
+            "carryIn": "1",
+            "rawTotal": "7",
+            "resultDigit": "7",
+            "carryOut": "0"
+          },
+          {
+            "columnFromRight": "12",
+            "leftDigit": "0",
+            "rightDigit": "2",
+            "carryIn": "0",
+            "rawTotal": "2",
+            "resultDigit": "2",
+            "carryOut": "0"
+          },
+          {
+            "columnFromRight": "13",
+            "leftDigit": "0",
+            "rightDigit": "1",
+            "carryIn": "0",
+            "rawTotal": "1",
+            "resultDigit": "1",
+            "carryOut": "0"
+          }
+        ],
+        "multiplicationSteps": [],
+        "work": {
+          "decimalColumns": "14",
+          "digitAdditions": "28",
+          "carryEvents": "5",
+          "sequentialMagnitudeMultiplications": "0"
+        },
+        "oracleVerified": true,
+        "claimCeiling": "Replayable public decimal-column algorithm; counts are not tokens, latency, or private model reasoning."
+      },
+      "primePath": {
+        "strategy": "PRIME_RECEIPT_TOOL_PATH",
+        "resultDecimal": "12715018791655",
+        "inputReceipts": [
+          {
+            "schema": "prime-axiom-prime-receipt-v1",
+            "protocolId": "PAS-BUILD003-PRIME-RECEIPT-0001",
+            "receiptId": "495334EF0BD96AF9AE6854E232ABA6392B74A4C6051E2B2D28064A6CD07C143B",
+            "algorithm": "ORDERED_TRIAL_DIVISION_V1",
+            "origin": "DiscoveredFromMagnitude",
+            "parentReceiptIds": [],
+            "policy": {
+              "maxOddCandidates": "1000000"
+            },
+            "canonicalInputDecimal": "125891290390",
+            "inputSha256": "4BB5F61C3F5B0A58C7486B548C960153CF326EDE554832C788C25E04BC3F179E",
+            "sign": "1",
+            "absoluteBitLength": "37",
+            "status": "ExactFactorization",
+            "primePowers": [
+              {
+                "primeDecimal": "2",
+                "exponent": "1",
+                "proofKind": "RadixPrime"
+              },
+              {
+                "primeDecimal": "5",
+                "exponent": "1",
+                "proofKind": "OrderedTrialDivision"
+              },
+              {
+                "primeDecimal": "12589129039",
+                "exponent": "1",
+                "proofKind": "TerminalResidualBound"
+              }
+            ],
+            "unresolvedCofactorDecimal": "1",
+            "testedThroughOddCandidateDecimal": "112201",
+            "reconstructionVerified": true,
+            "magnitudeIsPrime": false,
+            "integerIsPrime": false,
+            "work": {
+              "radixExtractions": "1",
+              "oddCandidatesExamined": "56100",
+              "remainderChecks": "56101",
+              "exactFactorDivisions": "1"
+            },
+            "structure": "2 * 5 * 12589129039",
+            "claimCeiling": "Exact for this input under deterministic ordered trial division; this is not a succinct primality certificate or a general factoring-performance claim."
+          },
+          {
+            "schema": "prime-axiom-prime-receipt-v1",
+            "protocolId": "PAS-BUILD003-PRIME-RECEIPT-0001",
+            "receiptId": "742F929781573ADAC27A7B5C0E1D99C2BB1C64DC03499E5A7772AC34BE0309BF",
+            "algorithm": "ORDERED_TRIAL_DIVISION_V1",
+            "origin": "DiscoveredFromMagnitude",
+            "parentReceiptIds": [],
+            "policy": {
+              "maxOddCandidates": "1000000"
+            },
+            "canonicalInputDecimal": "12589127501265",
+            "inputSha256": "649B39F2261C8641E33902132B0B556FA20FDA6520302EEABAB316C40E533363",
+            "sign": "1",
+            "absoluteBitLength": "44",
+            "status": "ExactFactorization",
+            "primePowers": [
+              {
+                "primeDecimal": "3",
+                "exponent": "2",
+                "proofKind": "OrderedTrialDivision"
+              },
+              {
+                "primeDecimal": "5",
+                "exponent": "1",
+                "proofKind": "OrderedTrialDivision"
+              },
+              {
+                "primeDecimal": "7",
+                "exponent": "1",
+                "proofKind": "OrderedTrialDivision"
+              },
+              {
+                "primeDecimal": "61",
+                "exponent": "1",
+                "proofKind": "OrderedTrialDivision"
+              },
+              {
+                "primeDecimal": "83",
+                "exponent": "1",
+                "proofKind": "OrderedTrialDivision"
+              },
+              {
+                "primeDecimal": "7893637",
+                "exponent": "1",
+                "proofKind": "TerminalResidualBound"
+              }
+            ],
+            "unresolvedCofactorDecimal": "1",
+            "testedThroughOddCandidateDecimal": "2809",
+            "reconstructionVerified": true,
+            "magnitudeIsPrime": false,
+            "integerIsPrime": false,
+            "work": {
+              "radixExtractions": "0",
+              "oddCandidatesExamined": "1404",
+              "remainderChecks": "1410",
+              "exactFactorDivisions": "6"
+            },
+            "structure": "3^2 * 5 * 7 * 61 * 83 * 7893637",
+            "claimCeiling": "Exact for this input under deterministic ordered trial division; this is not a succinct primality certificate or a general factoring-performance claim."
+          }
+        ],
+        "outputReceipt": {
+          "schema": "prime-axiom-prime-receipt-v1",
+          "protocolId": "PAS-BUILD003-PRIME-RECEIPT-0001",
+          "receiptId": "DC74AD06EB2688AA7AB5865A47ACAB168153C5597A6068E5B7C79825F030384A",
+          "algorithm": "ORDERED_TRIAL_DIVISION_V1",
+          "origin": "FactoredAfterMagnitudeAddition",
+          "parentReceiptIds": [
+            "495334EF0BD96AF9AE6854E232ABA6392B74A4C6051E2B2D28064A6CD07C143B",
+            "742F929781573ADAC27A7B5C0E1D99C2BB1C64DC03499E5A7772AC34BE0309BF"
+          ],
+          "policy": {
+            "maxOddCandidates": "1000000"
+          },
+          "canonicalInputDecimal": "12715018791655",
+          "inputSha256": "2A6B07A308B4EDF80C1BA447924A99D9E973FBE9119E544722AEE5D1720E7E4A",
+          "sign": "1",
+          "absoluteBitLength": "44",
+          "status": "ExactFactorization",
+          "primePowers": [
+            {
+              "primeDecimal": "5",
+              "exponent": "1",
+              "proofKind": "OrderedTrialDivision"
+            },
+            {
+              "primeDecimal": "23",
+              "exponent": "1",
+              "proofKind": "OrderedTrialDivision"
+            },
+            {
+              "primeDecimal": "31",
+              "exponent": "1",
+              "proofKind": "OrderedTrialDivision"
+            },
+            {
+              "primeDecimal": "103",
+              "exponent": "1",
+              "proofKind": "OrderedTrialDivision"
+            },
+            {
+              "primeDecimal": "34627429",
+              "exponent": "1",
+              "proofKind": "TerminalResidualBound"
+            }
+          ],
+          "unresolvedCofactorDecimal": "1",
+          "testedThroughOddCandidateDecimal": "5883",
+          "reconstructionVerified": true,
+          "magnitudeIsPrime": false,
+          "integerIsPrime": false,
+          "work": {
+            "radixExtractions": "0",
+            "oddCandidatesExamined": "2941",
+            "remainderChecks": "2945",
+            "exactFactorDivisions": "4"
+          },
+          "structure": "5 * 23 * 31 * 103 * 34627429",
+          "claimCeiling": "Exact for this input under deterministic ordered trial division; this is not a succinct primality certificate or a general factoring-performance claim."
+        },
+        "commonCertifiedPrimePowers": [
+          {
+            "primeDecimal": "5",
+            "exponent": "1",
+            "proofKind": "InheritedFromParentReceipts"
+          }
+        ],
+        "events": [
+          {
+            "sequence": "1",
+            "phase": "INGRESS",
+            "operationClass": "REQUIRES_FACTOR_DISCOVERY",
+            "operation": "FACTOR_LEFT",
+            "detail": "Acquire an auditable receipt from the first ordinary magnitude.",
+            "receiptId": "495334EF0BD96AF9AE6854E232ABA6392B74A4C6051E2B2D28064A6CD07C143B"
+          },
+          {
+            "sequence": "2",
+            "phase": "INGRESS",
+            "operationClass": "REQUIRES_FACTOR_DISCOVERY",
+            "operation": "FACTOR_RIGHT",
+            "detail": "Acquire an auditable receipt from the second ordinary magnitude.",
+            "receiptId": "742F929781573ADAC27A7B5C0E1D99C2BB1C64DC03499E5A7772AC34BE0309BF"
+          },
+          {
+            "sequence": "3",
+            "phase": "EXECUTE",
+            "operationClass": "BINARY_MAGNITUDE_LOCAL",
+            "operation": "ADD_MAGNITUDES",
+            "detail": "General exact addition remains an ordinary magnitude operation.",
+            "receiptId": null
+          },
+          {
+            "sequence": "4",
+            "phase": "ADDITION_RECOVERY",
+            "operationClass": "REQUIRES_FACTOR_DISCOVERY",
+            "operation": "FACTOR_SUM",
+            "detail": "The output prime structure is freshly discovered; it is not obtained by exponent merge.",
+            "receiptId": "DC74AD06EB2688AA7AB5865A47ACAB168153C5597A6068E5B7C79825F030384A"
+          },
+          {
+            "sequence": "5",
+            "phase": "VERIFY",
+            "operationClass": "CROSS_REPRESENTATION",
+            "operation": "VERIFY_RECEIPTS",
+            "detail": "Reconstruct every receipt and compare the final exact magnitude.",
+            "receiptId": "DC74AD06EB2688AA7AB5865A47ACAB168153C5597A6068E5B7C79825F030384A"
+          }
+        ],
+        "work": {
+          "factorizationCalls": "3",
+          "radixExtractions": "1",
+          "oddCandidatesExamined": "60445",
+          "remainderChecks": "60456",
+          "exactFactorDivisions": "11",
+          "exponentReads": "9",
+          "exponentWrites": "1",
+          "exponentMerges": "0",
+          "magnitudeAdditions": "1",
+          "receiptConstructionReconstructions": "3",
+          "integrityReplayReconstructions": "2",
+          "egressReconstructions": "1",
+          "reconstructions": "6"
+        },
+        "exactStructureCompleted": true,
+        "oracleVerified": true,
+        "localityConclusion": "MAGNITUDE_ADD_THEN_FRESH_FACTOR_DISCOVERY",
+        "claimCeiling": "The receipts expose exact structure when complete, but they do not make general addition representation-local or remove acquisition work."
+      },
+      "pathsAgree": true,
+      "aiComparisonBoundary": "This compares public deterministic arithmetic strategies, not hidden chain of thought, model understanding, or general LLM accuracy."
+    },
+    {
+      "schema": "prime-axiom-arithmetic-comparison-v1",
+      "protocolId": "PAS-BUILD003-PRIME-RECEIPT-0001",
+      "id": "USER_MUL_001",
+      "operation": "MULTIPLY",
+      "expression": "218 * 489 * 175 * 17",
+      "operandsDecimal": [
+        "218",
+        "489",
+        "175",
+        "17"
+      ],
+      "outputObligation": "MAGNITUDE_AND_RECEIPT",
+      "ordinaryPath": {
+        "strategy": "EXPLICIT_DECIMAL_BASELINE_TRACE",
+        "algorithm": "SEQUENTIAL_MAGNITUDE_MULTIPLY_V1",
+        "resultDecimal": "317140950",
+        "columnSteps": [],
+        "multiplicationSteps": [
+          {
+            "step": "0",
+            "accumulatorBeforeDecimal": "218",
+            "operandDecimal": "489",
+            "accumulatorAfterDecimal": "106602"
+          },
+          {
+            "step": "1",
+            "accumulatorBeforeDecimal": "106602",
+            "operandDecimal": "175",
+            "accumulatorAfterDecimal": "18655350"
+          },
+          {
+            "step": "2",
+            "accumulatorBeforeDecimal": "18655350",
+            "operandDecimal": "17",
+            "accumulatorAfterDecimal": "317140950"
+          }
+        ],
+        "work": {
+          "decimalColumns": "0",
+          "digitAdditions": "0",
+          "carryEvents": "0",
+          "sequentialMagnitudeMultiplications": "3"
+        },
+        "oracleVerified": true,
+        "claimCeiling": "Replayable public left-fold multiplication; the BigInteger operations are explicit semantic baseline work, not a hardware or cognition metric."
+      },
+      "primePath": {
+        "strategy": "PRIME_RECEIPT_TOOL_PATH",
+        "resultDecimal": "317140950",
+        "inputReceipts": [
+          {
+            "schema": "prime-axiom-prime-receipt-v1",
+            "protocolId": "PAS-BUILD003-PRIME-RECEIPT-0001",
+            "receiptId": "83D65B546D22024C3B3C343868562CF79DD6AD952BFD50CCBBD522DB13464C50",
+            "algorithm": "ORDERED_TRIAL_DIVISION_V1",
+            "origin": "DiscoveredFromMagnitude",
+            "parentReceiptIds": [],
+            "policy": {
+              "maxOddCandidates": "1000000"
+            },
+            "canonicalInputDecimal": "218",
+            "inputSha256": "5966ABD0CBFC86F98A186531B2B4EE5F6E910120CE13222F98207203DFC9A9A2",
+            "sign": "1",
+            "absoluteBitLength": "8",
+            "status": "ExactFactorization",
+            "primePowers": [
+              {
+                "primeDecimal": "2",
+                "exponent": "1",
+                "proofKind": "RadixPrime"
+              },
+              {
+                "primeDecimal": "109",
+                "exponent": "1",
+                "proofKind": "TerminalResidualBound"
+              }
+            ],
+            "unresolvedCofactorDecimal": "1",
+            "testedThroughOddCandidateDecimal": "9",
+            "reconstructionVerified": true,
+            "magnitudeIsPrime": false,
+            "integerIsPrime": false,
+            "work": {
+              "radixExtractions": "1",
+              "oddCandidatesExamined": "4",
+              "remainderChecks": "4",
+              "exactFactorDivisions": "0"
+            },
+            "structure": "2 * 109",
+            "claimCeiling": "Exact for this input under deterministic ordered trial division; this is not a succinct primality certificate or a general factoring-performance claim."
+          },
+          {
+            "schema": "prime-axiom-prime-receipt-v1",
+            "protocolId": "PAS-BUILD003-PRIME-RECEIPT-0001",
+            "receiptId": "7A926C24807A38B26B5CBB3F19BBDE0A26A401C27D75E5FFFB0BAE8191A1D9F5",
+            "algorithm": "ORDERED_TRIAL_DIVISION_V1",
+            "origin": "DiscoveredFromMagnitude",
+            "parentReceiptIds": [],
+            "policy": {
+              "maxOddCandidates": "1000000"
+            },
+            "canonicalInputDecimal": "489",
+            "inputSha256": "E4BE97CE765E6CFCD703884CC31DB7478FA7BEFCA7CF6DC15420BA20ED718ABE",
+            "sign": "1",
+            "absoluteBitLength": "9",
+            "status": "ExactFactorization",
+            "primePowers": [
+              {
+                "primeDecimal": "3",
+                "exponent": "1",
+                "proofKind": "OrderedTrialDivision"
+              },
+              {
+                "primeDecimal": "163",
+                "exponent": "1",
+                "proofKind": "TerminalResidualBound"
+              }
+            ],
+            "unresolvedCofactorDecimal": "1",
+            "testedThroughOddCandidateDecimal": "11",
+            "reconstructionVerified": true,
+            "magnitudeIsPrime": false,
+            "integerIsPrime": false,
+            "work": {
+              "radixExtractions": "0",
+              "oddCandidatesExamined": "5",
+              "remainderChecks": "6",
+              "exactFactorDivisions": "1"
+            },
+            "structure": "3 * 163",
+            "claimCeiling": "Exact for this input under deterministic ordered trial division; this is not a succinct primality certificate or a general factoring-performance claim."
+          },
+          {
+            "schema": "prime-axiom-prime-receipt-v1",
+            "protocolId": "PAS-BUILD003-PRIME-RECEIPT-0001",
+            "receiptId": "33956CE3E967DF798D72902BB140102679783568199D335584213188D01B3B8C",
+            "algorithm": "ORDERED_TRIAL_DIVISION_V1",
+            "origin": "DiscoveredFromMagnitude",
+            "parentReceiptIds": [],
+            "policy": {
+              "maxOddCandidates": "1000000"
+            },
+            "canonicalInputDecimal": "175",
+            "inputSha256": "DAC53C17C250FD4D4D81EAF6D88435676DAC1F3F3896441E277AF839BF50ED8A",
+            "sign": "1",
+            "absoluteBitLength": "8",
+            "status": "ExactFactorization",
+            "primePowers": [
+              {
+                "primeDecimal": "5",
+                "exponent": "2",
+                "proofKind": "OrderedTrialDivision"
+              },
+              {
+                "primeDecimal": "7",
+                "exponent": "1",
+                "proofKind": "TerminalResidualBound"
+              }
+            ],
+            "unresolvedCofactorDecimal": "1",
+            "testedThroughOddCandidateDecimal": "5",
+            "reconstructionVerified": true,
+            "magnitudeIsPrime": false,
+            "integerIsPrime": false,
+            "work": {
+              "radixExtractions": "0",
+              "oddCandidatesExamined": "2",
+              "remainderChecks": "4",
+              "exactFactorDivisions": "2"
+            },
+            "structure": "5^2 * 7",
+            "claimCeiling": "Exact for this input under deterministic ordered trial division; this is not a succinct primality certificate or a general factoring-performance claim."
+          },
+          {
+            "schema": "prime-axiom-prime-receipt-v1",
+            "protocolId": "PAS-BUILD003-PRIME-RECEIPT-0001",
+            "receiptId": "F45A61624651B98C844B5B9AE34487016A11651258FBD123E0E6F88ED0ABF93B",
+            "algorithm": "ORDERED_TRIAL_DIVISION_V1",
+            "origin": "DiscoveredFromMagnitude",
+            "parentReceiptIds": [],
+            "policy": {
+              "maxOddCandidates": "1000000"
+            },
+            "canonicalInputDecimal": "17",
+            "inputSha256": "4523540F1504CD17100C4835E85B7EEFD49911580F8EFFF0599A8F283BE6B9E3",
+            "sign": "1",
+            "absoluteBitLength": "5",
+            "status": "ExactFactorization",
+            "primePowers": [
+              {
+                "primeDecimal": "17",
+                "exponent": "1",
+                "proofKind": "TerminalResidualBound"
+              }
+            ],
+            "unresolvedCofactorDecimal": "1",
+            "testedThroughOddCandidateDecimal": "3",
+            "reconstructionVerified": true,
+            "magnitudeIsPrime": true,
+            "integerIsPrime": true,
+            "work": {
+              "radixExtractions": "0",
+              "oddCandidatesExamined": "1",
+              "remainderChecks": "1",
+              "exactFactorDivisions": "0"
+            },
+            "structure": "17",
+            "claimCeiling": "Exact for this input under deterministic ordered trial division; this is not a succinct primality certificate or a general factoring-performance claim."
+          }
+        ],
+        "outputReceipt": {
+          "schema": "prime-axiom-prime-receipt-v1",
+          "protocolId": "PAS-BUILD003-PRIME-RECEIPT-0001",
+          "receiptId": "062CAEE72326AC1868BF1C52C40C1D6447E92E8CBBAAC1DB2F0BE2EFC69E73E1",
+          "algorithm": "EXPONENT_MAP_COMPOSITION_V1",
+          "origin": "ComposedFromReceipts",
+          "parentReceiptIds": [
+            "83D65B546D22024C3B3C343868562CF79DD6AD952BFD50CCBBD522DB13464C50",
+            "7A926C24807A38B26B5CBB3F19BBDE0A26A401C27D75E5FFFB0BAE8191A1D9F5",
+            "33956CE3E967DF798D72902BB140102679783568199D335584213188D01B3B8C",
+            "F45A61624651B98C844B5B9AE34487016A11651258FBD123E0E6F88ED0ABF93B"
+          ],
+          "policy": null,
+          "canonicalInputDecimal": "317140950",
+          "inputSha256": "A6163DA4935FA401D351ED84395CF12EBBEC060F2E804BC371D9705734D8B427",
+          "sign": "1",
+          "absoluteBitLength": "29",
+          "status": "ExactFactorization",
+          "primePowers": [
+            {
+              "primeDecimal": "2",
+              "exponent": "1",
+              "proofKind": "InheritedFromParentReceipts"
+            },
+            {
+              "primeDecimal": "3",
+              "exponent": "1",
+              "proofKind": "InheritedFromParentReceipts"
+            },
+            {
+              "primeDecimal": "5",
+              "exponent": "2",
+              "proofKind": "InheritedFromParentReceipts"
+            },
+            {
+              "primeDecimal": "7",
+              "exponent": "1",
+              "proofKind": "InheritedFromParentReceipts"
+            },
+            {
+              "primeDecimal": "17",
+              "exponent": "1",
+              "proofKind": "InheritedFromParentReceipts"
+            },
+            {
+              "primeDecimal": "109",
+              "exponent": "1",
+              "proofKind": "InheritedFromParentReceipts"
+            },
+            {
+              "primeDecimal": "163",
+              "exponent": "1",
+              "proofKind": "InheritedFromParentReceipts"
+            }
+          ],
+          "unresolvedCofactorDecimal": "1",
+          "testedThroughOddCandidateDecimal": "1",
+          "reconstructionVerified": true,
+          "magnitudeIsPrime": false,
+          "integerIsPrime": false,
+          "work": {
+            "radixExtractions": "0",
+            "oddCandidatesExamined": "0",
+            "remainderChecks": "0",
+            "exactFactorDivisions": "0"
+          },
+          "structure": "2 * 3 * 5^2 * 7 * 17 * 109 * 163",
+          "claimCeiling": "Exact exponent-map composition from reconstruction-verified parent receipts; parent acquisition and required magnitude reconstruction are not free."
+        },
+        "commonCertifiedPrimePowers": [],
+        "events": [
+          {
+            "sequence": "1",
+            "phase": "INGRESS",
+            "operationClass": "REQUIRES_FACTOR_DISCOVERY",
+            "operation": "FACTOR_OPERAND",
+            "detail": "Acquire operand receipt 0 from ordinary magnitude.",
+            "receiptId": "83D65B546D22024C3B3C343868562CF79DD6AD952BFD50CCBBD522DB13464C50"
+          },
+          {
+            "sequence": "2",
+            "phase": "INGRESS",
+            "operationClass": "REQUIRES_FACTOR_DISCOVERY",
+            "operation": "FACTOR_OPERAND",
+            "detail": "Acquire operand receipt 1 from ordinary magnitude.",
+            "receiptId": "7A926C24807A38B26B5CBB3F19BBDE0A26A401C27D75E5FFFB0BAE8191A1D9F5"
+          },
+          {
+            "sequence": "3",
+            "phase": "INGRESS",
+            "operationClass": "REQUIRES_FACTOR_DISCOVERY",
+            "operation": "FACTOR_OPERAND",
+            "detail": "Acquire operand receipt 2 from ordinary magnitude.",
+            "receiptId": "33956CE3E967DF798D72902BB140102679783568199D335584213188D01B3B8C"
+          },
+          {
+            "sequence": "4",
+            "phase": "INGRESS",
+            "operationClass": "REQUIRES_FACTOR_DISCOVERY",
+            "operation": "FACTOR_OPERAND",
+            "detail": "Acquire operand receipt 3 from ordinary magnitude.",
+            "receiptId": "F45A61624651B98C844B5B9AE34487016A11651258FBD123E0E6F88ED0ABF93B"
+          },
+          {
+            "sequence": "5",
+            "phase": "EXECUTE",
+            "operationClass": "REPRESENTATION_LOCAL",
+            "operation": "MERGE_EXPONENTS",
+            "detail": "Merge identical prime identities and add their exponents; the product is not refactored.",
+            "receiptId": "062CAEE72326AC1868BF1C52C40C1D6447E92E8CBBAAC1DB2F0BE2EFC69E73E1"
+          },
+          {
+            "sequence": "6",
+            "phase": "EGRESS",
+            "operationClass": "CROSS_REPRESENTATION",
+            "operation": "RECONSTRUCT_MAGNITUDE",
+            "detail": "One exact ordinary magnitude is required by the output contract.",
+            "receiptId": "062CAEE72326AC1868BF1C52C40C1D6447E92E8CBBAAC1DB2F0BE2EFC69E73E1"
+          },
+          {
+            "sequence": "7",
+            "phase": "VERIFY",
+            "operationClass": "BINARY_MAGNITUDE_LOCAL",
+            "operation": "DIFFERENTIAL_CHECK",
+            "detail": "Compare the reconstructed structural product with the independent ordinary product.",
+            "receiptId": "062CAEE72326AC1868BF1C52C40C1D6447E92E8CBBAAC1DB2F0BE2EFC69E73E1"
+          }
+        ],
+        "work": {
+          "factorizationCalls": "4",
+          "radixExtractions": "1",
+          "oddCandidatesExamined": "12",
+          "remainderChecks": "15",
+          "exactFactorDivisions": "3",
+          "exponentReads": "7",
+          "exponentWrites": "7",
+          "exponentMerges": "0",
+          "magnitudeAdditions": "0",
+          "receiptConstructionReconstructions": "5",
+          "integrityReplayReconstructions": "4",
+          "egressReconstructions": "1",
+          "reconstructions": "10"
+        },
+        "exactStructureCompleted": true,
+        "oracleVerified": true,
+        "localityConclusion": "LOCAL_EXPONENT_MERGE_AFTER_EXPLICIT_ACQUISITION",
+        "claimCeiling": "Exponent merge is local only after exact receipts exist; cold factor discovery and the required final magnitude reconstruction remain charged."
+      },
+      "pathsAgree": true,
+      "aiComparisonBoundary": "This compares public deterministic arithmetic strategies, not hidden chain of thought, model understanding, or general LLM accuracy."
+    },
+    {
+      "schema": "prime-axiom-arithmetic-comparison-v1",
+      "protocolId": "PAS-BUILD003-PRIME-RECEIPT-0001",
+      "id": "ADD_REORGANIZE_001",
+      "operation": "ADD",
+      "expression": "9999999967 \u002B 33",
+      "operandsDecimal": [
+        "9999999967",
+        "33"
+      ],
+      "outputObligation": "MAGNITUDE_AND_RECEIPT",
+      "ordinaryPath": {
+        "strategy": "EXPLICIT_DECIMAL_BASELINE_TRACE",
+        "algorithm": "COLUMN_ADD_DECIMAL_V1",
+        "resultDecimal": "10000000000",
+        "columnSteps": [
+          {
+            "columnFromRight": "0",
+            "leftDigit": "7",
+            "rightDigit": "3",
+            "carryIn": "0",
+            "rawTotal": "10",
+            "resultDigit": "0",
+            "carryOut": "1"
+          },
+          {
+            "columnFromRight": "1",
+            "leftDigit": "6",
+            "rightDigit": "3",
+            "carryIn": "1",
+            "rawTotal": "10",
+            "resultDigit": "0",
+            "carryOut": "1"
+          },
+          {
+            "columnFromRight": "2",
+            "leftDigit": "9",
+            "rightDigit": "0",
+            "carryIn": "1",
+            "rawTotal": "10",
+            "resultDigit": "0",
+            "carryOut": "1"
+          },
+          {
+            "columnFromRight": "3",
+            "leftDigit": "9",
+            "rightDigit": "0",
+            "carryIn": "1",
+            "rawTotal": "10",
+            "resultDigit": "0",
+            "carryOut": "1"
+          },
+          {
+            "columnFromRight": "4",
+            "leftDigit": "9",
+            "rightDigit": "0",
+            "carryIn": "1",
+            "rawTotal": "10",
+            "resultDigit": "0",
+            "carryOut": "1"
+          },
+          {
+            "columnFromRight": "5",
+            "leftDigit": "9",
+            "rightDigit": "0",
+            "carryIn": "1",
+            "rawTotal": "10",
+            "resultDigit": "0",
+            "carryOut": "1"
+          },
+          {
+            "columnFromRight": "6",
+            "leftDigit": "9",
+            "rightDigit": "0",
+            "carryIn": "1",
+            "rawTotal": "10",
+            "resultDigit": "0",
+            "carryOut": "1"
+          },
+          {
+            "columnFromRight": "7",
+            "leftDigit": "9",
+            "rightDigit": "0",
+            "carryIn": "1",
+            "rawTotal": "10",
+            "resultDigit": "0",
+            "carryOut": "1"
+          },
+          {
+            "columnFromRight": "8",
+            "leftDigit": "9",
+            "rightDigit": "0",
+            "carryIn": "1",
+            "rawTotal": "10",
+            "resultDigit": "0",
+            "carryOut": "1"
+          },
+          {
+            "columnFromRight": "9",
+            "leftDigit": "9",
+            "rightDigit": "0",
+            "carryIn": "1",
+            "rawTotal": "10",
+            "resultDigit": "0",
+            "carryOut": "1"
+          }
+        ],
+        "multiplicationSteps": [],
+        "work": {
+          "decimalColumns": "10",
+          "digitAdditions": "20",
+          "carryEvents": "10",
+          "sequentialMagnitudeMultiplications": "0"
+        },
+        "oracleVerified": true,
+        "claimCeiling": "Replayable public decimal-column algorithm; counts are not tokens, latency, or private model reasoning."
+      },
+      "primePath": {
+        "strategy": "PRIME_RECEIPT_TOOL_PATH",
+        "resultDecimal": "10000000000",
+        "inputReceipts": [
+          {
+            "schema": "prime-axiom-prime-receipt-v1",
+            "protocolId": "PAS-BUILD003-PRIME-RECEIPT-0001",
+            "receiptId": "31C134E128A9F97D1A8C6832716082B6555F57A00AF3A720011EA07EA242F874",
+            "algorithm": "ORDERED_TRIAL_DIVISION_V1",
+            "origin": "DiscoveredFromMagnitude",
+            "parentReceiptIds": [],
+            "policy": {
+              "maxOddCandidates": "1000000"
+            },
+            "canonicalInputDecimal": "9999999967",
+            "inputSha256": "A1CF12FE7B00D6352579B1BCF34F8F0749BF0B6A97747358F96D025AC29B8C05",
+            "sign": "1",
+            "absoluteBitLength": "34",
+            "status": "ExactFactorization",
+            "primePowers": [
+              {
+                "primeDecimal": "9999999967",
+                "exponent": "1",
+                "proofKind": "TerminalResidualBound"
+              }
+            ],
+            "unresolvedCofactorDecimal": "1",
+            "testedThroughOddCandidateDecimal": "99999",
+            "reconstructionVerified": true,
+            "magnitudeIsPrime": true,
+            "integerIsPrime": true,
+            "work": {
+              "radixExtractions": "0",
+              "oddCandidatesExamined": "49999",
+              "remainderChecks": "49999",
+              "exactFactorDivisions": "0"
+            },
+            "structure": "9999999967",
+            "claimCeiling": "Exact for this input under deterministic ordered trial division; this is not a succinct primality certificate or a general factoring-performance claim."
+          },
+          {
+            "schema": "prime-axiom-prime-receipt-v1",
+            "protocolId": "PAS-BUILD003-PRIME-RECEIPT-0001",
+            "receiptId": "51E6A850F476734ED0D64D015C652F3190B90697D769B85A0EC81EC57A53F59A",
+            "algorithm": "ORDERED_TRIAL_DIVISION_V1",
+            "origin": "DiscoveredFromMagnitude",
+            "parentReceiptIds": [],
+            "policy": {
+              "maxOddCandidates": "1000000"
+            },
+            "canonicalInputDecimal": "33",
+            "inputSha256": "C6F3AC57944A531490CD39902D0F777715FD005EFAC9A30622D5F5205E7F6894",
+            "sign": "1",
+            "absoluteBitLength": "6",
+            "status": "ExactFactorization",
+            "primePowers": [
+              {
+                "primeDecimal": "3",
+                "exponent": "1",
+                "proofKind": "OrderedTrialDivision"
+              },
+              {
+                "primeDecimal": "11",
+                "exponent": "1",
+                "proofKind": "TerminalResidualBound"
+              }
+            ],
+            "unresolvedCofactorDecimal": "1",
+            "testedThroughOddCandidateDecimal": "3",
+            "reconstructionVerified": true,
+            "magnitudeIsPrime": false,
+            "integerIsPrime": false,
+            "work": {
+              "radixExtractions": "0",
+              "oddCandidatesExamined": "1",
+              "remainderChecks": "2",
+              "exactFactorDivisions": "1"
+            },
+            "structure": "3 * 11",
+            "claimCeiling": "Exact for this input under deterministic ordered trial division; this is not a succinct primality certificate or a general factoring-performance claim."
+          }
+        ],
+        "outputReceipt": {
+          "schema": "prime-axiom-prime-receipt-v1",
+          "protocolId": "PAS-BUILD003-PRIME-RECEIPT-0001",
+          "receiptId": "C377213C57680EA19289B9F6C70332272AFF86C5BB117B90219D40BF080485AF",
+          "algorithm": "ORDERED_TRIAL_DIVISION_V1",
+          "origin": "FactoredAfterMagnitudeAddition",
+          "parentReceiptIds": [
+            "31C134E128A9F97D1A8C6832716082B6555F57A00AF3A720011EA07EA242F874",
+            "51E6A850F476734ED0D64D015C652F3190B90697D769B85A0EC81EC57A53F59A"
+          ],
+          "policy": {
+            "maxOddCandidates": "1000000"
+          },
+          "canonicalInputDecimal": "10000000000",
+          "inputSha256": "E476A1537B03D06DB3FFFFDBE4AC07A137333C5F6EF58D7375A4238751D7C3D8",
+          "sign": "1",
+          "absoluteBitLength": "34",
+          "status": "ExactFactorization",
+          "primePowers": [
+            {
+              "primeDecimal": "2",
+              "exponent": "10",
+              "proofKind": "RadixPrime"
+            },
+            {
+              "primeDecimal": "5",
+              "exponent": "10",
+              "proofKind": "OrderedTrialDivision"
+            }
+          ],
+          "unresolvedCofactorDecimal": "1",
+          "testedThroughOddCandidateDecimal": "5",
+          "reconstructionVerified": true,
+          "magnitudeIsPrime": false,
+          "integerIsPrime": false,
+          "work": {
+            "radixExtractions": "10",
+            "oddCandidatesExamined": "2",
+            "remainderChecks": "11",
+            "exactFactorDivisions": "10"
+          },
+          "structure": "2^10 * 5^10",
+          "claimCeiling": "Exact for this input under deterministic ordered trial division; this is not a succinct primality certificate or a general factoring-performance claim."
+        },
+        "commonCertifiedPrimePowers": [],
+        "events": [
+          {
+            "sequence": "1",
+            "phase": "INGRESS",
+            "operationClass": "REQUIRES_FACTOR_DISCOVERY",
+            "operation": "FACTOR_LEFT",
+            "detail": "Acquire an auditable receipt from the first ordinary magnitude.",
+            "receiptId": "31C134E128A9F97D1A8C6832716082B6555F57A00AF3A720011EA07EA242F874"
+          },
+          {
+            "sequence": "2",
+            "phase": "INGRESS",
+            "operationClass": "REQUIRES_FACTOR_DISCOVERY",
+            "operation": "FACTOR_RIGHT",
+            "detail": "Acquire an auditable receipt from the second ordinary magnitude.",
+            "receiptId": "51E6A850F476734ED0D64D015C652F3190B90697D769B85A0EC81EC57A53F59A"
+          },
+          {
+            "sequence": "3",
+            "phase": "EXECUTE",
+            "operationClass": "BINARY_MAGNITUDE_LOCAL",
+            "operation": "ADD_MAGNITUDES",
+            "detail": "General exact addition remains an ordinary magnitude operation.",
+            "receiptId": null
+          },
+          {
+            "sequence": "4",
+            "phase": "ADDITION_RECOVERY",
+            "operationClass": "REQUIRES_FACTOR_DISCOVERY",
+            "operation": "FACTOR_SUM",
+            "detail": "The output prime structure is freshly discovered; it is not obtained by exponent merge.",
+            "receiptId": "C377213C57680EA19289B9F6C70332272AFF86C5BB117B90219D40BF080485AF"
+          },
+          {
+            "sequence": "5",
+            "phase": "VERIFY",
+            "operationClass": "CROSS_REPRESENTATION",
+            "operation": "VERIFY_RECEIPTS",
+            "detail": "Reconstruct every receipt and compare the final exact magnitude.",
+            "receiptId": "C377213C57680EA19289B9F6C70332272AFF86C5BB117B90219D40BF080485AF"
+          }
+        ],
+        "work": {
+          "factorizationCalls": "3",
+          "radixExtractions": "10",
+          "oddCandidatesExamined": "50002",
+          "remainderChecks": "50012",
+          "exactFactorDivisions": "11",
+          "exponentReads": "3",
+          "exponentWrites": "0",
+          "exponentMerges": "0",
+          "magnitudeAdditions": "1",
+          "receiptConstructionReconstructions": "3",
+          "integrityReplayReconstructions": "2",
+          "egressReconstructions": "1",
+          "reconstructions": "6"
+        },
+        "exactStructureCompleted": true,
+        "oracleVerified": true,
+        "localityConclusion": "MAGNITUDE_ADD_THEN_FRESH_FACTOR_DISCOVERY",
+        "claimCeiling": "The receipts expose exact structure when complete, but they do not make general addition representation-local or remove acquisition work."
+      },
+      "pathsAgree": true,
+      "aiComparisonBoundary": "This compares public deterministic arithmetic strategies, not hidden chain of thought, model understanding, or general LLM accuracy."
+    },
+    {
+      "schema": "prime-axiom-arithmetic-comparison-v1",
+      "protocolId": "PAS-BUILD003-PRIME-RECEIPT-0001",
+      "id": "ADD_RADIX_BOUNDARY_001",
+      "operation": "ADD",
+      "expression": "4294967296 \u002B 1",
+      "operandsDecimal": [
+        "4294967296",
+        "1"
+      ],
+      "outputObligation": "MAGNITUDE_AND_RECEIPT",
+      "ordinaryPath": {
+        "strategy": "EXPLICIT_DECIMAL_BASELINE_TRACE",
+        "algorithm": "COLUMN_ADD_DECIMAL_V1",
+        "resultDecimal": "4294967297",
+        "columnSteps": [
+          {
+            "columnFromRight": "0",
+            "leftDigit": "6",
+            "rightDigit": "1",
+            "carryIn": "0",
+            "rawTotal": "7",
+            "resultDigit": "7",
+            "carryOut": "0"
+          },
+          {
+            "columnFromRight": "1",
+            "leftDigit": "9",
+            "rightDigit": "0",
+            "carryIn": "0",
+            "rawTotal": "9",
+            "resultDigit": "9",
+            "carryOut": "0"
+          },
+          {
+            "columnFromRight": "2",
+            "leftDigit": "2",
+            "rightDigit": "0",
+            "carryIn": "0",
+            "rawTotal": "2",
+            "resultDigit": "2",
+            "carryOut": "0"
+          },
+          {
+            "columnFromRight": "3",
+            "leftDigit": "7",
+            "rightDigit": "0",
+            "carryIn": "0",
+            "rawTotal": "7",
+            "resultDigit": "7",
+            "carryOut": "0"
+          },
+          {
+            "columnFromRight": "4",
+            "leftDigit": "6",
+            "rightDigit": "0",
+            "carryIn": "0",
+            "rawTotal": "6",
+            "resultDigit": "6",
+            "carryOut": "0"
+          },
+          {
+            "columnFromRight": "5",
+            "leftDigit": "9",
+            "rightDigit": "0",
+            "carryIn": "0",
+            "rawTotal": "9",
+            "resultDigit": "9",
+            "carryOut": "0"
+          },
+          {
+            "columnFromRight": "6",
+            "leftDigit": "4",
+            "rightDigit": "0",
+            "carryIn": "0",
+            "rawTotal": "4",
+            "resultDigit": "4",
+            "carryOut": "0"
+          },
+          {
+            "columnFromRight": "7",
+            "leftDigit": "9",
+            "rightDigit": "0",
+            "carryIn": "0",
+            "rawTotal": "9",
+            "resultDigit": "9",
+            "carryOut": "0"
+          },
+          {
+            "columnFromRight": "8",
+            "leftDigit": "2",
+            "rightDigit": "0",
+            "carryIn": "0",
+            "rawTotal": "2",
+            "resultDigit": "2",
+            "carryOut": "0"
+          },
+          {
+            "columnFromRight": "9",
+            "leftDigit": "4",
+            "rightDigit": "0",
+            "carryIn": "0",
+            "rawTotal": "4",
+            "resultDigit": "4",
+            "carryOut": "0"
+          }
+        ],
+        "multiplicationSteps": [],
+        "work": {
+          "decimalColumns": "10",
+          "digitAdditions": "20",
+          "carryEvents": "0",
+          "sequentialMagnitudeMultiplications": "0"
+        },
+        "oracleVerified": true,
+        "claimCeiling": "Replayable public decimal-column algorithm; counts are not tokens, latency, or private model reasoning."
+      },
+      "primePath": {
+        "strategy": "PRIME_RECEIPT_TOOL_PATH",
+        "resultDecimal": "4294967297",
+        "inputReceipts": [
+          {
+            "schema": "prime-axiom-prime-receipt-v1",
+            "protocolId": "PAS-BUILD003-PRIME-RECEIPT-0001",
+            "receiptId": "7656A615CE6603A3B6408E61330A90C906D369087245393A0C7458B1B642102F",
+            "algorithm": "ORDERED_TRIAL_DIVISION_V1",
+            "origin": "DiscoveredFromMagnitude",
+            "parentReceiptIds": [],
+            "policy": {
+              "maxOddCandidates": "1000000"
+            },
+            "canonicalInputDecimal": "4294967296",
+            "inputSha256": "6C1CA4002509BC24E93AA4211830738FCE7E205E41364E11301AC5A0635CB4B5",
+            "sign": "1",
+            "absoluteBitLength": "33",
+            "status": "ExactFactorization",
+            "primePowers": [
+              {
+                "primeDecimal": "2",
+                "exponent": "32",
+                "proofKind": "RadixPrime"
+              }
+            ],
+            "unresolvedCofactorDecimal": "1",
+            "testedThroughOddCandidateDecimal": "1",
+            "reconstructionVerified": true,
+            "magnitudeIsPrime": false,
+            "integerIsPrime": false,
+            "work": {
+              "radixExtractions": "32",
+              "oddCandidatesExamined": "0",
+              "remainderChecks": "0",
+              "exactFactorDivisions": "0"
+            },
+            "structure": "2^32",
+            "claimCeiling": "Exact for this input under deterministic ordered trial division; this is not a succinct primality certificate or a general factoring-performance claim."
+          },
+          {
+            "schema": "prime-axiom-prime-receipt-v1",
+            "protocolId": "PAS-BUILD003-PRIME-RECEIPT-0001",
+            "receiptId": "B71952B3C0E10EACCD65AC5F1C847299D1B936BB89EB4AFBD06FCB6BC27FFA39",
+            "algorithm": "ORDERED_TRIAL_DIVISION_V1",
+            "origin": "DiscoveredFromMagnitude",
+            "parentReceiptIds": [],
+            "policy": {
+              "maxOddCandidates": "1000000"
+            },
+            "canonicalInputDecimal": "1",
+            "inputSha256": "6B86B273FF34FCE19D6B804EFF5A3F5747ADA4EAA22F1D49C01E52DDB7875B4B",
+            "sign": "1",
+            "absoluteBitLength": "1",
+            "status": "ExactUnit",
+            "primePowers": [],
+            "unresolvedCofactorDecimal": "1",
+            "testedThroughOddCandidateDecimal": "1",
+            "reconstructionVerified": true,
+            "magnitudeIsPrime": false,
+            "integerIsPrime": false,
+            "work": {
+              "radixExtractions": "0",
+              "oddCandidatesExamined": "0",
+              "remainderChecks": "0",
+              "exactFactorDivisions": "0"
+            },
+            "structure": "1",
+            "claimCeiling": "Exact for this input under deterministic ordered trial division; this is not a succinct primality certificate or a general factoring-performance claim."
+          }
+        ],
+        "outputReceipt": {
+          "schema": "prime-axiom-prime-receipt-v1",
+          "protocolId": "PAS-BUILD003-PRIME-RECEIPT-0001",
+          "receiptId": "CC91595B8DC765DA46D103E8FFA380E08E8C5DC583BD8536F601C614A70802C3",
+          "algorithm": "ORDERED_TRIAL_DIVISION_V1",
+          "origin": "FactoredAfterMagnitudeAddition",
+          "parentReceiptIds": [
+            "7656A615CE6603A3B6408E61330A90C906D369087245393A0C7458B1B642102F",
+            "B71952B3C0E10EACCD65AC5F1C847299D1B936BB89EB4AFBD06FCB6BC27FFA39"
+          ],
+          "policy": {
+            "maxOddCandidates": "1000000"
+          },
+          "canonicalInputDecimal": "4294967297",
+          "inputSha256": "F8C90AC8F7617AD4F06AE6146BABF571448A1A511464DAAAD1DDD41D12F77EA6",
+          "sign": "1",
+          "absoluteBitLength": "33",
+          "status": "ExactFactorization",
+          "primePowers": [
+            {
+              "primeDecimal": "641",
+              "exponent": "1",
+              "proofKind": "OrderedTrialDivision"
+            },
+            {
+              "primeDecimal": "6700417",
+              "exponent": "1",
+              "proofKind": "TerminalResidualBound"
+            }
+          ],
+          "unresolvedCofactorDecimal": "1",
+          "testedThroughOddCandidateDecimal": "2587",
+          "reconstructionVerified": true,
+          "magnitudeIsPrime": false,
+          "integerIsPrime": false,
+          "work": {
+            "radixExtractions": "0",
+            "oddCandidatesExamined": "1293",
+            "remainderChecks": "1294",
+            "exactFactorDivisions": "1"
+          },
+          "structure": "641 * 6700417",
+          "claimCeiling": "Exact for this input under deterministic ordered trial division; this is not a succinct primality certificate or a general factoring-performance claim."
+        },
+        "commonCertifiedPrimePowers": [],
+        "events": [
+          {
+            "sequence": "1",
+            "phase": "INGRESS",
+            "operationClass": "REQUIRES_FACTOR_DISCOVERY",
+            "operation": "FACTOR_LEFT",
+            "detail": "Acquire an auditable receipt from the first ordinary magnitude.",
+            "receiptId": "7656A615CE6603A3B6408E61330A90C906D369087245393A0C7458B1B642102F"
+          },
+          {
+            "sequence": "2",
+            "phase": "INGRESS",
+            "operationClass": "REQUIRES_FACTOR_DISCOVERY",
+            "operation": "FACTOR_RIGHT",
+            "detail": "Acquire an auditable receipt from the second ordinary magnitude.",
+            "receiptId": "B71952B3C0E10EACCD65AC5F1C847299D1B936BB89EB4AFBD06FCB6BC27FFA39"
+          },
+          {
+            "sequence": "3",
+            "phase": "EXECUTE",
+            "operationClass": "BINARY_MAGNITUDE_LOCAL",
+            "operation": "ADD_MAGNITUDES",
+            "detail": "General exact addition remains an ordinary magnitude operation.",
+            "receiptId": null
+          },
+          {
+            "sequence": "4",
+            "phase": "ADDITION_RECOVERY",
+            "operationClass": "REQUIRES_FACTOR_DISCOVERY",
+            "operation": "FACTOR_SUM",
+            "detail": "The output prime structure is freshly discovered; it is not obtained by exponent merge.",
+            "receiptId": "CC91595B8DC765DA46D103E8FFA380E08E8C5DC583BD8536F601C614A70802C3"
+          },
+          {
+            "sequence": "5",
+            "phase": "VERIFY",
+            "operationClass": "CROSS_REPRESENTATION",
+            "operation": "VERIFY_RECEIPTS",
+            "detail": "Reconstruct every receipt and compare the final exact magnitude.",
+            "receiptId": "CC91595B8DC765DA46D103E8FFA380E08E8C5DC583BD8536F601C614A70802C3"
+          }
+        ],
+        "work": {
+          "factorizationCalls": "3",
+          "radixExtractions": "32",
+          "oddCandidatesExamined": "1293",
+          "remainderChecks": "1294",
+          "exactFactorDivisions": "1",
+          "exponentReads": "1",
+          "exponentWrites": "0",
+          "exponentMerges": "0",
+          "magnitudeAdditions": "1",
+          "receiptConstructionReconstructions": "2",
+          "integrityReplayReconstructions": "2",
+          "egressReconstructions": "1",
+          "reconstructions": "5"
+        },
+        "exactStructureCompleted": true,
+        "oracleVerified": true,
+        "localityConclusion": "MAGNITUDE_ADD_THEN_FRESH_FACTOR_DISCOVERY",
+        "claimCeiling": "The receipts expose exact structure when complete, but they do not make general addition representation-local or remove acquisition work."
+      },
+      "pathsAgree": true,
+      "aiComparisonBoundary": "This compares public deterministic arithmetic strategies, not hidden chain of thought, model understanding, or general LLM accuracy."
+    },
+    {
+      "schema": "prime-axiom-arithmetic-comparison-v1",
+      "protocolId": "PAS-BUILD003-PRIME-RECEIPT-0001",
+      "id": "MUL_COLD_PRIMES_001",
+      "operation": "MULTIPLY",
+      "expression": "104729 * 99991 * 97 * 89",
+      "operandsDecimal": [
+        "104729",
+        "99991",
+        "97",
+        "89"
+      ],
+      "outputObligation": "MAGNITUDE_AND_RECEIPT",
+      "ordinaryPath": {
+        "strategy": "EXPLICIT_DECIMAL_BASELINE_TRACE",
+        "algorithm": "SEQUENTIAL_MAGNITUDE_MULTIPLY_V1",
+        "resultDecimal": "90404408570887",
+        "columnSteps": [],
+        "multiplicationSteps": [
+          {
+            "step": "0",
+            "accumulatorBeforeDecimal": "104729",
+            "operandDecimal": "99991",
+            "accumulatorAfterDecimal": "10471957439"
+          },
+          {
+            "step": "1",
+            "accumulatorBeforeDecimal": "10471957439",
+            "operandDecimal": "97",
+            "accumulatorAfterDecimal": "1015779871583"
+          },
+          {
+            "step": "2",
+            "accumulatorBeforeDecimal": "1015779871583",
+            "operandDecimal": "89",
+            "accumulatorAfterDecimal": "90404408570887"
+          }
+        ],
+        "work": {
+          "decimalColumns": "0",
+          "digitAdditions": "0",
+          "carryEvents": "0",
+          "sequentialMagnitudeMultiplications": "3"
+        },
+        "oracleVerified": true,
+        "claimCeiling": "Replayable public left-fold multiplication; the BigInteger operations are explicit semantic baseline work, not a hardware or cognition metric."
+      },
+      "primePath": {
+        "strategy": "PRIME_RECEIPT_TOOL_PATH",
+        "resultDecimal": "90404408570887",
+        "inputReceipts": [
+          {
+            "schema": "prime-axiom-prime-receipt-v1",
+            "protocolId": "PAS-BUILD003-PRIME-RECEIPT-0001",
+            "receiptId": "CEDBE678CFB8EB688EECC10FC9B629981F50D8C9D94D8E278FAE0B3325FBF24F",
+            "algorithm": "ORDERED_TRIAL_DIVISION_V1",
+            "origin": "DiscoveredFromMagnitude",
+            "parentReceiptIds": [],
+            "policy": {
+              "maxOddCandidates": "1000000"
+            },
+            "canonicalInputDecimal": "104729",
+            "inputSha256": "3893C0271AC886A14EA7A1DEC5203387D0B1EEF91E5595804D3F85D72C82BAFC",
+            "sign": "1",
+            "absoluteBitLength": "17",
+            "status": "ExactFactorization",
+            "primePowers": [
+              {
+                "primeDecimal": "104729",
+                "exponent": "1",
+                "proofKind": "TerminalResidualBound"
+              }
+            ],
+            "unresolvedCofactorDecimal": "1",
+            "testedThroughOddCandidateDecimal": "323",
+            "reconstructionVerified": true,
+            "magnitudeIsPrime": true,
+            "integerIsPrime": true,
+            "work": {
+              "radixExtractions": "0",
+              "oddCandidatesExamined": "161",
+              "remainderChecks": "161",
+              "exactFactorDivisions": "0"
+            },
+            "structure": "104729",
+            "claimCeiling": "Exact for this input under deterministic ordered trial division; this is not a succinct primality certificate or a general factoring-performance claim."
+          },
+          {
+            "schema": "prime-axiom-prime-receipt-v1",
+            "protocolId": "PAS-BUILD003-PRIME-RECEIPT-0001",
+            "receiptId": "F12566C97FAEBABB6B302D62F915346D2CAA6704117FB1B85F47D4C6936EC167",
+            "algorithm": "ORDERED_TRIAL_DIVISION_V1",
+            "origin": "DiscoveredFromMagnitude",
+            "parentReceiptIds": [],
+            "policy": {
+              "maxOddCandidates": "1000000"
+            },
+            "canonicalInputDecimal": "99991",
+            "inputSha256": "30B2EBED06E5A12C599638517DB91B8CE583355E6C6B992A3E5638A03E0A79D9",
+            "sign": "1",
+            "absoluteBitLength": "17",
+            "status": "ExactFactorization",
+            "primePowers": [
+              {
+                "primeDecimal": "99991",
+                "exponent": "1",
+                "proofKind": "TerminalResidualBound"
+              }
+            ],
+            "unresolvedCofactorDecimal": "1",
+            "testedThroughOddCandidateDecimal": "315",
+            "reconstructionVerified": true,
+            "magnitudeIsPrime": true,
+            "integerIsPrime": true,
+            "work": {
+              "radixExtractions": "0",
+              "oddCandidatesExamined": "157",
+              "remainderChecks": "157",
+              "exactFactorDivisions": "0"
+            },
+            "structure": "99991",
+            "claimCeiling": "Exact for this input under deterministic ordered trial division; this is not a succinct primality certificate or a general factoring-performance claim."
+          },
+          {
+            "schema": "prime-axiom-prime-receipt-v1",
+            "protocolId": "PAS-BUILD003-PRIME-RECEIPT-0001",
+            "receiptId": "7A7ACE9265CAC06FBFF1FA7EE827E55C63D91A5249B12E7A52E84B03B117F25F",
+            "algorithm": "ORDERED_TRIAL_DIVISION_V1",
+            "origin": "DiscoveredFromMagnitude",
+            "parentReceiptIds": [],
+            "policy": {
+              "maxOddCandidates": "1000000"
+            },
+            "canonicalInputDecimal": "97",
+            "inputSha256": "D6D824ABBA4AFDE81129C71DEA75B8100E96338DA5F416D2F69088F1960CB091",
+            "sign": "1",
+            "absoluteBitLength": "7",
+            "status": "ExactFactorization",
+            "primePowers": [
+              {
+                "primeDecimal": "97",
+                "exponent": "1",
+                "proofKind": "TerminalResidualBound"
+              }
+            ],
+            "unresolvedCofactorDecimal": "1",
+            "testedThroughOddCandidateDecimal": "9",
+            "reconstructionVerified": true,
+            "magnitudeIsPrime": true,
+            "integerIsPrime": true,
+            "work": {
+              "radixExtractions": "0",
+              "oddCandidatesExamined": "4",
+              "remainderChecks": "4",
+              "exactFactorDivisions": "0"
+            },
+            "structure": "97",
+            "claimCeiling": "Exact for this input under deterministic ordered trial division; this is not a succinct primality certificate or a general factoring-performance claim."
+          },
+          {
+            "schema": "prime-axiom-prime-receipt-v1",
+            "protocolId": "PAS-BUILD003-PRIME-RECEIPT-0001",
+            "receiptId": "D882ACF10CDC40E0A129F891713C699544D31327A2D9180C2DBFFA5175F378C6",
+            "algorithm": "ORDERED_TRIAL_DIVISION_V1",
+            "origin": "DiscoveredFromMagnitude",
+            "parentReceiptIds": [],
+            "policy": {
+              "maxOddCandidates": "1000000"
+            },
+            "canonicalInputDecimal": "89",
+            "inputSha256": "CD70BEA023F752A0564ABB6ED08D42C1440F2E33E29914E55E0BE1595E24F45A",
+            "sign": "1",
+            "absoluteBitLength": "7",
+            "status": "ExactFactorization",
+            "primePowers": [
+              {
+                "primeDecimal": "89",
+                "exponent": "1",
+                "proofKind": "TerminalResidualBound"
+              }
+            ],
+            "unresolvedCofactorDecimal": "1",
+            "testedThroughOddCandidateDecimal": "9",
+            "reconstructionVerified": true,
+            "magnitudeIsPrime": true,
+            "integerIsPrime": true,
+            "work": {
+              "radixExtractions": "0",
+              "oddCandidatesExamined": "4",
+              "remainderChecks": "4",
+              "exactFactorDivisions": "0"
+            },
+            "structure": "89",
+            "claimCeiling": "Exact for this input under deterministic ordered trial division; this is not a succinct primality certificate or a general factoring-performance claim."
+          }
+        ],
+        "outputReceipt": {
+          "schema": "prime-axiom-prime-receipt-v1",
+          "protocolId": "PAS-BUILD003-PRIME-RECEIPT-0001",
+          "receiptId": "CEDDF1FEF9246F0A9AB9B2326A49A6599822C2E9CCADD63417C69AA4ECC6694E",
+          "algorithm": "EXPONENT_MAP_COMPOSITION_V1",
+          "origin": "ComposedFromReceipts",
+          "parentReceiptIds": [
+            "CEDBE678CFB8EB688EECC10FC9B629981F50D8C9D94D8E278FAE0B3325FBF24F",
+            "F12566C97FAEBABB6B302D62F915346D2CAA6704117FB1B85F47D4C6936EC167",
+            "7A7ACE9265CAC06FBFF1FA7EE827E55C63D91A5249B12E7A52E84B03B117F25F",
+            "D882ACF10CDC40E0A129F891713C699544D31327A2D9180C2DBFFA5175F378C6"
+          ],
+          "policy": null,
+          "canonicalInputDecimal": "90404408570887",
+          "inputSha256": "84E37A0E8472A6562E8EBCC84DF324E177839FD9D14320B109C1620D9990A20D",
+          "sign": "1",
+          "absoluteBitLength": "47",
+          "status": "ExactFactorization",
+          "primePowers": [
+            {
+              "primeDecimal": "89",
+              "exponent": "1",
+              "proofKind": "InheritedFromParentReceipts"
+            },
+            {
+              "primeDecimal": "97",
+              "exponent": "1",
+              "proofKind": "InheritedFromParentReceipts"
+            },
+            {
+              "primeDecimal": "99991",
+              "exponent": "1",
+              "proofKind": "InheritedFromParentReceipts"
+            },
+            {
+              "primeDecimal": "104729",
+              "exponent": "1",
+              "proofKind": "InheritedFromParentReceipts"
+            }
+          ],
+          "unresolvedCofactorDecimal": "1",
+          "testedThroughOddCandidateDecimal": "1",
+          "reconstructionVerified": true,
+          "magnitudeIsPrime": false,
+          "integerIsPrime": false,
+          "work": {
+            "radixExtractions": "0",
+            "oddCandidatesExamined": "0",
+            "remainderChecks": "0",
+            "exactFactorDivisions": "0"
+          },
+          "structure": "89 * 97 * 99991 * 104729",
+          "claimCeiling": "Exact exponent-map composition from reconstruction-verified parent receipts; parent acquisition and required magnitude reconstruction are not free."
+        },
+        "commonCertifiedPrimePowers": [],
+        "events": [
+          {
+            "sequence": "1",
+            "phase": "INGRESS",
+            "operationClass": "REQUIRES_FACTOR_DISCOVERY",
+            "operation": "FACTOR_OPERAND",
+            "detail": "Acquire operand receipt 0 from ordinary magnitude.",
+            "receiptId": "CEDBE678CFB8EB688EECC10FC9B629981F50D8C9D94D8E278FAE0B3325FBF24F"
+          },
+          {
+            "sequence": "2",
+            "phase": "INGRESS",
+            "operationClass": "REQUIRES_FACTOR_DISCOVERY",
+            "operation": "FACTOR_OPERAND",
+            "detail": "Acquire operand receipt 1 from ordinary magnitude.",
+            "receiptId": "F12566C97FAEBABB6B302D62F915346D2CAA6704117FB1B85F47D4C6936EC167"
+          },
+          {
+            "sequence": "3",
+            "phase": "INGRESS",
+            "operationClass": "REQUIRES_FACTOR_DISCOVERY",
+            "operation": "FACTOR_OPERAND",
+            "detail": "Acquire operand receipt 2 from ordinary magnitude.",
+            "receiptId": "7A7ACE9265CAC06FBFF1FA7EE827E55C63D91A5249B12E7A52E84B03B117F25F"
+          },
+          {
+            "sequence": "4",
+            "phase": "INGRESS",
+            "operationClass": "REQUIRES_FACTOR_DISCOVERY",
+            "operation": "FACTOR_OPERAND",
+            "detail": "Acquire operand receipt 3 from ordinary magnitude.",
+            "receiptId": "D882ACF10CDC40E0A129F891713C699544D31327A2D9180C2DBFFA5175F378C6"
+          },
+          {
+            "sequence": "5",
+            "phase": "EXECUTE",
+            "operationClass": "REPRESENTATION_LOCAL",
+            "operation": "MERGE_EXPONENTS",
+            "detail": "Merge identical prime identities and add their exponents; the product is not refactored.",
+            "receiptId": "CEDDF1FEF9246F0A9AB9B2326A49A6599822C2E9CCADD63417C69AA4ECC6694E"
+          },
+          {
+            "sequence": "6",
+            "phase": "EGRESS",
+            "operationClass": "CROSS_REPRESENTATION",
+            "operation": "RECONSTRUCT_MAGNITUDE",
+            "detail": "One exact ordinary magnitude is required by the output contract.",
+            "receiptId": "CEDDF1FEF9246F0A9AB9B2326A49A6599822C2E9CCADD63417C69AA4ECC6694E"
+          },
+          {
+            "sequence": "7",
+            "phase": "VERIFY",
+            "operationClass": "BINARY_MAGNITUDE_LOCAL",
+            "operation": "DIFFERENTIAL_CHECK",
+            "detail": "Compare the reconstructed structural product with the independent ordinary product.",
+            "receiptId": "CEDDF1FEF9246F0A9AB9B2326A49A6599822C2E9CCADD63417C69AA4ECC6694E"
+          }
+        ],
+        "work": {
+          "factorizationCalls": "4",
+          "radixExtractions": "0",
+          "oddCandidatesExamined": "326",
+          "remainderChecks": "326",
+          "exactFactorDivisions": "0",
+          "exponentReads": "4",
+          "exponentWrites": "4",
+          "exponentMerges": "0",
+          "magnitudeAdditions": "0",
+          "receiptConstructionReconstructions": "5",
+          "integrityReplayReconstructions": "4",
+          "egressReconstructions": "1",
+          "reconstructions": "10"
+        },
+        "exactStructureCompleted": true,
+        "oracleVerified": true,
+        "localityConclusion": "LOCAL_EXPONENT_MERGE_AFTER_EXPLICIT_ACQUISITION",
+        "claimCeiling": "Exponent merge is local only after exact receipts exist; cold factor discovery and the required final magnitude reconstruction remain charged."
+      },
+      "pathsAgree": true,
+      "aiComparisonBoundary": "This compares public deterministic arithmetic strategies, not hidden chain of thought, model understanding, or general LLM accuracy."
+    },
+    {
+      "schema": "prime-axiom-arithmetic-comparison-v1",
+      "protocolId": "PAS-BUILD003-PRIME-RECEIPT-0001",
+      "id": "MUL_FACTOR_RICH_001",
+      "operation": "MULTIPLY",
+      "expression": "360360 * 720720 * 17",
+      "operandsDecimal": [
+        "360360",
+        "720720",
+        "17"
+      ],
+      "outputObligation": "MAGNITUDE_AND_RECEIPT",
+      "ordinaryPath": {
+        "strategy": "EXPLICIT_DECIMAL_BASELINE_TRACE",
+        "algorithm": "SEQUENTIAL_MAGNITUDE_MULTIPLY_V1",
+        "resultDecimal": "4415217206400",
+        "columnSteps": [],
+        "multiplicationSteps": [
+          {
+            "step": "0",
+            "accumulatorBeforeDecimal": "360360",
+            "operandDecimal": "720720",
+            "accumulatorAfterDecimal": "259718659200"
+          },
+          {
+            "step": "1",
+            "accumulatorBeforeDecimal": "259718659200",
+            "operandDecimal": "17",
+            "accumulatorAfterDecimal": "4415217206400"
+          }
+        ],
+        "work": {
+          "decimalColumns": "0",
+          "digitAdditions": "0",
+          "carryEvents": "0",
+          "sequentialMagnitudeMultiplications": "2"
+        },
+        "oracleVerified": true,
+        "claimCeiling": "Replayable public left-fold multiplication; the BigInteger operations are explicit semantic baseline work, not a hardware or cognition metric."
+      },
+      "primePath": {
+        "strategy": "PRIME_RECEIPT_TOOL_PATH",
+        "resultDecimal": "4415217206400",
+        "inputReceipts": [
+          {
+            "schema": "prime-axiom-prime-receipt-v1",
+            "protocolId": "PAS-BUILD003-PRIME-RECEIPT-0001",
+            "receiptId": "C03B10E642FDCFEE3BD1F6DDD9B5FB0280B42F70AF476E0509772262039C97AB",
+            "algorithm": "ORDERED_TRIAL_DIVISION_V1",
+            "origin": "DiscoveredFromMagnitude",
+            "parentReceiptIds": [],
+            "policy": {
+              "maxOddCandidates": "1000000"
+            },
+            "canonicalInputDecimal": "360360",
+            "inputSha256": "197192FF8DAB5FFADFAA52556ED3BDF8246E88340E034ECA92F374AC68BCDCCF",
+            "sign": "1",
+            "absoluteBitLength": "19",
+            "status": "ExactFactorization",
+            "primePowers": [
+              {
+                "primeDecimal": "2",
+                "exponent": "3",
+                "proofKind": "RadixPrime"
+              },
+              {
+                "primeDecimal": "3",
+                "exponent": "2",
+                "proofKind": "OrderedTrialDivision"
+              },
+              {
+                "primeDecimal": "5",
+                "exponent": "1",
+                "proofKind": "OrderedTrialDivision"
+              },
+              {
+                "primeDecimal": "7",
+                "exponent": "1",
+                "proofKind": "OrderedTrialDivision"
+              },
+              {
+                "primeDecimal": "11",
+                "exponent": "1",
+                "proofKind": "OrderedTrialDivision"
+              },
+              {
+                "primeDecimal": "13",
+                "exponent": "1",
+                "proofKind": "TerminalResidualBound"
+              }
+            ],
+            "unresolvedCofactorDecimal": "1",
+            "testedThroughOddCandidateDecimal": "11",
+            "reconstructionVerified": true,
+            "magnitudeIsPrime": false,
+            "integerIsPrime": false,
+            "work": {
+              "radixExtractions": "3",
+              "oddCandidatesExamined": "5",
+              "remainderChecks": "10",
+              "exactFactorDivisions": "5"
+            },
+            "structure": "2^3 * 3^2 * 5 * 7 * 11 * 13",
+            "claimCeiling": "Exact for this input under deterministic ordered trial division; this is not a succinct primality certificate or a general factoring-performance claim."
+          },
+          {
+            "schema": "prime-axiom-prime-receipt-v1",
+            "protocolId": "PAS-BUILD003-PRIME-RECEIPT-0001",
+            "receiptId": "E9DC554C478FA8D9A6CE3E7E06D0778E504EE221707059D5060FB3587491F88E",
+            "algorithm": "ORDERED_TRIAL_DIVISION_V1",
+            "origin": "DiscoveredFromMagnitude",
+            "parentReceiptIds": [],
+            "policy": {
+              "maxOddCandidates": "1000000"
+            },
+            "canonicalInputDecimal": "720720",
+            "inputSha256": "073DAF56B9474874DCC01F6A5FBBCD9DC87F9BBCE535B7750E04758693F445B1",
+            "sign": "1",
+            "absoluteBitLength": "20",
+            "status": "ExactFactorization",
+            "primePowers": [
+              {
+                "primeDecimal": "2",
+                "exponent": "4",
+                "proofKind": "RadixPrime"
+              },
+              {
+                "primeDecimal": "3",
+                "exponent": "2",
+                "proofKind": "OrderedTrialDivision"
+              },
+              {
+                "primeDecimal": "5",
+                "exponent": "1",
+                "proofKind": "OrderedTrialDivision"
+              },
+              {
+                "primeDecimal": "7",
+                "exponent": "1",
+                "proofKind": "OrderedTrialDivision"
+              },
+              {
+                "primeDecimal": "11",
+                "exponent": "1",
+                "proofKind": "OrderedTrialDivision"
+              },
+              {
+                "primeDecimal": "13",
+                "exponent": "1",
+                "proofKind": "TerminalResidualBound"
+              }
+            ],
+            "unresolvedCofactorDecimal": "1",
+            "testedThroughOddCandidateDecimal": "11",
+            "reconstructionVerified": true,
+            "magnitudeIsPrime": false,
+            "integerIsPrime": false,
+            "work": {
+              "radixExtractions": "4",
+              "oddCandidatesExamined": "5",
+              "remainderChecks": "10",
+              "exactFactorDivisions": "5"
+            },
+            "structure": "2^4 * 3^2 * 5 * 7 * 11 * 13",
+            "claimCeiling": "Exact for this input under deterministic ordered trial division; this is not a succinct primality certificate or a general factoring-performance claim."
+          },
+          {
+            "schema": "prime-axiom-prime-receipt-v1",
+            "protocolId": "PAS-BUILD003-PRIME-RECEIPT-0001",
+            "receiptId": "F45A61624651B98C844B5B9AE34487016A11651258FBD123E0E6F88ED0ABF93B",
+            "algorithm": "ORDERED_TRIAL_DIVISION_V1",
+            "origin": "DiscoveredFromMagnitude",
+            "parentReceiptIds": [],
+            "policy": {
+              "maxOddCandidates": "1000000"
+            },
+            "canonicalInputDecimal": "17",
+            "inputSha256": "4523540F1504CD17100C4835E85B7EEFD49911580F8EFFF0599A8F283BE6B9E3",
+            "sign": "1",
+            "absoluteBitLength": "5",
+            "status": "ExactFactorization",
+            "primePowers": [
+              {
+                "primeDecimal": "17",
+                "exponent": "1",
+                "proofKind": "TerminalResidualBound"
+              }
+            ],
+            "unresolvedCofactorDecimal": "1",
+            "testedThroughOddCandidateDecimal": "3",
+            "reconstructionVerified": true,
+            "magnitudeIsPrime": true,
+            "integerIsPrime": true,
+            "work": {
+              "radixExtractions": "0",
+              "oddCandidatesExamined": "1",
+              "remainderChecks": "1",
+              "exactFactorDivisions": "0"
+            },
+            "structure": "17",
+            "claimCeiling": "Exact for this input under deterministic ordered trial division; this is not a succinct primality certificate or a general factoring-performance claim."
+          }
+        ],
+        "outputReceipt": {
+          "schema": "prime-axiom-prime-receipt-v1",
+          "protocolId": "PAS-BUILD003-PRIME-RECEIPT-0001",
+          "receiptId": "511D97B70A52FA7C6606BC3412C33120D68CE03AD3DF559269EABA848B3CF2F1",
+          "algorithm": "EXPONENT_MAP_COMPOSITION_V1",
+          "origin": "ComposedFromReceipts",
+          "parentReceiptIds": [
+            "C03B10E642FDCFEE3BD1F6DDD9B5FB0280B42F70AF476E0509772262039C97AB",
+            "E9DC554C478FA8D9A6CE3E7E06D0778E504EE221707059D5060FB3587491F88E",
+            "F45A61624651B98C844B5B9AE34487016A11651258FBD123E0E6F88ED0ABF93B"
+          ],
+          "policy": null,
+          "canonicalInputDecimal": "4415217206400",
+          "inputSha256": "1F2B0D242AEA42F5D591BCB9470656A6131C2E868914C310AF28E375FD71DF60",
+          "sign": "1",
+          "absoluteBitLength": "43",
+          "status": "ExactFactorization",
+          "primePowers": [
+            {
+              "primeDecimal": "2",
+              "exponent": "7",
+              "proofKind": "InheritedFromParentReceipts"
+            },
+            {
+              "primeDecimal": "3",
+              "exponent": "4",
+              "proofKind": "InheritedFromParentReceipts"
+            },
+            {
+              "primeDecimal": "5",
+              "exponent": "2",
+              "proofKind": "InheritedFromParentReceipts"
+            },
+            {
+              "primeDecimal": "7",
+              "exponent": "2",
+              "proofKind": "InheritedFromParentReceipts"
+            },
+            {
+              "primeDecimal": "11",
+              "exponent": "2",
+              "proofKind": "InheritedFromParentReceipts"
+            },
+            {
+              "primeDecimal": "13",
+              "exponent": "2",
+              "proofKind": "InheritedFromParentReceipts"
+            },
+            {
+              "primeDecimal": "17",
+              "exponent": "1",
+              "proofKind": "InheritedFromParentReceipts"
+            }
+          ],
+          "unresolvedCofactorDecimal": "1",
+          "testedThroughOddCandidateDecimal": "1",
+          "reconstructionVerified": true,
+          "magnitudeIsPrime": false,
+          "integerIsPrime": false,
+          "work": {
+            "radixExtractions": "0",
+            "oddCandidatesExamined": "0",
+            "remainderChecks": "0",
+            "exactFactorDivisions": "0"
+          },
+          "structure": "2^7 * 3^4 * 5^2 * 7^2 * 11^2 * 13^2 * 17",
+          "claimCeiling": "Exact exponent-map composition from reconstruction-verified parent receipts; parent acquisition and required magnitude reconstruction are not free."
+        },
+        "commonCertifiedPrimePowers": [],
+        "events": [
+          {
+            "sequence": "1",
+            "phase": "INGRESS",
+            "operationClass": "REQUIRES_FACTOR_DISCOVERY",
+            "operation": "FACTOR_OPERAND",
+            "detail": "Acquire operand receipt 0 from ordinary magnitude.",
+            "receiptId": "C03B10E642FDCFEE3BD1F6DDD9B5FB0280B42F70AF476E0509772262039C97AB"
+          },
+          {
+            "sequence": "2",
+            "phase": "INGRESS",
+            "operationClass": "REQUIRES_FACTOR_DISCOVERY",
+            "operation": "FACTOR_OPERAND",
+            "detail": "Acquire operand receipt 1 from ordinary magnitude.",
+            "receiptId": "E9DC554C478FA8D9A6CE3E7E06D0778E504EE221707059D5060FB3587491F88E"
+          },
+          {
+            "sequence": "3",
+            "phase": "INGRESS",
+            "operationClass": "REQUIRES_FACTOR_DISCOVERY",
+            "operation": "FACTOR_OPERAND",
+            "detail": "Acquire operand receipt 2 from ordinary magnitude.",
+            "receiptId": "F45A61624651B98C844B5B9AE34487016A11651258FBD123E0E6F88ED0ABF93B"
+          },
+          {
+            "sequence": "4",
+            "phase": "EXECUTE",
+            "operationClass": "REPRESENTATION_LOCAL",
+            "operation": "MERGE_EXPONENTS",
+            "detail": "Merge identical prime identities and add their exponents; the product is not refactored.",
+            "receiptId": "511D97B70A52FA7C6606BC3412C33120D68CE03AD3DF559269EABA848B3CF2F1"
+          },
+          {
+            "sequence": "5",
+            "phase": "EGRESS",
+            "operationClass": "CROSS_REPRESENTATION",
+            "operation": "RECONSTRUCT_MAGNITUDE",
+            "detail": "One exact ordinary magnitude is required by the output contract.",
+            "receiptId": "511D97B70A52FA7C6606BC3412C33120D68CE03AD3DF559269EABA848B3CF2F1"
+          },
+          {
+            "sequence": "6",
+            "phase": "VERIFY",
+            "operationClass": "BINARY_MAGNITUDE_LOCAL",
+            "operation": "DIFFERENTIAL_CHECK",
+            "detail": "Compare the reconstructed structural product with the independent ordinary product.",
+            "receiptId": "511D97B70A52FA7C6606BC3412C33120D68CE03AD3DF559269EABA848B3CF2F1"
+          }
+        ],
+        "work": {
+          "factorizationCalls": "3",
+          "radixExtractions": "7",
+          "oddCandidatesExamined": "11",
+          "remainderChecks": "21",
+          "exactFactorDivisions": "10",
+          "exponentReads": "13",
+          "exponentWrites": "7",
+          "exponentMerges": "6",
+          "magnitudeAdditions": "0",
+          "receiptConstructionReconstructions": "4",
+          "integrityReplayReconstructions": "3",
+          "egressReconstructions": "1",
+          "reconstructions": "8"
+        },
+        "exactStructureCompleted": true,
+        "oracleVerified": true,
+        "localityConclusion": "LOCAL_EXPONENT_MERGE_AFTER_EXPLICIT_ACQUISITION",
+        "claimCeiling": "Exponent merge is local only after exact receipts exist; cold factor discovery and the required final magnitude reconstruction remain charged."
+      },
+      "pathsAgree": true,
+      "aiComparisonBoundary": "This compares public deterministic arithmetic strategies, not hidden chain of thought, model understanding, or general LLM accuracy."
+    }
+  ],
+  "conclusions": {
+    "multiplication": "LOCAL_EXPONENT_MERGE_AFTER_EXPLICIT_ACQUISITION",
+    "addition": "MAGNITUDE_ADD_THEN_FRESH_FACTOR_DISCOVERY",
+    "generalLlmImprovement": "NOT_MEASURED"
+  },
+  "claimCeiling": "Bounded functional and deterministic-path evidence only; no hardware advantage, factoring-performance, private reasoning, model understanding, or general LLM accuracy claim."
+}
