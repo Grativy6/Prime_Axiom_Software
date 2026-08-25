@@ -126,6 +126,7 @@ internal static class Build002Workloads
                 Rational(width, 5, 13, 13, "shared unsupported prime"),
                 Rational(width, 6, 10, 15, "non-integral reduced result"),
                 Rational(width, 7, 7, 14, "proper fraction"),
+                Rational(width, 8, 7, 0, "denominator-zero atomic rejection boundary"),
             ],
             6 =>
             [
@@ -137,6 +138,7 @@ internal static class Build002Workloads
                 Rational(width, 5, 26, 39, "shared unsupported prime 13"),
                 Rational(width, 6, 34, 51, "shared unsupported prime 17"),
                 Rational(width, 7, 0, 11, "zero numerator"),
+                Rational(width, 8, 35, 0, "denominator-zero atomic rejection boundary"),
             ],
             8 =>
             [
@@ -148,6 +150,7 @@ internal static class Build002Workloads
                 Rational(width, 5, 209, 247, "shared unsupported prime 19"),
                 Rational(width, 6, 0, 143, "zero numerator with unsupported denominator"),
                 Rational(width, 7, 242, 154, "shared unsupported factor 22"),
+                Rational(width, 8, 210, 0, "denominator-zero atomic rejection boundary"),
             ],
             _ => throw new InvalidOperationException("Width validation failed."),
         };

@@ -150,6 +150,11 @@ internal static class Build002ExperimentRunner
                 width,
                 "SUBTRACTIVE_GCD_STEP",
                 BaselineAlgorithmHardware.BuildSubtractiveGcdMachine(width));
+            AddBaseline(
+                "BIN-SCALE-CANCEL-WARM",
+                width,
+                "INTEGRATED_SCALE_CANCEL",
+                WarmStructuralHardware.BuildBinaryScaleCancelMachine(width).Netlist);
 
             AddExperimental("VFU-BINEXP-S4", ExperimentalHardware.BuildBinaryExponentCompose(width));
             AddExperimental("VFU-BINEXP-S4", ExperimentalHardware.BuildBinaryExponentCancel(width));
@@ -157,6 +162,45 @@ internal static class Build002ExperimentRunner
             AddExperimental("VFU-BINEXP-S4", ExperimentalHardware.BuildBinaryExponentJoin(width));
             AddExperimental("VFU-BINEXP-S4", ExperimentalHardware.BuildBinaryExponentDivides(width));
             AddExperimental("VFU-BINEXP-S4", ExperimentalHardware.BuildBinaryExponentFunctionalUnit(width));
+            var warmStructural = WarmStructuralHardware.BuildScaleCancelMachine(width);
+            rows.Add(new Build002StaticCostRow(
+                "VFU-BINEXP-S4-WARM",
+                width,
+                warmStructural.Netlist.Name,
+                "INTEGRATED_SCALE_CANCEL",
+                "BINARY_EXPONENT",
+                warmStructural.EvidenceClass,
+                "FULLY_INTEGRATED_EXACT_S4_STATE",
+                warmStructural.Netlist.Metrics,
+                "Persistent DFF state, control/status, cap checks, malformed-state rejection, and atomic hold are charged."));
+            AddAdapter(
+                "VFU-BINEXP-S4",
+                width,
+                "COLD_ENCODE",
+                "BINARY_MAGNITUDE_TO_BINARY_EXPONENT",
+                RepresentationAdapterHardware.BuildMagnitudeToBinaryExponent(width).Netlist,
+                "Exact S4 valuations are emitted; support status distinguishes zero/S4-smooth values from unsupported cofactors.");
+            AddAdapter(
+                "VFU-BINEXP-S4",
+                width,
+                "RECONSTRUCT",
+                "BINARY_EXPONENT_TO_BINARY_MAGNITUDE",
+                RepresentationAdapterHardware.BuildBinaryExponentToMagnitude(width).Netlist,
+                "Malformed, saturated, and W-bit-overflow states are rejected explicitly.");
+            AddAdapter(
+                "PRESENCE-S4",
+                width,
+                "PROJECT_PRESENCE",
+                "BINARY_EXPONENT_TO_PRESENCE",
+                RepresentationAdapterHardware.BuildBinaryExponentPresence(width).Netlist,
+                "Lossy presence projection; multiplicity is intentionally not represented.");
+            AddAdapter(
+                "PRESENCE-S4",
+                width,
+                "PROJECT_PRESENCE",
+                "THERMOMETER_TO_PRESENCE",
+                RepresentationAdapterHardware.BuildThermometerPresence(width).Netlist,
+                "Lossy presence projection from canonical thermometer thresholds.");
             AddExperimental("VFU-THERM-S4", ExperimentalHardware.BuildThermometerCompose(width));
             AddExperimental("VFU-THERM-S4", ExperimentalHardware.BuildThermometerMeet(width));
             AddExperimental("VFU-THERM-S4", ExperimentalHardware.BuildThermometerJoin(width));
@@ -195,6 +239,26 @@ internal static class Build002ExperimentRunner
                 "IMPLEMENTED_OPERATION_ONLY",
                 circuit.Netlist.Metrics,
                 "No operand/result DFF boundary or binary acquisition/reconstruction adapter is included."));
+        }
+
+        void AddAdapter(
+            string implementation,
+            int width,
+            string operation,
+            string architecture,
+            NandNetlist netlist,
+            string notes)
+        {
+            rows.Add(new Build002StaticCostRow(
+                implementation,
+                width,
+                netlist.Name,
+                operation,
+                architecture,
+                "STRUCTURAL_DECLARED",
+                "IMPLEMENTED_ADAPTER",
+                netlist.Metrics,
+                notes));
         }
     }
 
@@ -297,6 +361,67 @@ internal static class Build002ExperimentRunner
                 "PREDICATE_ONLY",
                 correctness);
 
+            var coldEncoder = RepresentationAdapterHardware.BuildMagnitudeToBinaryExponent(width);
+            var encode = MeasureCircuit(
+                coldEncoder.Netlist,
+                MagnitudeEncoderInputs(coldEncoder),
+                (index, evaluation) =>
+                {
+                    var magnitude = (int)index;
+                    correctness.Check(
+                        IsOn(evaluation.Outputs[coldEncoder.Ports.ZeroOutput]) == (magnitude == 0),
+                        $"A/COLD_ENCODER/ZERO/W{width}/{magnitude}");
+                    foreach (var lane in coldEncoder.Ports.Lanes)
+                    {
+                        correctness.Check(
+                            ReadUnsigned(evaluation.Outputs, lane.ExponentOutputs) ==
+                            (magnitude == 0 ? 0 : Valuation(magnitude, lane.Prime)),
+                            $"A/COLD_ENCODER/LANE/W{width}/{magnitude}/P{lane.Prime}");
+                    }
+
+                    var smooth = TryEncodeSmooth(width, magnitude, out _);
+                    correctness.Check(
+                        IsOn(evaluation.Outputs[coldEncoder.Ports.SupportedOutput]) == smooth,
+                        $"A/COLD_ENCODER/SUPPORT/W{width}/{magnitude}");
+                });
+            AddMeasured(
+                $"A/VFU-BINEXP-S4/ENCODE/W{width}",
+                "VFU-BINEXP-S4",
+                width,
+                "ENCODE",
+                "COLD_MAG",
+                "STRUCTURAL_FINAL",
+                coldEncoder.EvidenceClass,
+                "EXACT_CATALOG_VALUATIONS_SUPPORT_TAGGED",
+                encode,
+                "Runtime is an emitted NAND truth-table adapter; construction-time arithmetic only selects fixed minterms.");
+
+            var reconstruction = RepresentationAdapterHardware.BuildBinaryExponentToMagnitude(width);
+            var reconstruct = MeasureCircuit(
+                reconstruction.Netlist,
+                DecoderInputs(reconstruction, structuralStates),
+                (index, evaluation) =>
+                {
+                    var state = structuralStates[(int)index];
+                    var expected = state.Reconstruct();
+                    correctness.Check(
+                        expected.Succeeded && IsOn(evaluation.Outputs[reconstruction.Ports.AcceptedOutput]) &&
+                        ReadUnsigned(evaluation.Outputs, reconstruction.Ports.MagnitudeOutputs) ==
+                        (int)expected.Value!.Value,
+                        $"A/RECONSTRUCT/W{width}/{index}");
+                });
+            AddMeasured(
+                $"A/VFU-BINEXP-S4/RECONSTRUCT/W{width}",
+                "VFU-BINEXP-S4",
+                width,
+                "RECONSTRUCT",
+                "WARM_RESIDENT",
+                "MAGNITUDE_FINAL",
+                reconstruction.EvidenceClass,
+                "FULL_EXACT_COMMON_W_BIT_DOMAIN",
+                reconstruct,
+                "Every common-domain exact state is reconstructed; malformed/saturated/overflow rejection is tested separately.");
+
             var gcdNetlist = BaselineAlgorithmHardware.BuildSubtractiveGcdMachine(width);
             long gcdCases = 0;
             long gcdCycles = 0;
@@ -341,14 +466,6 @@ internal static class Build002ExperimentRunner
                 "PREDICATE_ONLY",
                 magnitudeLimit,
                 "Exact sidecar semantics exist, but no integrated sidecar acquisition/query NAND circuit is implemented."));
-            rows.Add(NotMeasuredDynamicRow(
-                "VFU-BINEXP-S4",
-                width,
-                "ENCODE_COMPOSE_RECONSTRUCT",
-                "COLD_MAG",
-                "MAGNITUDE_FINAL",
-                structuralStates.Count * structuralStates.Count,
-                "Cold acquisition and reconstruction NAND adapters are not implemented; native compose is reported separately."));
         }
 
         return new DynamicEvidence(rows, measurements);
@@ -520,19 +637,9 @@ internal static class Build002ExperimentRunner
             {
                 var execution = RunStructuralTrace(trace, correctness);
                 AddStructuralTraceRows(rows, trace, execution);
+                rows.Add(RunIntegratedWarmStructuralTrace(trace, correctness));
+                rows.Add(RunIntegratedWarmBinaryTrace(trace, correctness));
             }
-
-            rows.Add(NotMeasuredWorkload(
-                "B",
-                $"B-W{width}-BIN-INTEGRATED",
-                "BIN-FU",
-                width,
-                "WARM_GENERATED",
-                "MAGNITUDE_FINAL",
-                "EXECUTE",
-                32,
-                "FULL_BINARY",
-                "Per-operation multiplier/divider circuits exist, but the atomic W-bit overflow/rejection controller is not integrated."));
 
             AddMeasurement(
                 "C",
@@ -619,17 +726,58 @@ internal static class Build002ExperimentRunner
                 Build002Workloads.HostileValues(width).Count,
                 "AUTHORITATIVE_MAGNITUDE_SEMANTICS_ONLY",
                 "Hostile values and state overhead are recorded, but frequent-addition/reconstruction/support-thrash hardware traces are NOT_MEASURED."));
-            rows.Add(NotMeasuredWorkload(
-                "R",
-                $"R-W{width}-CONVERTERS",
-                "REPRESENTATION-SEARCH",
+            var domain = ValuationHardwareDomain.ForWidth(width);
+            var encoder = RepresentationAdapterHardware.BuildMagnitudeToBinaryExponent(width);
+            var decoder = RepresentationAdapterHardware.BuildBinaryExponentToMagnitude(width);
+            var binaryPresence = RepresentationAdapterHardware.BuildBinaryExponentPresence(width);
+            var thermometerPresence = RepresentationAdapterHardware.BuildThermometerPresence(width);
+            var magnitudeCases = 1 << width;
+            var binaryPayloadCases = 1 << domain.Caps.Sum(BitsRequired);
+            var thermometerPayloadCases = 1 << domain.Caps.Sum();
+            rows.Add(AdapterWorkload(
+                $"R-W{width}-MAG-TO-BINEXP",
+                "VFU-BINEXP-S4",
                 width,
                 "COLD_MAG",
                 "STRUCTURAL_FINAL",
                 "INGRESS",
-                1,
-                "PARTIAL_REPRESENTATION_SET",
-                "State-bit geometry and native circuits are measured; representation converters and presence-only hardware are NOT_MEASURED."));
+                magnitudeCases,
+                encoder.Netlist,
+                "EXACT_CATALOG_VALUATIONS_SUPPORT_TAGGED",
+                "Cold magnitude encoder; unsupported cofactor support is explicit."));
+            rows.Add(AdapterWorkload(
+                $"R-W{width}-BINEXP-TO-MAG",
+                "VFU-BINEXP-S4",
+                width,
+                "WARM_RESIDENT",
+                "MAGNITUDE_FINAL",
+                "EGRESS",
+                SmoothStates(width).Count,
+                decoder.Netlist,
+                "FULL_EXACT_COMMON_W_BIT_DOMAIN",
+                "Structural decoder rejects malformed, saturated, and overflow states."));
+            rows.Add(AdapterWorkload(
+                $"R-W{width}-BINEXP-PRESENCE",
+                "PRESENCE-S4",
+                width,
+                "WARM_RESIDENT",
+                "STRUCTURAL_FINAL",
+                "EXECUTE",
+                binaryPayloadCases,
+                binaryPresence.Netlist,
+                "LOSSY_PRESENCE_PROJECTION",
+                "Multiplicity is intentionally discarded and cannot support cancellation counts."));
+            rows.Add(AdapterWorkload(
+                $"R-W{width}-THERM-PRESENCE",
+                "PRESENCE-S4",
+                width,
+                "WARM_RESIDENT",
+                "STRUCTURAL_FINAL",
+                "EXECUTE",
+                thermometerPayloadCases,
+                thermometerPresence.Netlist,
+                "LOSSY_PRESENCE_PROJECTION",
+                "Raw thermometer payloads are validated before presence projection."));
         }
 
         return rows;
@@ -671,6 +819,40 @@ internal static class Build002ExperimentRunner
                 feature,
                 notes));
         }
+
+        static Build002WorkloadRow AdapterWorkload(
+            string traceId,
+            string implementation,
+            int width,
+            string regime,
+            string obligation,
+            string phase,
+            int cases,
+            NandNetlist netlist,
+            string support,
+            string notes) =>
+            new(
+                "R",
+                traceId,
+                implementation,
+                width,
+                regime,
+                obligation,
+                phase,
+                "STRUCTURAL_DECLARED_EXHAUSTIVE",
+                support,
+                cases,
+                cases,
+                checked((long)cases * netlist.Metrics.Nand2Static),
+                NotMeasured,
+                0,
+                0,
+                phase == "INGRESS" ? cases : 0,
+                phase == "EGRESS" ? cases : 0,
+                0,
+                string.Empty,
+                "representation ablation",
+                notes + " Settled-transition aggregate is not pooled across invalid raw encodings.");
     }
 
     private static void AddStructuralTraceRows(
@@ -732,6 +914,187 @@ internal static class Build002ExperimentRunner
                 trace.Feature,
                 "-1 cost fields mean NOT_MEASURED, not zero cost."));
         }
+    }
+
+    private static Build002WorkloadRow RunIntegratedWarmStructuralTrace(
+        Build002Trace trace,
+        CorrectnessAccumulator correctness)
+    {
+        var machine = WarmStructuralHardware.BuildScaleCancelMachine(trace.Width);
+        var semantic = ValuationHardwareState.Identity(trace.Width);
+        var state = WarmStructuralHardware.EncodeExactState(machine, semantic);
+        NandEvaluation? previous = null;
+        long nandEvaluations = 0;
+        long nandTransitions = 0;
+        long stateTransitions = 0;
+        long inputTransitions = 0;
+        long initialTransitions = 0;
+        var rejections = 0;
+        for (var index = 0; index < trace.Steps.Count; index++)
+        {
+            var step = trace.Steps[index];
+            var operation = step.Operation switch
+            {
+                Build002TraceOperation.ScaleKnownFactor => WarmStructuralOperation.Scale,
+                Build002TraceOperation.CancelKnownFactor => WarmStructuralOperation.Cancel,
+                _ => throw new InvalidOperationException("Experiment B contains only scale/cancel steps."),
+            };
+            var evaluated = machine.Netlist.Evaluate(
+                WarmStructuralHardware.EncodeControl(machine, step.Operand, operation),
+                state,
+                previous,
+                compareWithAllOff: previous is null);
+            var factor = ValuationHardwareState.Power(trace.Width, step.Operand, 1).Value!;
+            var expected = operation == WarmStructuralOperation.Scale
+                ? semantic.Compose(factor)
+                : semantic.Cancel(factor);
+            var rejected = !expected.Succeeded || !expected.Value!.IsExact;
+            correctness.Check(
+                IsOn(evaluated.Outputs[machine.Ports.RejectOutput]) == rejected,
+                $"B/WARM_STRUCTURAL/STATUS/{trace.Id}/{index}");
+            if (rejected)
+            {
+                rejections++;
+            }
+            else
+            {
+                semantic = expected.Value!;
+            }
+
+            state = WarmStructuralHardware.AdvanceState(evaluated);
+            var decoded = WarmStructuralHardware.DecodeNextExactState(machine, evaluated);
+            correctness.Check(
+                decoded.Succeeded && SameValuationState(decoded.Value!, semantic),
+                $"B/WARM_STRUCTURAL/NEXT_STATE/{trace.Id}/{index}");
+            nandEvaluations += evaluated.NandEvaluations;
+            stateTransitions += evaluated.StateBitTransitions;
+            inputTransitions += evaluated.InputTransitions;
+            if (previous is null)
+            {
+                initialTransitions = evaluated.NandOutputTransitions;
+            }
+            else
+            {
+                nandTransitions += evaluated.NandOutputTransitions;
+            }
+
+            previous = evaluated;
+        }
+
+        correctness.Check(
+            rejections == trace.ExpectedRejectedCancellations,
+            $"B/WARM_STRUCTURAL/REJECTION_COUNT/{trace.Id}");
+        return new Build002WorkloadRow(
+            "B",
+            trace.Id,
+            "VFU-BINEXP-S4-WARM",
+            trace.Width,
+            "WARM_GENERATED",
+            "STRUCTURAL_FINAL",
+            "EXECUTE",
+            "STRUCTURAL_DECLARED_INTEGRATED_EXHAUSTIVE",
+            "FULL_EXACT_S4_GENERATED",
+            trace.Steps.Count,
+            trace.Steps.Count,
+            nandEvaluations,
+            nandTransitions,
+            stateTransitions,
+            rejections,
+            0,
+            0,
+            0,
+            FormatState(semantic),
+            trace.Feature,
+            $"Persistent DFFs and atomic hold are charged; input transitions={inputTransitions}; initial NAND transitions={initialTransitions}.");
+    }
+
+    private static Build002WorkloadRow RunIntegratedWarmBinaryTrace(
+        Build002Trace trace,
+        CorrectnessAccumulator correctness)
+    {
+        var machine = WarmStructuralHardware.BuildBinaryScaleCancelMachine(trace.Width);
+        var magnitude = trace.InitialMagnitude;
+        var maximum = (1 << trace.Width) - 1;
+        var state = WarmStructuralHardware.EncodeMagnitudeState(machine, magnitude);
+        NandEvaluation? previous = null;
+        long nandEvaluations = 0;
+        long nandTransitions = 0;
+        long stateTransitions = 0;
+        long inputTransitions = 0;
+        long initialTransitions = 0;
+        var rejections = 0;
+        for (var index = 0; index < trace.Steps.Count; index++)
+        {
+            var step = trace.Steps[index];
+            var operation = step.Operation switch
+            {
+                Build002TraceOperation.ScaleKnownFactor => WarmStructuralOperation.Scale,
+                Build002TraceOperation.CancelKnownFactor => WarmStructuralOperation.Cancel,
+                _ => throw new InvalidOperationException("Experiment B contains only scale/cancel steps."),
+            };
+            var evaluated = machine.Netlist.Evaluate(
+                WarmStructuralHardware.EncodeControl(machine, step.Operand, operation),
+                state,
+                previous,
+                compareWithAllOff: previous is null);
+            var expectedMagnitude = magnitude;
+            var expectedSucceeded = TryApplyMagnitudeStep(ref expectedMagnitude, maximum, step);
+            correctness.Check(
+                IsOn(evaluated.Outputs[machine.Ports.RejectOutput]) == !expectedSucceeded,
+                $"B/WARM_BINARY/STATUS/{trace.Id}/{index}");
+            if (expectedSucceeded)
+            {
+                magnitude = expectedMagnitude;
+            }
+            else
+            {
+                rejections++;
+            }
+
+            state = WarmStructuralHardware.AdvanceState(evaluated);
+            correctness.Check(
+                WarmStructuralHardware.DecodeNextMagnitude(machine, evaluated) == magnitude,
+                $"B/WARM_BINARY/NEXT_STATE/{trace.Id}/{index}");
+            nandEvaluations += evaluated.NandEvaluations;
+            stateTransitions += evaluated.StateBitTransitions;
+            inputTransitions += evaluated.InputTransitions;
+            if (previous is null)
+            {
+                initialTransitions = evaluated.NandOutputTransitions;
+            }
+            else
+            {
+                nandTransitions += evaluated.NandOutputTransitions;
+            }
+
+            previous = evaluated;
+        }
+
+        correctness.Check(
+            rejections == trace.ExpectedRejectedCancellations,
+            $"B/WARM_BINARY/REJECTION_COUNT/{trace.Id}");
+        return new Build002WorkloadRow(
+            "B",
+            trace.Id,
+            "BIN-SCALE-CANCEL-WARM",
+            trace.Width,
+            "WARM_GENERATED",
+            "MAGNITUDE_FINAL",
+            "EXECUTE",
+            "STRUCTURAL_DECLARED_INTEGRATED_EXHAUSTIVE",
+            "FULL_BINARY",
+            trace.Steps.Count,
+            trace.Steps.Count,
+            nandEvaluations,
+            nandTransitions,
+            stateTransitions,
+            rejections,
+            0,
+            0,
+            0,
+            magnitude.ToString(CultureInfo.InvariantCulture),
+            trace.Feature,
+            $"Persistent DFFs and atomic hold are charged; input transitions={inputTransitions}; initial NAND transitions={initialTransitions}.");
     }
 
     private static StructuralTraceExecution RunStructuralTrace(
@@ -872,9 +1235,12 @@ internal static class Build002ExperimentRunner
     {
         var encoded = BinaryValuationSidecar.Encode(trace.Width, trace.InitialMagnitude);
         var current = encoded.Value!;
+        var scalar = trace.InitialMagnitude;
+        var maximum = (1 << trace.Width) - 1;
         var rejections = 0;
-        foreach (var step in trace.Steps)
+        for (var index = 0; index < trace.Steps.Count; index++)
         {
+            var step = trace.Steps[index];
             ValuationStateResult<BinaryValuationSidecar> result;
             switch (step.Operation)
             {
@@ -891,16 +1257,46 @@ internal static class Build002ExperimentRunner
                     throw new InvalidOperationException("Undefined mixed-trace instruction.");
             }
 
-            if (!result.Succeeded)
+            var expectedSucceeded = TryApplyMagnitudeStep(ref scalar, maximum, step);
+            correctness.Check(
+                result.Succeeded == expectedSucceeded,
+                $"E/SIDECAR/STATUS/{trace.Id}/{index}");
+            if (!expectedSucceeded)
             {
                 rejections++;
+                correctness.Check(
+                    result.Value is null && current.Magnitude == scalar,
+                    $"E/SIDECAR/ATOMIC_REJECTION/{trace.Id}/{index}");
                 continue;
             }
 
             current = result.Value!;
+            correctness.Check(
+                current.Magnitude == scalar,
+                $"E/SIDECAR/MAGNITUDE/{trace.Id}/{index}");
+            var exact = BinaryValuationSidecar.Encode(trace.Width, scalar).Value!;
+            foreach (var prime in ValuationHardwareDomain.S4)
+            {
+                var cap = current.Domain.CapAt(current.Domain.IndexOfPrime(prime));
+                for (var exponent = 1; exponent <= cap; exponent++)
+                {
+                    var retained = current.ThresholdAt(prime, exponent);
+                    correctness.Check(
+                        !retained || exact.ThresholdAt(prime, exponent),
+                        $"E/SIDECAR/SOUND_THRESHOLD/{trace.Id}/{index}/{prime}/{exponent}");
+                    if (current.Valid)
+                    {
+                        correctness.Check(
+                            retained == exact.ThresholdAt(prime, exponent),
+                            $"E/SIDECAR/EXACT_THRESHOLD/{trace.Id}/{index}/{prime}/{exponent}");
+                    }
+                }
+            }
         }
 
-        correctness.Check(current.Magnitude >= 0, $"E/SIDECAR/EXACT_MAGNITUDE/{trace.Id}");
+        correctness.Check(
+            current.Magnitude == scalar,
+            $"E/SIDECAR/EXACT_MAGNITUDE/{trace.Id}");
         return new Build002WorkloadRow(
             "E",
             trace.Id,
@@ -934,6 +1330,8 @@ internal static class Build002ExperimentRunner
         {
             var cases = 1 << width;
             var smoothCases = SmoothStates(width).Count;
+            var coldEncoder = RepresentationAdapterHardware.BuildMagnitudeToBinaryExponent(width);
+            var reconstruction = RepresentationAdapterHardware.BuildBinaryExponentToMagnitude(width);
             rows.Add(new Build002IngressEgressRow(
                 "BIN-FU",
                 width,
@@ -951,25 +1349,25 @@ internal static class Build002ExperimentRunner
                 width,
                 "INGRESS",
                 "BINARY_MAGNITUDE_TO_EXACT_S4",
-                "NOT_MEASURED",
+                coldEncoder.EvidenceClass,
                 cases,
-                NotMeasured,
-                NotMeasured,
-                NotMeasured,
-                "ACQUISITION_CIRCUIT_MISSING",
-                "Semantic factoring is an oracle only; -1 fields are not zero-cost adapters."));
+                cases,
+                cases,
+                checked((long)cases * coldEncoder.Netlist.Metrics.Nand2Static),
+                "EXACT_CATALOG_VALUATIONS_SUPPORT_TAGGED",
+                "The adapter reports whether the magnitude is fully S4-supported; unsupported cofactors are not silently encoded."));
             rows.Add(new Build002IngressEgressRow(
                 "VFU-BINEXP-S4",
                 width,
                 "EGRESS",
                 "S4_STATE_TO_BINARY_MAGNITUDE",
-                "NOT_MEASURED",
+                reconstruction.EvidenceClass,
                 smoothCases,
-                NotMeasured,
-                NotMeasured,
-                NotMeasured,
-                "RECONSTRUCTION_CIRCUIT_MISSING",
-                "Semantic reconstruction is checked but no NAND reconstruction unit is implemented."));
+                smoothCases,
+                smoothCases,
+                checked((long)smoothCases * reconstruction.Netlist.Metrics.Nand2Static),
+                "FULL_EXACT_COMMON_W_BIT_DOMAIN",
+                "Malformed, saturated, noncanonical-zero, and out-of-range products are explicit rejection statuses."));
             rows.Add(new Build002IngressEgressRow(
                 "BIN+VSC-S4",
                 width,
@@ -1035,7 +1433,7 @@ internal static class Build002ExperimentRunner
             rows.Add(new Build002RepresentationRow(
                 width,
                 "PRESENCE_ONLY_S4",
-                "ANALYTIC_LOSSY_CONTROL",
+                "STRUCTURAL_DECLARED_LOSSY_CONTROL",
                 0,
                 4,
                 1,
@@ -1043,7 +1441,7 @@ internal static class Build002ExperimentRunner
                 16,
                 "PRIME_PRESENCE_QUERY",
                 "LOSES_MULTIPLICITY",
-                "Not equivalent to valuation state; circuit implementation is NOT_MEASURED."));
+                "Implemented binary-exponent and thermometer projections are reported in static_costs.csv; neither is equivalent to valuation state."));
             rows.Add(new Build002RepresentationRow(
                 width,
                 "BINARY_PLUS_EXACT_THRESHOLD_SIDECAR_S4",
@@ -1079,12 +1477,7 @@ internal static class Build002ExperimentRunner
                         break;
                     }
 
-                    left = step.Operation switch
-                    {
-                        Build002TraceOperation.ScaleKnownFactor => left * step.Operand,
-                        Build002TraceOperation.CancelKnownFactor => left / step.Operand,
-                        _ => left,
-                    };
+                    _ = TryApplyMagnitudeStep(ref left, maximum, step);
                 }
 
                 var sum = left + addend;
@@ -1128,6 +1521,42 @@ internal static class Build002ExperimentRunner
         }
 
         return rows;
+    }
+
+    private static bool TryApplyMagnitudeStep(
+        ref int magnitude,
+        int maximum,
+        Build002TraceStep step)
+    {
+        switch (step.Operation)
+        {
+            case Build002TraceOperation.ScaleKnownFactor:
+                if (magnitude > maximum / step.Operand)
+                {
+                    return false;
+                }
+
+                magnitude *= step.Operand;
+                return true;
+            case Build002TraceOperation.CancelKnownFactor:
+                if (magnitude % step.Operand != 0)
+                {
+                    return false;
+                }
+
+                magnitude /= step.Operand;
+                return true;
+            case Build002TraceOperation.AddMagnitude:
+                if (magnitude > maximum - step.Operand)
+                {
+                    return false;
+                }
+
+                magnitude += step.Operand;
+                return true;
+            default:
+                throw new InvalidOperationException("Undefined Build 002 trace operation.");
+        }
     }
 
     private static List<Build002HostileRow> BuildHostileSupport()
@@ -1249,7 +1678,7 @@ internal static class Build002ExperimentRunner
         CorrectnessReceipt correctness,
         IReadOnlyList<HdlSummaryReceipt> hdlSummaries)
     {
-        var command = $"dotnet run --project src/PrimeAxiom.Cli --configuration Release -- build002 --output {invocationOutputArgument}";
+        var command = $"dotnet run --project src/PrimeAxiom.Cli --configuration Release -- experiment-build002 --output {invocationOutputArgument}";
         var content = $$"""
             # Build 002 non-HDL evidence
 
@@ -1310,7 +1739,7 @@ internal static class Build002ExperimentRunner
             ProtocolBaselineCommit = Build002Protocol.BaselineCommit,
             FrozenPlanSha256 = Build002Protocol.HashFile(planPath),
             MasterSeed = $"0x{Build002Protocol.MasterSeed:X16}",
-            GeneratorCommand = $"dotnet run --project src/PrimeAxiom.Cli --configuration Release -- build002 --output {invocationOutputArgument}",
+            GeneratorCommand = $"dotnet run --project src/PrimeAxiom.Cli --configuration Release -- experiment-build002 --output {invocationOutputArgument}",
             Runtime = RuntimeInformation.FrameworkDescription,
             Architecture = RuntimeInformation.ProcessArchitecture.ToString(),
             Classification = PartialClassification,
@@ -1472,6 +1901,45 @@ internal static class Build002ExperimentRunner
             {
                 yield return BinaryInputs(width, "dividend", dividend, "divisor", divisor);
             }
+        }
+    }
+
+    private static IEnumerable<IReadOnlyDictionary<string, BitState>> MagnitudeEncoderInputs(
+        DeclaredMagnitudeEncoderCircuit circuit)
+    {
+        var limit = 1 << circuit.Ports.Width;
+        for (var magnitude = 0; magnitude < limit; magnitude++)
+        {
+            yield return circuit.Ports.MagnitudeInputs
+                .Select((name, bit) => new KeyValuePair<string, BitState>(
+                    name,
+                    State((magnitude & (1 << bit)) != 0)))
+                .ToDictionary(pair => pair.Key, pair => pair.Value, StringComparer.Ordinal);
+        }
+    }
+
+    private static IEnumerable<IReadOnlyDictionary<string, BitState>> DecoderInputs(
+        DeclaredMagnitudeDecoderCircuit circuit,
+        IEnumerable<ValuationHardwareState> states)
+    {
+        foreach (var state in states)
+        {
+            var inputs = new Dictionary<string, BitState>(StringComparer.Ordinal)
+            {
+                [circuit.Ports.ZeroInput] = State(state.IsZero),
+            };
+            foreach (var lane in circuit.Ports.Lanes)
+            {
+                for (var bit = 0; bit < lane.ExponentInputs.Count; bit++)
+                {
+                    inputs[lane.ExponentInputs[bit]] =
+                        State((state.ExponentAt(lane.Lane) & (1 << bit)) != 0);
+                }
+
+                inputs[lane.SaturationInput] = State(state.IsLaneSaturated(lane.Lane));
+            }
+
+            yield return inputs;
         }
     }
 
@@ -1881,6 +2349,15 @@ internal static class Build002ExperimentRunner
         state.IsZero
             ? "zero"
             : $"[{string.Join(',', state.Exponents)}];sat=[{string.Join(',', state.SaturatedLanes.Select(Build002Evidence.Boolean))}]";
+
+    private static bool SameValuationState(
+        ValuationHardwareState left,
+        ValuationHardwareState right) =>
+        left.Width == right.Width &&
+        left.IsZero == right.IsZero &&
+        left.IsExact == right.IsExact &&
+        left.Exponents.SequenceEqual(right.Exponents) &&
+        left.SaturatedLanes.SequenceEqual(right.SaturatedLanes);
 
     private static string? ReadJsonString(JsonElement element, string name) =>
         element.ValueKind == JsonValueKind.Object &&
