@@ -26,7 +26,7 @@ The prior art supports a narrower research question:
 
 > On an unchanged binary substrate, can a persistent, knowledge-carrying divisibility-state machine save enough repeated work to repay acquisition, residual, routing, overflow, and reconstruction costs against competent binary, logarithmic, and residue controls?
 
-Only paired implementation and synthesis evidence can answer that question.
+Build 002's paired implementation and logical synthesis evidence answers that question negatively for its dense fixed S4 sidecar, W4/W6/W8 transparent circuits, frozen workloads, and strict-Pareto rule. It does not answer the wider question for radix-aware, demand-driven, sequential, or physically placed/routed designs; those still require their own paired evidence.
 
 ## Ranked prior-art register
 
@@ -170,4 +170,3 @@ That absence may motivate experiments. It must not be reported as novelty withou
 The defensible prior-art statement for Build 002 is:
 
 > Factor-form representation, valuation laws, constant-divisor circuits, hardware extraction of bounded small-prime powers, logarithmic arithmetic, residue arithmetic, GCD hardware, associative arithmetic, dataflow execution, and reversible computing all predate this build. Build 002 asks only how an exact bounded-valuation-plus-cofactor contract maps onto the same binary substrate as conventional arithmetic, with every conversion and uncertainty state charged.
-

@@ -26,9 +26,9 @@ At this rung, an exact claim is limited to the constructed graph: NAND2 instance
 
 Single-connective presentations of Boolean algebra are established by Sheffer’s 1913 [“A Set of Five Independent Postulates for Boolean Algebras”](https://doi.org/10.1090/S0002-9947-1913-1500960-1). Shannon’s 1938 [“A Symbolic Analysis of Relay and Switching Circuits”](https://doi.org/10.1109/T-AIEE.1938.5057767) established the switching-algebra bridge used by digital circuit design. Build 002 applies this inherited floor; it does not rediscover it.
 
-### Open implication
+### Build 002 result and remaining implication
 
-The experiment can ask whether distinct resident representations map to different declared and optimized Boolean cost vectors under one substrate. It cannot infer that one mathematics is physically fundamental merely because one NAND decomposition is smaller at these widths.
+The experiment shows that distinct resident interpretations map to different declared and optimized Boolean cost vectors on one substrate. It cannot infer that either mathematics is physically fundamental merely because one NAND decomposition is smaller at these widths.
 
 ## 2. Registers and finite state
 
@@ -48,9 +48,9 @@ Representation changes the cardinality and shape of architectural state before i
 
 Mealy’s 1955 [“A Method for Synthesizing Sequential Circuits”](https://doi.org/10.1002/j.1538-7305.1955.tb03788.x) is primary prior art for treating sequential circuits through explicit state, input, transition, and output behavior. Readiness-driven or dataflow execution can expose independent valuation lanes, but Dennis and Misunas’s [data-flow processor](https://doi.org/10.1145/642089.642111) changes scheduling rather than the arithmetic representation itself.
 
-### Open implication
+### Build 002 result and remaining implication
 
-The central architectural question is amortization: can already resident valuation state answer enough later structural queries to repay its acquisition, registers, validity control, and eventual egress? That is a workload result, not a theorem about finite-state machines.
+Already resident valuation state did not repay acquisition, registers, validity control, and eventual egress across the frozen whole-machine comparisons, although it reduced local warm structural work. That is a result for these workloads and transparent machines, not a theorem about finite-state architectures; reuse thresholds remain a legitimate target for a narrower sequential design.
 
 ## 3. Binary positional magnitude and order
 
@@ -70,9 +70,9 @@ Binary magnitude directly supports ordinary comparison, addition, and bit shifts
 
 Conventional multiplier design extends far beyond shift-add: Booth’s [signed recoding](https://doi.org/10.1093/qjmam/4.2.236), Wallace’s [parallel multiplier](https://doi.org/10.1109/PGEC.1964.263830), Dadda’s [parallel schemes](https://ieeemilestones.ethw.org/File%3ASome_schemes_for_parallel_multipliers_%28reprint%29.pdf), and Baugh and Wooley’s [two’s-complement array](https://doi.org/10.1109/T-C.1973.223648) are established controls. A result against the transparent baseline must not be generalized to every conventional arithmetic architecture.
 
-### Open implication
+### Build 002 result and remaining implication
 
-Build 002 can locate which dependencies come from positional representation at tiny widths, then test whether synthesis preserves them. It cannot conclude that carry is globally avoidable: another representation may merely relocate the dependency into conversion, comparison, or addition recovery.
+Build 002 located representation-dependent dependency patterns at tiny widths and preserved both lineages through one synthesis flow. It did not show that carry-like dependency is globally avoidable: the valuation lineage relocated work into conversion, status, comparison, and addition recovery. Optimized netlists at W4/W6/W8 are bounded mapping evidence, not an optimality result for either lineage.
 
 ## 4. Binary exponent lanes and bounded composition
 
@@ -96,9 +96,9 @@ Resident multiplication becomes four independent small additions, and exact divi
 
 Prime-exponent coordinates and their laws are established in Mathlib’s [factorization definitions](https://leanprover-community.github.io/mathlib4_docs/Mathlib/Data/Nat/Factorization/Defs.html) and [factorization lemmas](https://leanprover-community.github.io/mathlib4_docs/Mathlib/Data/Nat/Factorization/Basic.html). Wells’s [*Elements of Combinatorial Computing*](https://shop.elsevier.com/books/elements-of-combinatorial-computing/wells/978-0-08-016091-7) treats prime-factor representation among computer representations. Factor-form software and bounded prime extraction documented in [Build 001 prior art](PRIOR_ART_BUILD001.md) further rule out a novelty claim for the representation or its local multiplication law.
 
-### Open implication
+### Build 002 result and remaining implication
 
-The remaining question is empirical: is the bounded partial algebra a useful resident instruction domain after its status bits and boundary operations are charged? A positive answer would establish a specialization at declared widths and workloads, not an alternative foundation for all integer computation.
+The complete registered matrix answers the general version negatively under its strict-Pareto rule: status bits, persistent state, and crossings prevent a hardware-advantage classification. It answers the local version positively as a tradeoff: the bounded algebra is markedly smaller and shallower for warm structural SCALE/CANCEL traces. That earns a specialized instruction-domain candidate, not an alternative foundation and not a Pareto win.
 
 ## 5. Thermometer thresholds as chain ideals
 
@@ -122,9 +122,9 @@ Thermometer storage spends `T_p` bits where binary exponents spend `ceil(log2(T_
 
 Order-ideal representations and distributive lattices are classical; Birkhoff’s [“Rings of Sets”](https://doi.org/10.1215/S0012-7094-37-00334-X) is primary prior art for set representations of distributive lattices. Componentwise factorization order is already formalized by the Mathlib sources above. Build 002’s thermometer vector is a hardware encoding of those established structures.
 
-### Open implication
+### Build 002 result and remaining implication
 
-The useful research question is representational, not mathematical: for the frozen small caps, does spending state bits on order ideals reduce enough query and meet/join logic to offset validation, convolution, routing, and register costs after common synthesis?
+For the frozen small caps, order ideals made threshold, meet, and join logic direct but spent more state and moved composition into convolution, validation, and adapters. That representation did not produce the registered unexpected-architecture or whole-machine Pareto result. Predicate-only sequential reuse remains the more precise follow-up question.
 
 ## 6. Divisibility order, meet, and join
 
@@ -144,9 +144,9 @@ Already resident lanes can answer a predicate or catalog-supported meet/join wit
 
 The factorization/divisibility/gcd/lcm correspondence is established in Mathlib’s [natural factorization library](https://leanprover-community.github.io/mathlib4_docs/Mathlib/Data/Nat/Factorization/Basic.html). Binary magnitude also has serious dedicated controls, including Brent and Kung’s [systolic GCD](https://maths-people.anu.edu.au/~brent/pub/pub082.html), Yun and Zhang’s [carry-free extended GCD](https://doi.org/10.1145/32439.32455), and Guyot’s [GCD coprocessor](https://doi.org/10.1109/ARITH.1991.145564). Lane-local `min` alone does not establish an end-to-end hardware advantage over them.
 
-### Open implication
+### Build 002 result and remaining implication
 
-A bounded divisibility-lattice coprocessor may still be useful when repeated questions concern the same fixed catalog. Build 002 must determine whether those saved queries repay exact ingress, persistent state, misses outside S4, and any final full-result obligation.
+The frozen matrix found a real warm structural advantage but not strict Pareto dominance: the resident S4 machine saved NANDs and depth on its local workload while using more DFF, state, and port bits, and cold acquisition or magnitude reconstruction erased the advantage under frequent crossings. A still-narrower sequential predicate engine may remain useful when many questions target one fixed catalog, but that is now a Build 003 candidate rather than an unmeasured Build 002 claim.
 
 ## 7. Zero as a tagged extension
 
@@ -154,7 +154,7 @@ A bounded divisibility-lattice coprocessor may still be useful when repeated que
 
 Pure exponent and thermometer states carry an explicit zero tag and require their canonical zero payload and saturation flags to be clear. The implemented contracts make zero absorbing for compose, use `meet(0,n)=n`, `join(0,n)=0`, define nonzero values as divisors of zero, define zero as dividing only zero, and reject cancellation by zero. A valuation query on semantic zero returns positive infinity rather than a finite lane value.
 
-The exact C# BIN+VSC semantic model uses another valid encoding: magnitude zero is authoritative, all finite threshold predicates are true, and `Valid=true`. The current HDL cold encoder instead emits `zero=1`, clear thresholds, and `valid=0`, treating zero as outside the finite sidecar payload. These conventions are not interchangeable; both require the zero indication to be consulted before threshold validity is interpreted.
+The exact C# BIN+VSC semantic model and corrected HDL cold encoder use the same query-oriented extension: magnitude/`zero` is authoritative, every finite threshold predicate is true, and `Valid=true`. An earlier superseded HDL run instead emitted `zero=1`, clear thresholds, and `valid=0`; the later cross-contract audit rejected that mismatch and preserved it as a failed design receipt. The final convention still requires the zero indication before finite payload bits are interpreted as an ordinary exponent.
 
 ### Mathematical abstraction
 
@@ -162,15 +162,15 @@ No vector in `N^S4` represents integer zero because every finite product of prim
 
 ### Cost consequence
 
-Zero adds state, detection, muxing, and operation-specific control. Encoding it as clear structural payload is compact but makes payload bits meaningless without the tag; encoding every finite divisibility threshold as true is query-friendly but also requires the magnitude/tag to distinguish infinity from a large finite valuation. Adapters between the C# sidecar and HDL cold-sidecar conventions must be explicit before integrated evidence is compared.
+Zero adds state, detection, muxing, and operation-specific control. Encoding it as clear structural payload is compact but makes payload bits meaningless without the tag; encoding every finite divisibility threshold as true is query-friendly but also requires the magnitude/tag to distinguish infinity from a large finite valuation. The pre-repair C#/HDL mismatch demonstrated why such conversions cannot remain implicit; the final integrated comparison uses the converged all-true-threshold contract.
 
 ### Prior art
 
 Special zero handling is standard in valuation-related instructions: the ratified RISC-V Zbb [`ctz`](https://docs.riscv.org/reference/isa/unpriv/b-st-ext.html) returns the register width on an all-zero operand rather than mathematical infinity. Mathlib’s factorization and valuation APIs similarly treat zero separately from positive prime-factor coordinates. Build 002’s tag is an implementation obligation, not a new number-theoretic object.
 
-### Open implication
+### Build 002 result and remaining implication
 
-Before evidence generation, one integrated zero/valid contract must mediate pure VFU, cold acquisition, and exact sidecar interfaces. Otherwise a clear threshold can mean “finite exponent below `k`,” “payload suppressed because zero,” or “unknown,” which would invalidate query and cost comparisons.
+Build 002 converged the semantic model, cold encoder, sidecar operations, self-checking simulation, and formal harnesses on one explicit zero/valid contract. Clear thresholds now distinguish only a finite failed threshold or unknown/invalid metadata according to the accompanying validity state; they are never used as an implicit zero encoding. Any future representation adapter must preserve that tagged distinction, especially if it compresses the all-true infinity payload.
 
 ## 8. Addition, valuation lower bounds, and nonclosure
 
@@ -250,6 +250,6 @@ An explicitly optimized `p=2` acquisition and known-factor scale/cancel path sho
 
 The RISC-V Zbb specification exposes this path directly as [`ctz`](https://docs.riscv.org/reference/isa/unpriv/b-st-ext.html). Granlund and Montgomery’s [division by invariant integers](https://doi.org/10.1145/178243.178249), de Dinechin and Didier’s [table-based small-constant division](https://doi.org/10.1007/978-3-642-28365-9_5), and Gorodecky and Sousa’s [FPGA constant divider](https://doi.org/10.1109/ARITH58626.2023.00025) establish the nonuniform fixed-divisor design space. This is direct precedent for separating the `p=2` lane from odd-prime acquisition.
 
-### Open implication
+### Build 002 result and remaining implication
 
-Build 002 should measure two questions separately: whether `v_2` metadata is useful beyond what a competent binary machine already exposes, and whether adding odd-prime lanes earns enough warm-query locality to repay their distinct acquisition circuits. Pooling the lanes would erase the most important representation-dependent asymmetry.
+Build 002 kept the positional binary controls and the S4 structural lanes separately visible. The complete matrix did not show that persistent `v_2` metadata or the added odd-prime lanes repay their acquisition and state costs under the registered strict-Pareto rules. The positive result is narrower: once S4 structure is resident, repeated scale/cancel and predicate work has strong locality. A future design should isolate an optimized `v_2` path and time-multiplex odd-prime predicate logic instead of assuming that four always-resident lanes are the right unit.

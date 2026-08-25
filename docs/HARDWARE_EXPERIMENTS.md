@@ -10,7 +10,9 @@ This document records the registered methods, implemented circuit families, and 
 
 The protocol identifier, rather than prose in this file, controls the experiment. The architecture and accounting interpretations are in [Hardware Architecture](HARDWARE_ARCHITECTURE.md), [Hardware Cost Model](HARDWARE_COST_MODEL.md), and [Hardware Mathematics](HARDWARE_MATHEMATICS.md). The HDL implementation boundary is summarized in [`hdl/README.md`](../hdl/README.md).
 
-The corrected HDL matrix passes `260/260` tool-flow cases. That result establishes the bounded lint, simulation, formal, declared-netlist, and optimized-netlist claims listed below. It does **not** by itself complete experiments A–F/R, supply missing integrated workload rows, establish Pareto dominance, or justify a physical-hardware claim. The committed [non-HDL runner](../src/PrimeAxiom.Cli/Build002ExperimentRunner.cs) continues to keep incomplete rows explicit; this document does not convert `NOT_MEASURED` fields into zero or infer completion from the existence of an adjacent circuit.
+The corrected HDL matrix passes `260/260` tool-flow cases. The separately generated and committed [Build 002 result set](../results/build002/README.md) records `656,810` bounded checks with zero failures, all A–F/R families as `COMPLETE_BOUNDED`, 15 passing formal cases, and 150 validated synthesis rows. Together these receipts satisfy the frozen decision preconditions and earn the terminal classification `NO_HARDWARE_ADVANTAGE`. That is a bounded result under the registered vector rule, not a claim that local valuation operations never help or that physical hardware has been measured.
+
+Some composite GCD/LCM/rational transition fields remain `NOT_MEASURED`. The generated coverage receipt explicitly excludes them from the terminal negative; this document never converts a `-1` sentinel into zero. The full machine-readable boundary is [protocol_coverage.json](../results/build002/protocol_coverage.json).
 
 Local raw HDL artifacts are intentionally ignored by Git. Their paths below are reproducible workspace paths, and their receipt hashes are the stable evidence anchors.
 
@@ -86,17 +88,17 @@ A local structural instruction is not compared directly with cold binary work un
 
 ## Frozen experiments A–F/R
 
-The table below states the registered method. “Available components” names evidence that can support later generated rows; it is not a completion declaration.
+The table states the registered method and the resulting committed coverage. `notMeasuredCostCells` is retained because bounded completion does not imply that every inapplicable or unused composite transition field was fabricated.
 
-| Experiment | Registered method and finite domain | Source/output contracts | Available components and remaining boundary |
+| Experiment | Registered method and finite domain | Source/output contracts | Committed coverage |
 |---|---|---|---|
-| **A — multiplier versus compose** | At W=4/6/8, check every legal common-domain operand pair. Compare full `W x W -> 2W` binary multiply with binary-exponent and thermometer compose. Separate products fitting W, fitting 2W, and saturating a lane. Report operation-only and encode/execute/reconstruct views. | `COLD_MAG` and resident structural views; `STRUCTURAL_FINAL` and matched `MAGNITUDE_FINAL`. | C# and HDL contain binary multiply, both compose encodings, cold S4 acquisition, and reconstruction/conversion components. Operation-only evidence does not close an integrated cold row with equal registered boundaries. |
-| **B — repeated multiply/cancel** | Eight deterministic 32-instruction traces per width use factors 2, 3, 5, and 7. Four traces contain only legal cancellation; four contain rejected cancellation. Rejection is atomic. | `WARM_GENERATED`; `STRUCTURAL_FINAL`, `MAGNITUDE_FINAL`, and `MAGNITUDE_EVERY_OP`. | C# contains matched warm structural/binary scale-cancel machines and a persistent magnitude-plus-sidecar datapath. HDL contains leaf compose/cancel, a persistent-bad checked compose adapter, and known-factor sidecar updates. A full HDL trace controller and every registered output-obligation row are not implied. |
-| **C — GCD/LCM and divisibility** | Exhaust the W=4 and W=6 pair domains. W=8 uses all 65,536 word pairs when under the ten-minute phase budget, otherwise the frozen 20,000-pair set is labeled seeded. Distinguish full binary answers, S4-smooth structural answers, catalog projections, and predicate-only queries. | Cold full-binary and warm structural contracts; `PREDICATE_ONLY`, `STRUCTURAL_FINAL`, or `MAGNITUDE_FINAL` as appropriate. | C# contains restoring division, subtractive GCD, composite binary LCM accounting, structural meet/join/divides, and an integrated exact sidecar query path. HDL proves selected structural operations and implements a combinational exact sidecar query. Missing settled composite/controller rows remain missing until generated. |
-| **D — rational reduction** | Eight deterministic numerator/denominator cases per width include catalog factors, unsupported shared cofactors, and denominator zero. Distinguish fully reduced binary rationals from catalog-only structural projection. | Cold or warm inputs as declared; binary `MAGNITUDE_FINAL` versus structural `STRUCTURAL_FINAL`. | The committed runner executes binary GCD-based reduction and a three-operation structural `MEET + CANCEL + CANCEL` composite. It leaves integrated rational register/controller cost unmeasured and has no dedicated HDL rational top. |
-| **E — mixed addition stress** | Eight traces per width execute `multiply -> multiply -> exact divide -> add -> multiply`, covering unequal/equal valuations, extra cancellation, coprime sums, zero, overflow, and unsupported cofactors. Record facts retained, invalidated, refreshed, and reconstructed at addition. | Registered trace regimes and all applicable output obligations, especially `MAGNITUDE_EVERY_OP`. | C# has both the semantic contract and an integrated persistent exact-sidecar NAND datapath with load, refresh, query, scale, cancel, and magnitude-add transitions. HDL has a combinational BIN+VSC query/multiply/cancel/invalidate top. There is no basis to mark the full addition-recovery workload complete until its trace rows, refresh policy, and phase costs are generated. |
-| **F — hostile support and metadata** | For each width use every representable prime above 7, eligible semiprimes whose factors exceed 7, odd non-S4 values, and 0..15. Run frequent-addition, constant-reconstruction, and rapidly changing support traces; retain metadata overhead even when no structural fact helps. | Primarily hostile `COLD_MAG`/`WARM_GENERATED` and `MAGNITUDE_EVERY_OP` contracts. | Semantic support/state-overhead rows can be generated. Frequent-addition, reconstruction, and support-thrash circuit traces remain distinct obligations. |
-| **R — representation search** | Compare binary exponents, full thermometer thresholds, presence-only bits, and exact sidecar thresholds at identical caps and operations. Sparse/CAM estimates must include tags, comparators, muxes, update, miss, and control and remain `ANALYTIC` unless implemented. | Matched source and output contracts for each comparison. | C# contains binary/thermometer state, magnitude adapters, and presence projections; HDL contains binary/thermometer converters and validators. No unimplemented sparse/CAM estimate may be reported as measured. |
+| **A — multiplier versus compose** | At W=4/6/8, check every legal common-domain operand pair. Compare full `W x W -> 2W` binary multiply with binary-exponent and thermometer compose. Separate products fitting W, fitting 2W, and saturating a lane. Report operation-only and encode/execute/reconstruct views. | `COLD_MAG` and resident structural views; `STRUCTURAL_FINAL` and matched `MAGNITUDE_FINAL`. | `COMPLETE_BOUNDED`: 45 rows; 0 integrated rows; 114 unmeasured cost cells. Binary multiply, both compose encodings, and charged adapters remain phase- and contract-separated. |
+| **B — repeated multiply/cancel** | Eight deterministic 32-instruction traces per width use factors 2, 3, 5, and 7. Four traces contain only legal cancellation; four contain rejected cancellation. Rejection is atomic. | `WARM_GENERATED`; `STRUCTURAL_FINAL`, `MAGNITUDE_FINAL`, and `MAGNITUDE_EVERY_OP`. | `COMPLETE_BOUNDED`: 240 rows; 144 integrated rows; 216 unmeasured cost cells. All eight traces run matched persistent binary and structural machines under all three obligations. Unmeasured adapter transitions are not used to claim Pareto dominance. |
+| **C — GCD/LCM and divisibility** | Exhaust the W=4 and W=6 pair domains. W=8 uses all 65,536 word pairs when under the ten-minute phase budget, otherwise the frozen 20,000-pair set is labeled seeded. Distinguish full binary answers, S4-smooth structural answers, catalog projections, and predicate-only queries. | Cold full-binary and warm structural contracts; `PREDICATE_ONLY`, `STRUCTURAL_FINAL`, or `MAGNITUDE_FINAL` as appropriate. | `COMPLETE_BOUNDED`: 24 rows; 6 integrated rows; 24 unmeasured cost cells. Full binary GCD/LCM semantics, S4 meet/join/divides, adapters, and exact-sidecar query hardware are separated. |
+| **D — rational reduction** | Eight deterministic numerator/denominator cases per width include catalog factors, unsupported shared cofactors, and denominator zero. Distinguish fully reduced binary rationals from catalog-only structural projection. | Cold or warm inputs as declared; binary `MAGNITUDE_FINAL` versus structural `STRUCTURAL_FINAL`. | `COMPLETE_BOUNDED`: 54 rows; 0 integrated rows; 162 unmeasured cost cells. Eight rational cases plus denominator zero per width retain full-binary versus catalog-projection status; unbuilt integrated rational control remains unclaimed. |
+| **E — mixed addition stress** | Eight traces per width execute `multiply -> multiply -> exact divide -> add -> multiply`, covering unequal/equal valuations, extra cancellation, coprime sums, zero, overflow, and unsupported cofactors. Record facts retained, invalidated, refreshed, and reconstructed at addition. | `WARM_GENERATED`, `MAGNITUDE_EVERY_OP`, with delayed and eager refresh policies. | `COMPLETE_BOUNDED`: 165 integrated rows; 0 unmeasured cost cells. All eight traces run the matched binary machine and persistent sidecar hardware with phase-separated ingress, execution, and recovery. |
+| **F — hostile support and metadata** | For each width use every representable prime above 7, eligible semiprimes whose factors exceed 7, odd non-S4 values, and 0..15. Run frequent-addition, constant-reconstruction, and rapidly changing support traces; retain metadata overhead even when no structural fact helps. | `WARM_GENERATED`, `MAGNITUDE_EVERY_OP`; unsupported cofactors remain in authoritative magnitude. | `COMPLETE_BOUNDED`: 63 integrated rows; 0 unmeasured cost cells. All three hostile trace families per width run matched binary, delayed-refresh sidecar, and eager-refresh sidecar hardware. |
+| **R — representation search** | Compare binary exponents, full thermometer thresholds, presence-only bits, and exact sidecar thresholds at identical caps and operations. Sparse/CAM estimates must include tags, comparators, muxes, update, miss, and control and remain `ANALYTIC` unless implemented. | Matched source and output contracts for each comparison. | `COMPLETE_BOUNDED`: 18 rows; 0 integrated rows; 54 unmeasured cost cells. Implemented encodings/adapters retain distinct evidence classes; no sparse/CAM estimate is relabeled as measured. |
 
 The frozen seed is `0x5041485742303032`; derived seeds use the protocol's SHA-256/SplitMix64 rule. The exact trace definitions live in [Build002Workloads.cs](../src/PrimeAxiom.Cli/Build002Workloads.cs). If a verifier uses the W=8 fallback, its row must say `SEEDED`; successful smaller-domain coverage cannot be extrapolated.
 
@@ -112,12 +114,13 @@ The committed C# source provides these distinct layers:
 | [ExperimentalHardware.cs](../src/PrimeAxiom.Core/Hardware/ExperimentalHardware.cs) | Binary-exponent compose/cancel/meet/join/divides/FU and thermometer compose/meet/join/divides/validation/query. | Primarily operation-only declared graphs. |
 | [RepresentationAdapterHardware.cs](../src/PrimeAxiom.Core/Hardware/RepresentationAdapterHardware.cs) | Magnitude-to-binary-exponent acquisition, reconstruction, and binary/thermometer presence projections. | Charged adapters; presence is explicitly lossy. |
 | [WarmStructuralHardware.cs](../src/PrimeAxiom.Core/Hardware/WarmStructuralHardware.cs) | Matched persistent warm structural and binary scale/cancel machines with state, control, validation, and atomic hold. | `STRUCTURAL_DECLARED_INTEGRATED` for that narrow trace machine, not every Build 002 workload. |
-| [SidecarDatapathHardware.cs](../src/PrimeAxiom.Core/Hardware/SidecarDatapathHardware.cs) | Persistent authoritative magnitude plus S4 threshold state; NAND-only load, refresh, query, scale, cancel, magnitude-add, validation, overflow/rejection, and atomic next-state logic. | `STRUCTURAL_DECLARED_INTEGRATED` for this C# graph. It is not the same boundary as the combinational HDL BIN+VSC top and does not generate workload rows by existing alone. |
+| [BinaryMagnitudeDatapathHardware.cs](../src/PrimeAxiom.Core/Hardware/BinaryMagnitudeDatapathHardware.cs) | Persistent matched binary load, scale, cancel, and magnitude-add machine with the same overlapping control, status, overflow, rejection, and atomic-hold contract used for E/F. | `STRUCTURAL_DECLARED_INTEGRATED`; it is the conventional integrated E/F comparator, not a full general-purpose processor. |
+| [SidecarDatapathHardware.cs](../src/PrimeAxiom.Core/Hardware/SidecarDatapathHardware.cs) | Persistent authoritative magnitude plus S4 threshold state; NAND-only load, refresh, query, scale, cancel, magnitude-add, validation, overflow/rejection, and atomic next-state logic. | `STRUCTURAL_DECLARED_INTEGRATED` for this C# graph. The generated C/E/F/ingress rows charge it explicitly; it is not the same boundary as the combinational HDL BIN+VSC top. |
 | [ValuationHardwareState.cs](../src/PrimeAxiom.Core/Hardware/ValuationHardwareState.cs) | Exact semantic contracts for binary-exponent state, thermometer state, sidecar magnitude/threshold knowledge, zero, saturation, rejection, and reconstruction. | Semantic/oracle layer unless paired with an explicit graph. |
 | [Build002ExperimentRunner.cs](../src/PrimeAxiom.Cli/Build002ExperimentRunner.cs) and [Build002Evidence.cs](../src/PrimeAxiom.Cli/Build002Evidence.cs) | Deterministic non-HDL rows, phase-separated costs, explicit `NOT_MEASURED` sentinels, correctness receipts, and coverage metadata. | Generated rows must be inspected; source presence alone is not a result receipt. |
 | [Build002HdlEvidenceImporter.cs](../src/PrimeAxiom.Cli/Build002HdlEvidenceImporter.cs) | Schema, path, tool-lock, summary, manifest, metrics, and formal-receipt validation followed by allowlisted sanitized evidence output. | Imported metadata cannot promote a failed/incomplete source receipt or manufacture a missing non-HDL row. |
 
-The corresponding xUnit coverage is split across [baseline](../tests/PrimeAxiom.Tests/HardwareBaselineTests.cs), [baseline algorithm](../tests/PrimeAxiom.Tests/HardwareBaselineAlgorithmTests.cs), [experimental circuit](../tests/PrimeAxiom.Tests/HardwareExperimentalCircuitTests.cs), [representation adapter](../tests/PrimeAxiom.Tests/HardwareRepresentationAdapterTests.cs), [valuation state](../tests/PrimeAxiom.Tests/HardwareValuationStateTests.cs), [warm machine](../tests/PrimeAxiom.Tests/HardwareWarmStructuralMachineTests.cs), [sidecar datapath](../tests/PrimeAxiom.Tests/HardwareSidecarDatapathTests.cs), and [HDL importer](../tests/PrimeAxiom.Tests/Build002HdlEvidenceImporterTests.cs) tests. Test completion is a correctness claim for those tests, not a completion marker for the frozen workload matrix.
+The corresponding xUnit coverage is split across [baseline](../tests/PrimeAxiom.Tests/HardwareBaselineTests.cs), [baseline algorithm](../tests/PrimeAxiom.Tests/HardwareBaselineAlgorithmTests.cs), [experimental circuit](../tests/PrimeAxiom.Tests/HardwareExperimentalCircuitTests.cs), [representation adapter](../tests/PrimeAxiom.Tests/HardwareRepresentationAdapterTests.cs), [valuation state](../tests/PrimeAxiom.Tests/HardwareValuationStateTests.cs), [warm machine](../tests/PrimeAxiom.Tests/HardwareWarmStructuralMachineTests.cs), [matched binary datapath](../tests/PrimeAxiom.Tests/HardwareBinaryMagnitudeDatapathTests.cs), [sidecar datapath](../tests/PrimeAxiom.Tests/HardwareSidecarDatapathTests.cs), and [HDL importer](../tests/PrimeAxiom.Tests/Build002HdlEvidenceImporterTests.cs) tests. Test completion is a correctness claim for those tests, not a completion marker for the frozen workload matrix.
 
 The integrated C# sidecar graph's declared static receipts are separate from the HDL metrics: W=4 has 2,307 NAND2, 12 DFF/state bits, and unit-NAND depth 148; W=6 has 5,638 NAND2, 19 DFF/state bits, and depth 278; W=8 has 15,871 NAND2, 26 DFF/state bits, and depth 458. These exact construction metrics are regression-checked in [HardwareSidecarDatapathTests.cs](../tests/PrimeAxiom.Tests/HardwareSidecarDatapathTests.cs); they are not optimized or physical measurements.
 
@@ -187,7 +190,7 @@ The manifest contains 751 file entries. Its file hashes are the integrity bounda
 |---|---|
 | OSS CAD Suite | release `2026-08-24`, `windows-x64` |
 | Archive | 595,298,533 bytes; SHA-256 `95d3cf2a59d1617f2363ee9370bb3577799f33a07e9c66e126ddeb68e8e5814c` |
-| Yosys | `Yosys 0.68+120 (git sha1 a34d3baae-dirty, Release, GNU /usr/bin/x86_64-w64-mingw32-g++ 15.2.1)` |
+| Yosys | `Yosys 0.68+120 (git sha1 a34d3baae-dirty, Release, GNU [REDACTED_PATH] 15.2.1)` in the committed sanitized receipt |
 | Icarus | `Icarus Verilog version 14.0 (devel) (s20260301-391-g64f13540a-dirty)` |
 | vvp | `Icarus Verilog runtime version 14.0 (devel) (s20260301-391-g64f13540a-dirty)` |
 | Verilator | `Verilator 5.051 devel rev v5.050-251-g477b48fb3 (mod)` |
@@ -214,6 +217,86 @@ All 75 tops at all three widths have both declared and optimized rows in `synthe
 
 These selected tops are combinational and have zero DFFs. Registered counter/FU tops are present as separate rows. The large difference between declared and optimized cold/sidecar graphs is itself tool- and construction-specific evidence; it neither erases acquisition cost nor predicts physical PPA.
 
+## Generated comparison evidence
+
+The committed [correctness receipt](../results/build002/correctness.json) reports `656,810` bounded checks, zero failures, and no skip mechanism. The tables below expose the values that drive the terminal decision. They show named vector components rather than summing unlike resources.
+
+### W6/W8 integrated static boundaries
+
+Entries are `NAND2 / DFF-state bits / port bits / wire bits / unit-NAND depth`, all from [static_costs.csv](../results/build002/static_costs.csv).
+
+| Frozen comparison context | Width | Conventional integrated boundary | Experimental integrated boundary |
+|---|---:|---|---|
+| B warm scale/cancel | 6 | BIN: `2313 / 6 / 15 / 2324 / 270` | BINEXP-S4: `789 / 14 / 23 / 820 / 38` |
+| B warm scale/cancel | 8 | BIN: `3959 / 8 / 17 / 3972 / 448` | BINEXP-S4: `864 / 15 / 24 / 896 / 38` |
+| E/F load-scale-cancel-add | 6 | BIN: `2532 / 6 / 22 / 2551 / 276` | BIN+VSC-S4: `5638 / 19 / 42 / 5677 / 278` |
+| E/F load-scale-cancel-add | 8 | BIN: `4242 / 8 / 26 / 4265 / 456` | BIN+VSC-S4: `15871 / 26 / 51 / 15919 / 458` |
+| C predicate context | 6 | Full binary divider: `1021 / 0 / 26 / 1034 / 268` | BIN+VSC-S4: `5638 / 19 / 42 / 5677 / 278` |
+| C predicate context | 8 | Full binary divider: `1729 / 0 / 34 / 1746 / 450` | BIN+VSC-S4: `15871 / 26 / 51 / 15919 / 458` |
+
+The warm structural machine is smaller in NAND, wire, and depth, but larger in DFF/state and port bits at both decision widths. It therefore does not Pareto-dominate the matched binary machine. The exact sidecar is statically larger than the matched mixed-operation binary machine and even the full binary divider context at W6 and W8. These are vector failures, not weighted-score judgments.
+
+### Corrected integrated sidecar ingress
+
+The current [ingress/egress receipt](../results/build002/ingress_egress.csv) charges the whole persistent sidecar datapath's `LOAD`, not the smaller standalone valuation encoder:
+
+| Width | Exhaustive magnitudes | Cycles | Integrated NAND evaluations | NAND evaluations per load | Support status |
+|---:|---:|---:|---:|---:|---|
+| 4 | 16 | 16 | 36,912 | 2,307 | `FULL_BINARY_TO_EXACT_S4_INTEGRATED_LOAD` |
+| 6 | 64 | 64 | 360,832 | 5,638 | `FULL_BINARY_TO_EXACT_S4_INTEGRATED_LOAD` |
+| 8 | 256 | 256 | 4,062,976 | 15,871 | `FULL_BINARY_TO_EXACT_S4_INTEGRATED_LOAD` |
+
+Every W-bit magnitude, including zero and values with unsupported cofactors, loads authoritative magnitude and exact S4 metadata atomically. This corrected charge is why cold acquisition cannot be hidden behind an operation-local compose/query win.
+
+### B — warm scale/cancel dynamics
+
+Across all eight frozen 32-step traces, the `EXECUTE` phase has the same 256 requested operations, 256 cycles, 275 input-bit transitions, and 26 atomic rejections for each machine:
+
+| Width | Machine | NAND evaluations | Settled NAND transitions | State-bit transitions | Initial NAND transitions |
+|---:|---|---:|---:|---:|---:|
+| 6 | BIN scale/cancel | 592,128 | 46,863 | 371 | 12,316 |
+| 6 | BINEXP-S4 scale/cancel | 201,984 | 23,166 | 244 | 4,045 |
+| 8 | BIN scale/cancel | 1,013,504 | 59,073 | 371 | 21,134 |
+| 8 | BINEXP-S4 scale/cancel | 221,184 | 24,604 | 244 | 4,411 |
+
+That is a real native-work advantage. Output obligations expose where it stops being a whole-machine result:
+
+| Width | Obligation | Machine | Cycles | NAND evaluations | Reconstructs |
+|---:|---|---|---:|---:|---:|
+| 6 | `MAGNITUDE_FINAL` | BIN | 256 | 592,128 | 0 |
+| 6 | `MAGNITUDE_FINAL` | BINEXP-S4 | 264 | 251,008 | 8 |
+| 6 | `MAGNITUDE_EVERY_OP` | BIN | 256 | 592,128 | 0 |
+| 6 | `MAGNITUDE_EVERY_OP` | BINEXP-S4 | 512 | 1,770,752 | 256 |
+| 8 | `MAGNITUDE_FINAL` | BIN | 256 | 1,013,504 | 0 |
+| 8 | `MAGNITUDE_FINAL` | BINEXP-S4 | 264 | 367,928 | 8 |
+| 8 | `MAGNITUDE_EVERY_OP` | BIN | 256 | 1,013,504 | 0 |
+| 8 | `MAGNITUDE_EVERY_OP` | BINEXP-S4 | 512 | 4,916,992 | 256 |
+
+The reconstruction adapters' settled-transition fields remain `NOT_MEASURED`, so the second table supports only the shown cycle/NAND/reconstruction dimensions. It is not silently upgraded into a full dynamic Pareto row.
+
+### E/F — integrated sidecar dynamics
+
+These totals combine all recorded `INGRESS`, `EXECUTE`, and `ADDITION_RECOVERY` rows for the same `WARM_GENERATED + MAGNITUDE_EVERY_OP` contract. E contains eight traces per policy; F contains three hostile traces per policy. “Delayed” preserves sound lower bounds with invalid exactness; “eager” refreshes after invalidating additions.
+
+At W=8, integrated sidecar addition correctness combines exhaustive semantic differential checking with the frozen 20,000 gate-level pair set. The rows below do not relabel that gate sample as exhaustive.
+
+| Family | Width | Policy | Cycles | NAND evaluations | Settled NAND transitions | Initial NAND transitions | State-bit transitions | Refreshes | Rejections |
+|---|---:|---|---:|---:|---:|---:|---:|---:|---:|
+| E | 6 | BIN baseline | 48 | 121,536 | 9,678 | 13,584 | 77 | 0 | 1 |
+| E | 6 | Sidecar delayed | 48 | 270,624 | 25,942 | 28,052 | 149 | 0 | 1 |
+| E | 6 | Sidecar eager | 55 | 310,090 | 27,466 | 28,052 | 168 | 7 | 1 |
+| E | 8 | BIN baseline | 48 | 203,616 | 11,966 | 22,784 | 77 | 0 | 1 |
+| E | 8 | Sidecar delayed | 48 | 761,808 | 52,671 | 74,730 | 159 | 0 | 1 |
+| E | 8 | Sidecar eager | 55 | 872,905 | 54,533 | 74,730 | 180 | 7 | 1 |
+| F | 6 | BIN baseline | 99 | 250,668 | 24,538 | 5,094 | 95 | 0 | 60 |
+| F | 6 | Sidecar delayed | 99 | 558,162 | 50,337 | 10,507 | 141 | 0 | 60 |
+| F | 6 | Sidecar eager | 121 | 682,198 | 61,420 | 10,507 | 242 | 22 | 60 |
+| F | 8 | BIN baseline | 99 | 419,958 | 38,802 | 8,544 | 140 | 0 | 54 |
+| F | 8 | Sidecar delayed | 99 | 1,571,229 | 122,482 | 28,005 | 202 | 0 | 54 |
+| F | 8 | Sidecar eager | 126 | 1,999,746 | 154,201 | 28,005 | 339 | 27 | 54 |
+
+The exact input-transition and phase rows remain in [workload_matrix.csv](../results/build002/workload_matrix.csv). E and F show no integrated dynamic recovery: the sidecar performs more NAND evaluations and settled transitions than the matched binary machine, and eager refresh adds cycles and state activity.
+
 ## Preserved failures, superseded runs, and repairs
 
 Raw failures were retained rather than rewritten:
@@ -237,7 +320,22 @@ Toolchain bring-up also found reproducibility defects that are now guarded: the 
 
 ## Exact reproduction
 
-From the repository root in PowerShell:
+The canonical end-to-end verifier restores, formats, builds, runs the zero-skip test suite, regenerates the full HDL evidence, generates the result set twice, compares deterministic hashes, validates the manifest, protects inherited Build 000/001 evidence, and writes a verification receipt:
+
+```powershell
+& .\scripts\verify-build002.ps1
+```
+
+To replay the aggregate against the already preserved corrected HDL evidence without rerunning HDL:
+
+```powershell
+& .\scripts\verify-build002.ps1 `
+  -UseExistingHdlEvidence `
+  -HdlOutputDirectory '.artifacts/build002-hdl-full-zero-repair' `
+  -OutputDirectory 'artifacts/build002-reproduction'
+```
+
+The lower-level HDL commands, from the repository root in PowerShell, are:
 
 ```powershell
 # Acquire or reuse the pinned archive, verify bytes/SHA-256, extract, and probe tools.
@@ -274,32 +372,47 @@ dotnet test .\PrimeAxiom.sln --configuration Release --no-build --no-restore
 
 dotnet run --project .\src\PrimeAxiom.Cli `
   --configuration Release `
-  --no-build `
   -- experiment-build002 `
   --output results/build002 `
-  --hdl-summary .artifacts/build002-hdl-reproduction/verification-summary.json
+  --hdl-verification-summary .artifacts/build002-hdl-reproduction/verification-summary.json `
+  --hdl-synthesis-metrics .artifacts/build002-hdl-reproduction/synthesis-metrics.csv `
+  --hdl-toolchain .artifacts/build002-hdl-reproduction/toolchain-bootstrap.json
 ```
 
-The imported HDL summary is allowlist-sanitized metadata in the committed runner. It does not silently turn missing non-HDL workload rows into measured synthesis or dynamic rows. Inspect `results/build002/protocol_coverage.json`, every `NOT_MEASURED` value, the result manifest, and the phase-separated CSVs before interpreting the generated set.
+The generator validates and path-sanitizes all three supplied HDL receipts before emitting [150 synthesis rows](../results/build002/synthesis_metrics.csv), [15 formal receipts](../results/build002/formal_receipts.json), and the [toolchain receipt](../results/build002/toolchain.json). Imported HDL evidence does not silently turn a missing non-HDL field into a measured synthesis or dynamic value. Inspect [protocol_coverage.json](../results/build002/protocol_coverage.json), every `NOT_MEASURED` value, the [result manifest](../results/build002/manifest.json), and the phase-separated CSVs before interpreting the generated set.
 
 ## Physical claim boundary
 
 No result in this document crosses into FPGA LUT place-and-route, ASIC standard-cell mapping, extracted parasitics, static timing analysis, transistor/device simulation, measured energy, or fabricated silicon. The logical model omits hazards, wire length, buffering, capacitance, clock trees, setup/hold, metastability, process/voltage/temperature, and layout congestion. A future physical result must name its target, library/device, constraints, tool versions, placement/routing status, and evidence class; it may not retroactively relabel these NAND receipts.
 
-## Generated-results decision — intentionally unfilled
+## Generated-results decision
 
 <!-- BUILD002_GENERATED_RESULTS_DECISION_START -->
 
-This section is reserved for the final generated-results aggregation. No architectural classification is selected in this methods document.
+The committed generated result earns:
 
-- Generated manifest and hash: _to be inserted from the completed result set_
-- A–F/R coverage audit: _to be inserted_
-- Correctness and skipped/failed checks: _to be inserted_
-- Same-contract Pareto rows at W=6 and W=8: _to be inserted_
-- Cold/warm and output-obligation eligibility audit: _to be inserted_
-- Final classification and exact frozen rule invoked: _to be inserted_
-- Remaining exclusions, failed infrastructure, or `NOT_MEASURED` rows: _to be inserted_
+> **`NO_HARDWARE_ADVANTAGE`**
 
-The decision may be filled only after every required coverage row and integrated boundary cost has been generated and the frozen stop conditions have been checked. Local instruction wins, a passing HDL tool matrix, or semantic elegance alone are insufficient.
+This invokes fallback rule 5 of the frozen protocol after rules 1–4 fail. It is the strongest single classification justified by this bounded matrix.
+
+### Completion receipts
+
+- [Generated manifest](../results/build002/manifest.json): SHA-256 `ce25af5f5dceaf74e0182e729e09b3e6463f6d286bae165424c2af78ea01d809`; runtime `.NET 8.0.29`; generator command reproduced above.
+- [Protocol coverage](../results/build002/protocol_coverage.json): all seven A–F/R families are `COMPLETE_BOUNDED`, totaling 609 workload rows across W=4/6/8; the decision flag is true.
+- [Correctness](../results/build002/correctness.json): `656,810` checks, `0` failures. The generator has no skip mechanism, and the required-test receipt records zero skipped checks.
+- HDL: `260/260` verification cases, including `15/15` formal cases; `150` synthesis rows comprise 75 `STRUCTURAL_DECLARED` and 75 `STRUCTURAL_OPTIMIZED` rows, all with measured warning counts.
+- Inherited Build 000/001 evidence matches the frozen manifest/report hashes recorded in the coverage receipt.
+
+### Frozen-rule audit
+
+1. **Alternative arithmetic unit candidate — not satisfied.** The integrated BIN+VSC-S4 machine is statically larger than the matched binary mixed-operation machine at W6 and W8, and E's delayed/eager sidecar policies use more NAND evaluations and transitions under the same `MAGNITUDE_EVERY_OP` contract.
+2. **Prime structural coprocessor candidate — not satisfied.** The exact sidecar's W6/W8 static overhead exceeds the full binary divider/query context before a 32-operation dynamic horizon is charged. Static hardware cannot be amortized away under the registered Pareto rule.
+3. **Warm-state specialized advantage — not satisfied.** B confirms lower NAND count, depth, wiring, evaluations, and transitions for resident structural scale/cancel, but the structural machine uses more DFF/state and port bits at both W6 and W8. This is a tradeoff, not Pareto dominance.
+4. **Unexpected architecture — not satisfied.** No architecture outside the preregistered structural, thermometer, presence, or exact-sidecar families survived the integrated adversarial tests.
+5. **Fallback — selected.** `NO_HARDWARE_ADVANTAGE` follows because none of the positive rules is satisfied.
+
+### Meaning of the negative
+
+The terminal label does not say that prime/valuation coordinates are useless. It preserves the measured local warm-state advantage and rejects only a same-contract whole-machine hardware advantage under this fixed S4 catalog, these widths, these transparent constructions, and the frozen vector rule. Some composite GCD/LCM/rational settled-transition totals remain `NOT_MEASURED`; they were not needed or used to manufacture the terminal negative. No FPGA, ASIC, energy, or fabricated-silicon conclusion follows.
 
 <!-- BUILD002_GENERATED_RESULTS_DECISION_END -->
