@@ -1,0 +1,30 @@
+{
+  "schema": "prime-axiom-hdl-toolchain-lock-v1",
+  "protocol": "PAH-BUILD002-CONF0001",
+  "release": "2026-08-24",
+  "canonical_platform": "linux-x64",
+  "assets": {
+    "windows-x64": {
+      "file": "oss-cad-suite-windows-x64-20260824.tgz",
+      "bytes": 595298533,
+      "sha256": "95d3cf2a59d1617f2363ee9370bb3577799f33a07e9c66e126ddeb68e8e5814c",
+      "url": "https://github.com/YosysHQ/oss-cad-suite-build/releases/download/2026-08-24/oss-cad-suite-windows-x64-20260824.tgz"
+    },
+    "linux-x64": {
+      "file": "oss-cad-suite-linux-x64-20260824.tgz",
+      "bytes": 741360658,
+      "sha256": "9d7f79975ef624e1119fc9690fd9b9839b67026925aff3e2a1192d861b8dbb7c",
+      "url": "https://github.com/YosysHQ/oss-cad-suite-build/releases/download/2026-08-24/oss-cad-suite-linux-x64-20260824.tgz"
+    }
+  },
+  "required_commands": [
+    "yosys",
+    "iverilog",
+    "vvp",
+    "verilator",
+    "sby",
+    "yosys-smtbmc",
+    "z3"
+  ],
+  "forbidden_primary_fallback": "yowasp-yosys abc -g NAND"
+}
