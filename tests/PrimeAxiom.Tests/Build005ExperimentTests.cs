@@ -87,9 +87,11 @@ public sealed class Build005ExperimentTests
         {
             var first = Build005ExperimentRunner.Run(repositoryRoot, firstDirectory);
             var second = Build005ExperimentRunner.Run(repositoryRoot, secondDirectory);
+            var replacement = Build005ExperimentRunner.Run(repositoryRoot, firstDirectory);
 
             Assert.Equal(Build005Protocol.PartialStatus, first.GeneratedStatus);
             Assert.Equal(first with { OutputDirectory = second.OutputDirectory }, second);
+            Assert.Equal(first, replacement);
             Assert.True(first.CheckCount > 0);
             Assert.Equal(0, first.FailureCount);
             AssertExactInventory(firstDirectory);
@@ -138,7 +140,7 @@ public sealed class Build005ExperimentTests
             var exception = Assert.Throws<InvalidOperationException>(() =>
                 Build005ExperimentRunner.Run(repositoryRoot, outputDirectory));
 
-            Assert.Contains("unowned file", exception.Message, StringComparison.OrdinalIgnoreCase);
+            Assert.Contains("manifest-owned", exception.Message, StringComparison.OrdinalIgnoreCase);
             Assert.Equal("user-owned", File.ReadAllText(sentinel));
             Assert.Single(Directory.EnumerateFiles(outputDirectory));
         }
@@ -161,8 +163,30 @@ public sealed class Build005ExperimentTests
             var exception = Assert.Throws<InvalidOperationException>(() =>
                 Build005ExperimentRunner.Run(repositoryRoot, outputDirectory));
 
-            Assert.Contains("unexpected subdirectory", exception.Message, StringComparison.OrdinalIgnoreCase);
+            Assert.Contains("manifest-owned", exception.Message, StringComparison.OrdinalIgnoreCase);
             Assert.Equal("preserved", File.ReadAllText(sentinel));
+        }
+        finally
+        {
+            DeleteTemporaryDirectory(outputDirectory);
+        }
+    }
+
+    [Fact]
+    public void RunnerPreservesAllowedFilenameWithoutAnOwnershipManifest()
+    {
+        var repositoryRoot = FindRepositoryRoot();
+        var outputDirectory = CreateTemporaryDirectory();
+        var readme = Path.Combine(outputDirectory, "README.md");
+        File.WriteAllText(readme, "not Build 005 evidence");
+        try
+        {
+            var exception = Assert.Throws<InvalidOperationException>(() =>
+                Build005ExperimentRunner.Run(repositoryRoot, outputDirectory));
+
+            Assert.Contains("manifest-owned", exception.Message, StringComparison.OrdinalIgnoreCase);
+            Assert.Equal("not Build 005 evidence", File.ReadAllText(readme));
+            Assert.Single(Directory.EnumerateFiles(outputDirectory));
         }
         finally
         {
@@ -199,6 +223,13 @@ public sealed class Build005ExperimentTests
         Assert.Equal(receipt.CheckCount, root.GetProperty("checks").GetInt64());
         Assert.Equal(0, root.GetProperty("failures").GetInt64());
         Assert.True(root.GetProperty("selfExcluding").GetBoolean());
+        Assert.Equal(
+            "dotnet run --project src/PrimeAxiom.Cli --configuration Release -- experiment-build005 --output results/build005",
+            root.GetProperty("canonicalRegenerationCommand").GetString());
+        Assert.Equal(
+            "OUTPUT_PATH_EXCLUDED_FOR_CROSS_DIRECTORY_BYTE_REPLAY",
+            root.GetProperty("generationContext").GetString());
+        Assert.False(root.TryGetProperty("command", out _));
 
         var entries = root.GetProperty("entries").EnumerateArray().ToArray();
         Assert.Equal(Build005ExperimentRunner.ExpectedFiles.Count - 1, entries.Length);
@@ -229,6 +260,9 @@ public sealed class Build005ExperimentTests
         Assert.Equal(9, root.GetProperty("unmetGates").GetArrayLength());
         Assert.True(root.GetProperty("externalVerificationRequired").GetBoolean());
         Assert.False(root.GetProperty("evidence").GetProperty("integratedNetlist").GetBoolean());
+        Assert.Equal(
+            "LATER_REQUESTED_VS_NEVER_REQUESTED_KEYS_ONLY__RESIDENCY_AND_AVOIDED_WORK_NOT_ESTABLISHED",
+            root.GetProperty("evidence").GetProperty("speculationKeyFate").GetString());
     }
 
     private static string FindRepositoryRoot()

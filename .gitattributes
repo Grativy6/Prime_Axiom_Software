@@ -5,6 +5,7 @@
 /research/build002_experiment_plan.md text eol=lf
 /research/build003_experiment_plan.md text eol=lf
 /research/build004_experiment_plan.md text eol=lf
+/research/build005_experiment_plan.md text eol=lf
 # Build 000/001 generated receipts were frozen with Windows CRLF bytes.
 /results/build000/** text eol=crlf
 /results/build000/README.md text eol=lf
@@ -13,3 +14,4 @@
 /results/build003/** text eol=lf
 /results/build004/** text eol=lf
 /results/build004/*.wav binary
+/results/build005/** text eol=lf

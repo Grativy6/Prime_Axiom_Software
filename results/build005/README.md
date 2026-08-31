@@ -47,7 +47,7 @@ No exploratory break-even row is eligible for the frozen decision. Prime-specifi
 
 - `PRE_RESULT_TRACE_DIGEST_REGISTRY`: Trace digests are emitted from the executed mutable factory; no independent pre-result digest registry exists.
 - `ALL_OUTPUT_OBLIGATIONS`: The current corpus uses MAGNITUDE_FINAL only; predicate, exact-exponent, residual, and every-event obligations are not separately costed.
-- `PHASE_AND_TRANSITION_LEDGER`: INGRESS/SEARCH/EXECUTE/MAINTENANCE/EGRESS and settled NAND/input/state transition series are not recorded per trace prefix.
+- `PHASE_AND_TRANSITION_LEDGER`: Raw per-event prefix series, INGRESS/SEARCH/EXECUTE/MAINTENANCE/EGRESS rows, and settled NAND/input/state transition series are not emitted.
 - `INTEGRATED_PROPAGATION_HARDWARE`: Semantic propagation arithmetic is counted, but no integrated exponent/residual combiner netlist or switching trace is present.
 - `POLICY_MATCHED_CONTENT_CACHE_HARDWARE`: The declared cache graph is slot/generation keyed; the W-bit content-plus-divisor cache has no matching structural graph.
 - `COMPETENT_CONVENTIONAL_CONTROLS`: Grouped screening, full rational reduction, cumulative smooth stripping, producer-known sparse factor form, and a strict radix comparator are incomplete.

@@ -76,6 +76,14 @@ $inheritedPaths = @(
     'BUILD_002_REPORT.md',
     'BUILD_003_REPORT.md',
     'BUILD_004_REPORT.md',
+    'research/build001_experiment_plan.md',
+    'research/build002_experiment_plan.md',
+    'research/build003_experiment_plan.md',
+    'research/build004_experiment_plan.md',
+    'docs/PRIME_RECEIPT_CALCULATOR.md',
+    'docs/PROVENANCE_ARCHITECTURE.md',
+    'docs/BUILD004_BOUNDARY_PROBES.md',
+    'docs/PRIOR_ART_BUILD004.md',
     'results/build000',
     'results/build001',
     'results/build002',
@@ -314,7 +322,8 @@ function Assert-Manifest {
         $manifest.decisionAxesEarned -ne $false -or
         $manifest.implementedTraceCoverageComplete -ne $true -or
         $manifest.completeFrozenCoverage -ne $false -or
-        $manifest.command -cne $canonicalCommand -or
+        $manifest.canonicalRegenerationCommand -cne $canonicalCommand -or
+        $manifest.generationContext -cne 'OUTPUT_PATH_EXCLUDED_FOR_CROSS_DIRECTORY_BYTE_REPLAY' -or
         $manifest.selfExcluding -ne $true -or
         [long]$manifest.checks -ne $expectedChecks -or
         [long]$manifest.failures -ne 0 -or
@@ -377,6 +386,9 @@ function Assert-Receipts {
         $coverage.evidence.hdlSynthesis -cne 'NOT_MEASURED' -or
         $coverage.evidence.fpgaPlaceAndRoute -cne 'NOT_MEASURED' -or
         $coverage.evidence.physicalMeasurement -cne 'NOT_MEASURED' -or
+        $coverage.evidence.speculationKeyFate -cne 'LATER_REQUESTED_VS_NEVER_REQUESTED_KEYS_ONLY__RESIDENCY_AND_AVOIDED_WORK_NOT_ESTABLISHED' -or
+        $coverage.evidence.groupedScreenControl -cne 'DECLARED_REMAINDER_PROXY_ONLY__NOT_EXECUTED_OR_COSTED' -or
+        $coverage.evidence.gcdAndMagnitudeOutputCosts -cne 'COUNTERS_PRESENT__EXCLUDED_FROM_MODELED_TOTAL' -or
         $coverage.deterministicReplay -cne 'ESTABLISHED_ONLY_BY_EXTERNAL_TWO_RUN_VERIFIER' -or
         $coverage.inheritedEvidence -cne 'PROTECTED_ONLY_BY_EXTERNAL_VERIFIER' -or
         $coverage.claimCeiling -cne $claimCeiling) {
@@ -426,6 +438,10 @@ function Assert-Receipts {
             throw "Build 005 family receipt is incomplete or failed for $($family.family) in $Directory."
         }
     }
+    $familyCheckSum = [long](($families | Measure-Object -Property checks -Sum).Sum)
+    if ($familyCheckSum -ne $expectedWorkloadChecks) {
+        throw "Build 005 family check total differs in $Directory."
+    }
 
     $correctness = Get-Content -LiteralPath (Join-Path $Directory 'correctness.json') -Raw |
         ConvertFrom-Json
@@ -445,6 +461,21 @@ function Assert-Receipts {
         $correctness.testAssemblySkippedCount -cne 'ESTABLISHED_ONLY_BY_EXTERNAL_TRX_VERIFIER' -or
         $correctness.claimCeiling -cne $claimCeiling) {
         throw "Build 005 correctness receipt differs in $Directory."
+    }
+    $checkGroups = $correctness.independent.checkGroups
+    if ([long]$checkGroups.W8_VALUATION -ne 12288 -or
+        [long]$checkGroups.W8_ARITHMETIC -ne 131072 -or
+        [long]$checkGroups.W16_SEEDED -ne 10000 -or
+        [long]$checkGroups.W32_SEEDED -ne 10000) {
+        throw "Build 005 independent correctness groups differ in $Directory."
+    }
+    $independentGroupSum = [long]$checkGroups.W8_VALUATION +
+        [long]$checkGroups.W8_ARITHMETIC +
+        [long]$checkGroups.W16_SEEDED +
+        [long]$checkGroups.W32_SEEDED
+    if ($independentGroupSum -ne $expectedIndependentChecks -or
+        ([long]$correctness.independent.checks + [long]$correctness.workloadChecks) -ne $expectedChecks) {
+        throw "Build 005 correctness subtotals do not reconstruct the total in $Directory."
     }
 
     $attribution = Get-Content -LiteralPath (Join-Path $Directory 'attribution.json') -Raw |
@@ -503,6 +534,11 @@ function Assert-Receipts {
             $row.status -cne 'IMPLEMENTED_TRACE_PASS') {
             throw "Build 005 workload matrix contains an invalid or duplicate row in $Directory."
         }
+    }
+    $workloadCheckSum = [long](($workload | Measure-Object -Property correctness_checks -Sum).Sum)
+    $workloadFailureSum = [long](($workload | Measure-Object -Property correctness_failures -Sum).Sum)
+    if ($workloadCheckSum -ne $expectedWorkloadChecks -or $workloadFailureSum -ne 0) {
+        throw "Build 005 workload CSV correctness totals differ in $Directory."
     }
     foreach ($width in @(8, 16, 32)) {
         if (@($workload | Where-Object { [int]$_.width -eq $width }).Count -ne 288) {

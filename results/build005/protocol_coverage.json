@@ -28,7 +28,7 @@
     {
       "gate": "PHASE_AND_TRANSITION_LEDGER",
       "satisfied": false,
-      "evidence": "INGRESS/SEARCH/EXECUTE/MAINTENANCE/EGRESS and settled NAND/input/state transition series are not recorded per trace prefix."
+      "evidence": "Raw per-event prefix series, INGRESS/SEARCH/EXECUTE/MAINTENANCE/EGRESS rows, and settled NAND/input/state transition series are not emitted."
     },
     {
       "gate": "INTEGRATED_PROPAGATION_HARDWARE",
@@ -406,7 +406,10 @@
     "openCellMapping": "NOT_MEASURED",
     "physicalMeasurement": "NOT_MEASURED",
     "hostElapsedTime": "NOT_MEASURED",
-    "hostAllocation": "NOT_MEASURED"
+    "hostAllocation": "NOT_MEASURED",
+    "speculationKeyFate": "LATER_REQUESTED_VS_NEVER_REQUESTED_KEYS_ONLY__RESIDENCY_AND_AVOIDED_WORK_NOT_ESTABLISHED",
+    "groupedScreenControl": "DECLARED_REMAINDER_PROXY_ONLY__NOT_EXECUTED_OR_COSTED",
+    "gcdAndMagnitudeOutputCosts": "COUNTERS_PRESENT__EXCLUDED_FROM_MODELED_TOTAL"
   },
   "deterministicReplay": "ESTABLISHED_ONLY_BY_EXTERNAL_TWO_RUN_VERIFIER",
   "inheritedEvidence": "PROTECTED_ONLY_BY_EXTERNAL_VERIFIER",

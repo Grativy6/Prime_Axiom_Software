@@ -21,13 +21,13 @@ internal sealed record Build005ControlMetrics(
     long QueryRequests,
     long SpeculationQueries,
     long SpeculationDivmodSteps,
-    long UsefulSpeculations,
-    long WastedSpeculations,
-    long SearchToFirstUseDistanceTotal,
-    long SearchToFirstUseDistanceMaximum,
+    long PrefetchKeysLaterRequested,
+    long PrefetchKeysNeverRequested,
+    long PrefetchToLaterRequestDistanceTotal,
+    long PrefetchToLaterRequestDistanceMaximum,
     long GcdCalls,
     long GcdModuloSteps,
-    long GroupedScreenRemainders,
+    long DeclaredGroupedScreenRemainderProxy,
     long CompositeDivmodCalls,
     long MagnitudeOutputs,
     long CorrectnessChecks,
@@ -168,7 +168,7 @@ internal static class Build005Campaign
     internal const string SemanticEvidence = "EXACT_SEMANTIC_CONTROLLER";
     internal const string CompositionalNandEvidence = "STRUCTURAL_DECLARED_COMPOSITIONAL_SCHEDULE";
     internal const string SharedMagnitudeExclusion =
-        "AUTHORITATIVE_W_BIT_LOAD_ADD_MUL_OUTPUT_DATAPATH_NOT_REBUILT_AT_W16_W32; EXACT_OPERATION_COUNTS_AND_IDENTICAL_MAGNITUDES_RETAINED";
+        "AUTHORITATIVE_W_BIT_LOAD_ADD_MUL_OUTPUT_DATAPATH_NOT_REBUILT_AT_W16_W32; EXACT_OPERATION_COUNTS_AND_IDENTICAL_MAGNITUDES_RETAINED; GCD_GROUPED_SCREEN_AND_MAGNITUDE_OUTPUT_COSTS_EXCLUDED_FROM_MODELED_TOTAL";
 
     internal static readonly IReadOnlyList<Build005PolicyConfiguration> Policies =
         Array.AsReadOnly(CreatePolicies());
@@ -236,13 +236,21 @@ internal static class Build005Campaign
         var oracle = new ulong?[DemandValuationService.SlotCount];
         var control = new MutableControlMetrics();
         var prefetched = new Dictionary<SpeculationKey, int>();
-        var usedPrefetches = new HashSet<SpeculationKey>();
+        var laterRequestedPrefetches = new HashSet<SpeculationKey>();
         var prefixes = new List<Build005PrefixCost>(trace.Events.Count);
 
         for (var eventIndex = 0; eventIndex < trace.Events.Count; eventIndex++)
         {
             var item = trace.Events[eventIndex];
-            var producedSlot = ExecuteEvent(service, oracle, trace, item, control, prefetched, usedPrefetches, eventIndex);
+            var producedSlot = ExecuteEvent(
+                service,
+                oracle,
+                trace,
+                item,
+                control,
+                prefetched,
+                laterRequestedPrefetches,
+                eventIndex);
             if (producedSlot >= 0 && policy.IsSpeculative && !compositeControl)
             {
                 Speculate(
@@ -261,7 +269,7 @@ internal static class Build005Campaign
                 policy,
                 hardware.Services[policy.CacheCapacity],
                 service.Metrics,
-                control.Snapshot(usedPrefetches, prefetched)).ToPrefix(eventIndex));
+                control.Snapshot(laterRequestedPrefetches, prefetched)).ToPrefix(eventIndex));
         }
 
         for (var slot = 0; slot < oracle.Length; slot++)
@@ -278,7 +286,7 @@ internal static class Build005Campaign
                 $"{trace.Family}:final-slot:{slot}");
         }
 
-        var controlSnapshot = control.Snapshot(usedPrefetches, prefetched);
+        var controlSnapshot = control.Snapshot(laterRequestedPrefetches, prefetched);
         var modeled = BuildModeledCost(
             trace.Width,
             policy,
@@ -317,7 +325,7 @@ internal static class Build005Campaign
         Build005TraceEvent item,
         MutableControlMetrics control,
         IReadOnlyDictionary<SpeculationKey, int> prefetched,
-        HashSet<SpeculationKey> usedPrefetches,
+        HashSet<SpeculationKey> laterRequestedPrefetches,
         int eventIndex)
     {
         switch (item.Kind)
@@ -332,7 +340,7 @@ internal static class Build005Campaign
                         oracle[item.Destination] = item.Magnitude;
                         if (trace.Family == "SMOOTH_STRIP")
                         {
-                            control.GroupedScreenRemainders += 3;
+                            control.DeclaredGroupedScreenRemainderProxy += 3;
                         }
 
                         return item.Destination;
@@ -343,7 +351,14 @@ internal static class Build005Campaign
             case Build005EventKind.TestPower:
                 {
                     control.QueryRequests++;
-                    MarkPrefetchUse(service, item.Left, item.Divisor, prefetched, usedPrefetches, eventIndex, control);
+                    MarkLaterRequest(
+                        service,
+                        item.Left,
+                        item.Divisor,
+                        prefetched,
+                        laterRequestedPrefetches,
+                        eventIndex,
+                        control);
                     var result = service.TestPower(item.Left, item.Divisor, item.Threshold);
                     var expected = OracleValuation(RequireOracle(oracle, item.Left), item.Divisor);
                     Check(control, result.Succeeded, $"{trace.Family}:{eventIndex}:test-success");
@@ -362,7 +377,14 @@ internal static class Build005Campaign
             case Build005EventKind.StripAll:
                 {
                     control.QueryRequests++;
-                    MarkPrefetchUse(service, item.Left, item.Divisor, prefetched, usedPrefetches, eventIndex, control);
+                    MarkLaterRequest(
+                        service,
+                        item.Left,
+                        item.Divisor,
+                        prefetched,
+                        laterRequestedPrefetches,
+                        eventIndex,
+                        control);
                     var result = item.Kind == Build005EventKind.Valuation
                         ? service.Valuation(item.Left, item.Divisor)
                         : service.StripAll(item.Left, item.Divisor);
@@ -500,25 +522,27 @@ internal static class Build005Campaign
         _ = oracle;
     }
 
-    private static void MarkPrefetchUse(
+    private static void MarkLaterRequest(
         DemandValuationService service,
         int slot,
         int prime,
         IReadOnlyDictionary<SpeculationKey, int> prefetched,
-        HashSet<SpeculationKey> used,
+        HashSet<SpeculationKey> laterRequested,
         int eventIndex,
         MutableControlMetrics control)
     {
         var generation = service.SnapshotSlot(slot).Generation;
         var key = new SpeculationKey(slot, generation, prime);
-        if (!prefetched.TryGetValue(key, out var prefetchedAt) || !used.Add(key))
+        if (!prefetched.TryGetValue(key, out var prefetchedAt) || !laterRequested.Add(key))
         {
             return;
         }
 
         var distance = eventIndex - prefetchedAt;
-        control.SearchToFirstUseDistanceTotal += distance;
-        control.SearchToFirstUseDistanceMaximum = Math.Max(control.SearchToFirstUseDistanceMaximum, distance);
+        control.PrefetchToLaterRequestDistanceTotal += distance;
+        control.PrefetchToLaterRequestDistanceMaximum = Math.Max(
+            control.PrefetchToLaterRequestDistanceMaximum,
+            distance);
     }
 
     private static void ValidateCurrentSlots(
@@ -811,7 +835,7 @@ internal static class Build005Campaign
             new(
                 "PHASE_AND_TRANSITION_LEDGER",
                 false,
-                "INGRESS/SEARCH/EXECUTE/MAINTENANCE/EGRESS and settled NAND/input/state transition series are not recorded per trace prefix."),
+                "Raw per-event prefix series, INGRESS/SEARCH/EXECUTE/MAINTENANCE/EGRESS rows, and settled NAND/input/state transition series are not emitted."),
             new(
                 "INTEGRATED_PROPAGATION_HARDWARE",
                 false,
@@ -844,42 +868,69 @@ internal static class Build005Campaign
         IReadOnlyList<Build005EvidenceGate> evidenceGates,
         bool complete)
     {
-        var demandFamilies = QualifyingFamilies(
+        var exploratoryDemandFamilies = QualifyingFamilies(
             rows,
             breakEven,
             "BIN_PRIME_FRONTIER_PROP_K",
             speculationBudget: 0,
-            requirePrimeAttribution: true);
-        var speculativeFamilies = QualifyingFamilies(
+            requirePrimeAttribution: true,
+            requireDecisionEligibility: false);
+        var exploratorySpeculativeFamilies = QualifyingFamilies(
             rows,
             breakEven,
             policyPrefix: "BIN_PRIME_FRONTIER_SPEC_B",
             speculationBudget: null,
-            requirePrimeAttribution: true);
+            requirePrimeAttribution: true,
+            requireDecisionEligibility: false);
+        exploratorySpeculativeFamilies.RemoveAll(
+            family => !exploratoryDemandFamilies.Contains(family, StringComparer.Ordinal));
+        var exploratoryGenericAdvantage =
+            HasCrossWidthAdvantage(rows, breakEven, "BIN_CONTENT_ANSWER_LRU_K", requireDecisionEligibility: false) ||
+            HasCrossWidthAdvantage(rows, breakEven, "BIN_FRONTIER_NOPROP_K", requireDecisionEligibility: false);
+        var terminalDecisionCoverage = complete && breakEven.Any(row => row.EligibleForFrozenDecision);
+        var demandFamilies = terminalDecisionCoverage
+            ? QualifyingFamilies(
+                rows,
+                breakEven,
+                "BIN_PRIME_FRONTIER_PROP_K",
+                speculationBudget: 0,
+                requirePrimeAttribution: true,
+                requireDecisionEligibility: true)
+            : [];
+        var speculativeFamilies = terminalDecisionCoverage
+            ? QualifyingFamilies(
+                rows,
+                breakEven,
+                policyPrefix: "BIN_PRIME_FRONTIER_SPEC_B",
+                speculationBudget: null,
+                requirePrimeAttribution: true,
+                requireDecisionEligibility: true)
+            : [];
         speculativeFamilies.RemoveAll(family => !demandFamilies.Contains(family, StringComparer.Ordinal));
-        var genericAdvantage = HasCrossWidthAdvantage(rows, breakEven, "BIN_CONTENT_ANSWER_LRU_K") ||
-            HasCrossWidthAdvantage(rows, breakEven, "BIN_FRONTIER_NOPROP_K");
+        var genericAdvantage = terminalDecisionCoverage &&
+            (HasCrossWidthAdvantage(rows, breakEven, "BIN_CONTENT_ANSWER_LRU_K", requireDecisionEligibility: true) ||
+             HasCrossWidthAdvantage(rows, breakEven, "BIN_FRONTIER_NOPROP_K", requireDecisionEligibility: true));
         // These axes need competent baselines that are not yet implemented.
         var producerOnly = false;
         var radixOnly = false;
 
-        var exploratoryPattern = speculativeFamilies.Count > 0
+        var exploratoryPattern = exploratorySpeculativeFamilies.Count > 0
             ? "EXPLORATORY_SPECULATIVE_PRIME_SIGNAL"
-            : demandFamilies.Count > 0
+            : exploratoryDemandFamilies.Count > 0
                 ? "EXPLORATORY_DEMAND_PRIME_SIGNAL"
-                : genericAdvantage
+                : exploratoryGenericAdvantage
                     ? "EXPLORATORY_GENERIC_REUSE_PATTERN"
                     : "NO_EXPLORATORY_REPAYMENT_PATTERN";
         var exploratorySearch = rows
             .Where(row => row.Policy.StartsWith("BIN_PRIME_FRONTIER_SPEC_B", StringComparison.Ordinal))
-            .Sum(row => row.ControlMetrics.WastedSpeculations) > 0
+            .Sum(row => row.ControlMetrics.PrefetchKeysNeverRequested) > 0
             ? "BLIND_SPECULATION_INCURRED_WASTED_WORK"
             : "NO_SPECULATION_OBSERVATION";
 
         string label;
         string search;
         string attribution;
-        if (!complete)
+        if (!terminalDecisionCoverage)
         {
             label = Build005Protocol.PartialStatus;
             search = "NOT_EARNED";
@@ -925,19 +976,19 @@ internal static class Build005Campaign
         return new Build005Decision(
             Build005Protocol.PartialStatus,
             label,
-            complete,
+            terminalDecisionCoverage,
             search,
             attribution,
             "SEMANTIC",
             exploratoryPattern,
             exploratorySearch,
-            complete && demandFamilies.Count > 0,
-            complete && speculativeFamilies.Count > 0,
-            complete && genericAdvantage,
-            complete && producerOnly,
-            complete && radixOnly,
-            complete ? Array.AsReadOnly(demandFamilies.ToArray()) : Array.Empty<string>(),
-            complete ? Array.AsReadOnly(speculativeFamilies.ToArray()) : Array.Empty<string>(),
+            terminalDecisionCoverage && demandFamilies.Count > 0,
+            terminalDecisionCoverage && speculativeFamilies.Count > 0,
+            terminalDecisionCoverage && genericAdvantage,
+            terminalDecisionCoverage && producerOnly,
+            terminalDecisionCoverage && radixOnly,
+            terminalDecisionCoverage ? Array.AsReadOnly(demandFamilies.ToArray()) : Array.Empty<string>(),
+            terminalDecisionCoverage ? Array.AsReadOnly(speculativeFamilies.ToArray()) : Array.Empty<string>(),
             Array.AsReadOnly(evidenceGates.Where(gate => !gate.Satisfied).Select(gate => gate.Gate).ToArray()),
             Build005Protocol.ClaimCeiling);
     }
@@ -947,7 +998,8 @@ internal static class Build005Campaign
         IReadOnlyList<Build005BreakEvenRow> breakEven,
         string policyPrefix,
         int? speculationBudget,
-        bool requirePrimeAttribution)
+        bool requirePrimeAttribution,
+        bool requireDecisionEligibility)
     {
         var result = new List<string>();
         foreach (var family in rows.Select(row => row.Family).Distinct(StringComparer.Ordinal))
@@ -974,6 +1026,7 @@ internal static class Build005Campaign
                     }
 
                     var comparisons = breakEven.Where(row =>
+                            (!requireDecisionEligibility || row.EligibleForFrozenDecision) &&
                             row.Family == family &&
                             row.Candidate.StartsWith(policyPrefix, StringComparison.Ordinal) &&
                             row.CacheCapacity == cacheSize &&
@@ -987,11 +1040,17 @@ internal static class Build005Campaign
                             row.StableCyclePrefix >= 0 &&
                             row.StableServiceNandPrefix >= 0);
                     var attributableStrictSaving = policyPrefix == "BIN_PRIME_FRONTIER_PROP_K"
-                        ? comparisons.Any(row =>
-                            row.Baseline == "BIN_FRONTIER_NOPROP_K" &&
-                            row.StrictlyBetterAtLeastOne) &&
+                        ? comparisons.Any(comparison =>
+                            comparison.Baseline == "BIN_FRONTIER_NOPROP_K" &&
+                            comparison.StrictlyBetterAtLeastOne &&
                             candidates.Any(candidate =>
                             {
+                                if (candidate.Width != comparison.Width ||
+                                    candidate.Policy != comparison.Candidate)
+                                {
+                                    return false;
+                                }
+
                                 var noPropagation = FindRow(
                                     rows,
                                     candidate,
@@ -1000,7 +1059,7 @@ internal static class Build005Campaign
                                     speculationBudget: 0);
                                 return candidate.SemanticMetrics.TerminalCertificatesPropagated > 0 &&
                                     candidate.SemanticMetrics.DivModCalls < noPropagation.SemanticMetrics.DivModCalls;
-                            })
+                            }))
                         : comparisons.All(row => row.StrictlyBetterAtLeastOne);
                     if (stableNoWorse && attributableStrictSaving)
                     {
@@ -1022,7 +1081,8 @@ internal static class Build005Campaign
     private static bool HasCrossWidthAdvantage(
         IReadOnlyList<Build005WorkloadRow> rows,
         IReadOnlyList<Build005BreakEvenRow> breakEven,
-        string policy)
+        string policy,
+        bool requireDecisionEligibility)
     {
         foreach (var family in rows.Select(row => row.Family).Distinct(StringComparer.Ordinal))
         {
@@ -1040,6 +1100,7 @@ internal static class Build005Campaign
                 }
 
                 var comparisons = breakEven.Where(row =>
+                    (!requireDecisionEligibility || row.EligibleForFrozenDecision) &&
                     row.Family == family &&
                     row.Candidate == policy &&
                     row.Baseline == "BIN_DIRECT_BEST" &&
@@ -1239,11 +1300,11 @@ internal static class Build005Campaign
         public long QueryRequests;
         public long SpeculationQueries;
         public long SpeculationDivmodSteps;
-        public long SearchToFirstUseDistanceTotal;
-        public long SearchToFirstUseDistanceMaximum;
+        public long PrefetchToLaterRequestDistanceTotal;
+        public long PrefetchToLaterRequestDistanceMaximum;
         public long GcdCalls;
         public long GcdModuloSteps;
-        public long GroupedScreenRemainders;
+        public long DeclaredGroupedScreenRemainderProxy;
         public long CompositeDivmodCalls;
         public long MagnitudeOutputs;
         public long CorrectnessChecks;
@@ -1251,19 +1312,19 @@ internal static class Build005Campaign
         public List<string> FailureDetails { get; } = [];
 
         public Build005ControlMetrics Snapshot(
-            IReadOnlySet<SpeculationKey> used,
+            IReadOnlySet<SpeculationKey> laterRequested,
             IReadOnlyDictionary<SpeculationKey, int> prefetched) =>
             new(
                 QueryRequests,
                 SpeculationQueries,
                 SpeculationDivmodSteps,
-                used.Count,
-                prefetched.Count - used.Count,
-                SearchToFirstUseDistanceTotal,
-                SearchToFirstUseDistanceMaximum,
+                laterRequested.Count,
+                prefetched.Count - laterRequested.Count,
+                PrefetchToLaterRequestDistanceTotal,
+                PrefetchToLaterRequestDistanceMaximum,
                 GcdCalls,
                 GcdModuloSteps,
-                GroupedScreenRemainders,
+                DeclaredGroupedScreenRemainderProxy,
                 CompositeDivmodCalls,
                 MagnitudeOutputs,
                 CorrectnessChecks,

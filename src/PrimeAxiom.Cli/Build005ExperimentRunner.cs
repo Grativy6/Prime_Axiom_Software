@@ -1,5 +1,6 @@
 using System.Globalization;
 using System.Text;
+using System.Text.Json;
 
 namespace PrimeAxiom.Cli;
 
@@ -29,9 +30,9 @@ internal static class Build005ExperimentRunner
         "generation_wrap_flushes", "terminal_certificates_earned", "lower_bound_certificates_earned",
         "terminal_certificates_propagated", "lower_bound_certificates_propagated",
         "propagation_exponent_adds", "propagation_residual_multiplies", "query_requests",
-        "speculation_queries", "speculation_divmod_steps", "useful_speculations", "wasted_speculations",
-        "search_to_first_use_distance_total", "search_to_first_use_distance_maximum", "gcd_calls",
-        "gcd_modulo_steps", "grouped_screen_remainders", "composite_divmod_calls", "magnitude_outputs",
+        "speculation_queries", "speculation_divmod_steps", "prefetch_keys_later_requested", "prefetch_keys_never_requested",
+        "prefetch_to_later_request_distance_total", "prefetch_to_later_request_distance_maximum", "gcd_calls",
+        "gcd_modulo_steps", "declared_grouped_screen_remainder_proxy", "composite_divmod_calls", "magnitude_outputs",
         "shared_magnitude_cycles", "propagation_arithmetic_cycles", "query_issue_cycles", "odd_divmod_cycles", "cache_maintenance_cycles",
         "total_modeled_cycles", "catalogue_nand_evaluations", "ctz_nand_evaluations",
         "odd_divmod_nand_evaluations", "cache_nand_evaluations", "total_modeled_service_nand_evaluations",
@@ -223,6 +224,9 @@ internal static class Build005ExperimentRunner
                 PhysicalMeasurement = "NOT_MEASURED",
                 HostElapsedTime = "NOT_MEASURED",
                 HostAllocation = "NOT_MEASURED",
+                SpeculationKeyFate = "LATER_REQUESTED_VS_NEVER_REQUESTED_KEYS_ONLY__RESIDENCY_AND_AVOIDED_WORK_NOT_ESTABLISHED",
+                GroupedScreenControl = "DECLARED_REMAINDER_PROXY_ONLY__NOT_EXECUTED_OR_COSTED",
+                GcdAndMagnitudeOutputCosts = "COUNTERS_PRESENT__EXCLUDED_FROM_MODELED_TOTAL",
             },
             DeterministicReplay = "ESTABLISHED_ONLY_BY_EXTERNAL_TWO_RUN_VERIFIER",
             InheritedEvidence = "PROTECTED_ONLY_BY_EXTERNAL_VERIFIER",
@@ -344,13 +348,13 @@ internal static class Build005ExperimentRunner
                 I(control.QueryRequests),
                 I(control.SpeculationQueries),
                 I(control.SpeculationDivmodSteps),
-                I(control.UsefulSpeculations),
-                I(control.WastedSpeculations),
-                I(control.SearchToFirstUseDistanceTotal),
-                I(control.SearchToFirstUseDistanceMaximum),
+                I(control.PrefetchKeysLaterRequested),
+                I(control.PrefetchKeysNeverRequested),
+                I(control.PrefetchToLaterRequestDistanceTotal),
+                I(control.PrefetchToLaterRequestDistanceMaximum),
                 I(control.GcdCalls),
                 I(control.GcdModuloSteps),
-                I(control.GroupedScreenRemainders),
+                I(control.DeclaredGroupedScreenRemainderProxy),
                 I(control.CompositeDivmodCalls),
                 I(control.MagnitudeOutputs),
                 I(modeled.SharedMagnitudeCycles),
@@ -446,7 +450,8 @@ internal static class Build005ExperimentRunner
             campaign.Failures,
             Runtime = Environment.Version.ToString(),
             Platform = Environment.OSVersion.Platform.ToString(),
-            Command = "dotnet run --project src/PrimeAxiom.Cli --configuration Release -- experiment-build005 --output results/build005",
+            CanonicalRegenerationCommand = "dotnet run --project src/PrimeAxiom.Cli --configuration Release -- experiment-build005 --output results/build005",
+            GenerationContext = "OUTPUT_PATH_EXCLUDED_FOR_CROSS_DIRECTORY_BYTE_REPLAY",
             SelfExcluding = true,
             Entries = entries,
             Build005Protocol.ClaimCeiling,
@@ -455,6 +460,7 @@ internal static class Build005ExperimentRunner
 
     private static void ValidateOutputLocation(string repositoryRoot, string outputDirectory)
     {
+        RejectReparsePointTraversal(outputDirectory);
         if (string.Equals(repositoryRoot, outputDirectory, StringComparison.OrdinalIgnoreCase))
         {
             throw new InvalidOperationException("Build 005 output cannot be the repository root.");
@@ -474,28 +480,107 @@ internal static class Build005ExperimentRunner
 
     private static void ValidateExistingOutput(string outputDirectory)
     {
+        if (File.Exists(outputDirectory))
+        {
+            throw new InvalidOperationException("Build 005 output is a file, not a directory.");
+        }
+
         if (!Directory.Exists(outputDirectory))
         {
             return;
         }
 
-        RejectReparsePoint(outputDirectory);
-        var unexpectedDirectories = Directory.EnumerateDirectories(outputDirectory).ToArray();
-        if (unexpectedDirectories.Length != 0)
+        RejectReparsePointTraversal(outputDirectory);
+        var entries = Directory.EnumerateFileSystemEntries(outputDirectory).ToArray();
+        if (entries.Length == 0)
         {
-            throw new InvalidOperationException("Build 005 output contains an unexpected subdirectory.");
+            return;
         }
 
-        var expected = ExpectedFiles.ToHashSet(StringComparer.Ordinal);
-        foreach (var file in Directory.EnumerateFiles(outputDirectory))
+        if (!IsOwnedBuild005Directory(outputDirectory))
         {
-            var name = Path.GetFileName(file);
-            if (!expected.Contains(name))
+            throw new InvalidOperationException(
+                "Refusing to replace a nonempty directory that is not an intact manifest-owned Build 005 result set.");
+        }
+    }
+
+    private static bool IsOwnedBuild005Directory(string directory)
+    {
+        var manifestPath = Path.Combine(directory, "manifest.json");
+        if (!File.Exists(manifestPath))
+        {
+            return false;
+        }
+
+        try
+        {
+            RejectReparsePointTraversal(directory);
+            var actualInventory = Directory.EnumerateFileSystemEntries(directory)
+                .Select(Path.GetFileName)
+                .OrderBy(name => name, StringComparer.Ordinal)
+                .ToArray();
+            var expectedInventory = ExpectedFiles
+                .OrderBy(name => name, StringComparer.Ordinal)
+                .ToArray();
+            if (!actualInventory.SequenceEqual(expectedInventory, StringComparer.Ordinal))
             {
-                throw new InvalidOperationException($"Build 005 output contains unowned file '{name}'.");
+                return false;
             }
 
-            RejectReparsePoint(file);
+            using var document = JsonDocument.Parse(File.ReadAllBytes(manifestPath));
+            var root = document.RootElement;
+            if (!root.TryGetProperty("schema", out var schema) ||
+                schema.GetString() != "prime-axiom-build005-manifest-v1" ||
+                !root.TryGetProperty("protocolId", out var protocol) ||
+                protocol.GetString() != Build005Protocol.ProtocolId ||
+                !root.TryGetProperty("frozenPlanSha256", out var frozenPlan) ||
+                frozenPlan.GetString() != Build005Protocol.FrozenPlanSha256 ||
+                !root.TryGetProperty("entries", out var entries) ||
+                entries.ValueKind != JsonValueKind.Array)
+            {
+                return false;
+            }
+
+            var expectedPayloads = ExpectedFiles
+                .Where(file => file != "manifest.json")
+                .ToHashSet(StringComparer.Ordinal);
+            var seen = new HashSet<string>(StringComparer.Ordinal);
+            foreach (var entry in entries.EnumerateArray())
+            {
+                if (!entry.TryGetProperty("path", out var pathProperty) ||
+                    !entry.TryGetProperty("bytes", out var bytesProperty) ||
+                    !entry.TryGetProperty("sha256", out var hashProperty))
+                {
+                    return false;
+                }
+
+                var relative = pathProperty.GetString();
+                var expectedHash = hashProperty.GetString();
+                if (relative is null || expectedHash is null ||
+                    Path.GetFileName(relative) != relative ||
+                    !expectedPayloads.Contains(relative) ||
+                    !seen.Add(relative))
+                {
+                    return false;
+                }
+
+                var path = Path.Combine(directory, relative);
+                var item = new FileInfo(path);
+                if (!item.Exists ||
+                    (item.Attributes & FileAttributes.ReparsePoint) != 0 ||
+                    item.Length != bytesProperty.GetInt64() ||
+                    Build005Protocol.FileSha256(path) != expectedHash)
+                {
+                    return false;
+                }
+            }
+
+            return seen.SetEquals(expectedPayloads);
+        }
+        catch (Exception exception) when (
+            exception is IOException or JsonException or InvalidOperationException or UnauthorizedAccessException)
+        {
+            return false;
         }
     }
 
@@ -555,20 +640,49 @@ internal static class Build005ExperimentRunner
             throw new InvalidOperationException("Refusing to delete a directory that is not a validated Build 005 backup.");
         }
 
-        RejectReparsePoint(full);
-        if (Directory.EnumerateDirectories(full).Any())
+        RejectReparsePointTraversal(full);
+        var entries = Directory.EnumerateFileSystemEntries(full).ToArray();
+        if (entries.Length == 0)
         {
-            throw new InvalidOperationException("Refusing to delete a Build 005 backup containing a subdirectory.");
+            return;
         }
 
-        var expected = ExpectedFiles.ToHashSet(StringComparer.Ordinal);
-        foreach (var file in Directory.EnumerateFiles(full))
+        if (!IsOwnedBuild005Directory(full))
         {
-            RejectReparsePoint(file);
-            if (!expected.Contains(Path.GetFileName(file)))
+            throw new InvalidOperationException(
+                "Refusing to delete a backup that is not an intact manifest-owned Build 005 result set.");
+        }
+    }
+
+    private static void RejectReparsePointTraversal(string path)
+    {
+        var current = Path.GetFullPath(path);
+        while (!File.Exists(current) && !Directory.Exists(current))
+        {
+            var parent = Path.GetDirectoryName(current);
+            if (string.IsNullOrEmpty(parent) || string.Equals(parent, current, StringComparison.Ordinal))
             {
-                throw new InvalidOperationException("Refusing to delete a Build 005 backup containing an unowned file.");
+                break;
             }
+
+            current = parent;
+        }
+
+        while (!string.IsNullOrEmpty(current) && (File.Exists(current) || Directory.Exists(current)))
+        {
+            if ((File.GetAttributes(current) & FileAttributes.ReparsePoint) != 0)
+            {
+                throw new InvalidOperationException(
+                    $"Build 005 output may not traverse a symbolic link or junction: {current}");
+            }
+
+            var parent = Path.GetDirectoryName(current);
+            if (string.IsNullOrEmpty(parent) || string.Equals(parent, current, StringComparison.Ordinal))
+            {
+                break;
+            }
+
+            current = parent;
         }
     }
 

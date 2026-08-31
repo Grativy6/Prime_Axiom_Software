@@ -982,7 +982,10 @@ public sealed class DemandValuationService
         InvalidateCurrentFrontiers(destination, previousGeneration);
 
         var generationWrapped = previousGeneration == byte.MaxValue;
-        if (generationWrapped)
+        if (generationWrapped &&
+            Policy is (ValuationCachePolicy.BinFrontierNoPropK or
+                ValuationCachePolicy.BinPrimeFrontierPropK) &&
+            CacheCapacity > 0)
         {
             FlushCacheForGenerationWrap();
         }
@@ -1136,8 +1139,10 @@ public sealed class DemandValuationService
 
         if (infinite)
         {
-            var valid = magnitude == 0 && terminal;
-            detail = valid ? string.Empty : "Only zero may carry an infinite terminal valuation.";
+            var valid = magnitude == 0 && lowerBound == 0 && residual == 0 && terminal;
+            detail = valid
+                ? string.Empty
+                : "Only the canonical zero payload may carry an infinite terminal valuation.";
             return valid;
         }
 

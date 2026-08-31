@@ -103,10 +103,13 @@ public sealed record ValuationFrontier(
 
         if (Infinite)
         {
-            var validZero = authoritativeMagnitude == 0 && Terminal;
+            var validZero = authoritativeMagnitude == 0 &&
+                LowerBound == 0 &&
+                Residual == 0 &&
+                Terminal;
             detail = validZero
                 ? string.Empty
-                : "Only zero may carry an infinite terminal valuation.";
+                : "Only the canonical zero payload may carry an infinite terminal valuation.";
             return validZero;
         }
 

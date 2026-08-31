@@ -77,6 +77,8 @@ public sealed class Build005ValuationTests
         };
         Assert.True(zero.Satisfies(0, out var zeroDetail), zeroDetail);
         Assert.False(zero.Satisfies(1, out _));
+        Assert.False((zero with { LowerBound = 1 }).Satisfies(0, out _));
+        Assert.False((zero with { Residual = 1 }).Satisfies(0, out _));
     }
 
     [Fact]
@@ -297,6 +299,32 @@ public sealed class Build005ValuationTests
         Assert.Equal(1, wrap.MetricsDelta.GenerationWrapFlushes);
         Assert.Equal(1, wrap.MetricsDelta.CacheLinesFlushed);
         Assert.All(service.SnapshotCache(), line => Assert.False(line.Valid));
+    }
+
+    [Fact]
+    public void ContentCacheSurvivesIrrelevantSlotGenerationWrap()
+    {
+        var service = new DemandValuationService(
+            8,
+            ValuationCachePolicy.BinContentAnswerLruK,
+            1);
+        Assert.True(service.Load(0, 12).Succeeded);
+        Assert.Equal(1, AssertSuccess(service.Valuation(0, 3)).Exponent);
+        for (var index = 0; index < 254; index++)
+        {
+            Assert.True(service.Load(0, 12).Succeeded);
+        }
+
+        var wrap = service.Load(0, 12);
+        var beforeReuse = service.Metrics;
+        var reused = service.Valuation(0, 3);
+
+        Assert.True(AssertSuccess(wrap).GenerationWrapped);
+        Assert.Equal(0, wrap.MetricsDelta.GenerationWrapFlushes);
+        Assert.Equal(0, wrap.MetricsDelta.CacheLinesFlushed);
+        Assert.Equal(beforeReuse.DivModCalls, service.Metrics.DivModCalls);
+        Assert.Equal(beforeReuse.CacheHits + 1, service.Metrics.CacheHits);
+        Assert.Equal(1, AssertSuccess(reused).Exponent);
     }
 
     [Theory]

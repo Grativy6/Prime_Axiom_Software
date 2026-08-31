@@ -24,13 +24,14 @@
   "failures": 0,
   "runtime": "8.0.29",
   "platform": "Win32NT",
-  "command": "dotnet run --project src/PrimeAxiom.Cli --configuration Release -- experiment-build005 --output results/build005",
+  "canonicalRegenerationCommand": "dotnet run --project src/PrimeAxiom.Cli --configuration Release -- experiment-build005 --output results/build005",
+  "generationContext": "OUTPUT_PATH_EXCLUDED_FOR_CROSS_DIRECTORY_BYTE_REPLAY",
   "selfExcluding": true,
   "entries": [
     {
       "path": "README.md",
-      "bytes": 4902,
-      "sha256": "1A76A349E7A63361B52DF636DC4965EF8566A08975D943FDB60C5692906CA85B"
+      "bytes": 4919,
+      "sha256": "620B5A2A572BB632AD58FC06F6D2DA321988E7994AA6A46C80BF0C4656ED4FC1"
     },
     {
       "path": "attribution.json",
@@ -49,8 +50,8 @@
     },
     {
       "path": "protocol_coverage.json",
-      "bytes": 11282,
-      "sha256": "C3289DDA7093D87A038C8F21D29FD2FAD7BBD247FA0BA460BE788723A94D388A"
+      "bytes": 11585,
+      "sha256": "BFC2B4CD4849CEB766BE6554178F66DA300071FD5CF14D447EF9B8E6B98C19F4"
     },
     {
       "path": "static_costs.csv",
@@ -64,8 +65,8 @@
     },
     {
       "path": "workload_matrix.csv",
-      "bytes": 563276,
-      "sha256": "6704C07CD335B7F856B6F04E8B3556EFF3AEB375DF1C926C51C22EF95BE94ECE"
+      "bytes": 628122,
+      "sha256": "51D3144F370B10F7D67C2E997FC098387B774D0566D50BAC4DB4A09876E0342C"
     }
   ],
   "claimCeiling": "Bounded exact semantic, host-software, and declared NAND/DFF evidence under PAH-BUILD005-DEMAND-VALUATION-0001 only; no universal arithmetic, novelty, FPGA/ASIC PPA, physical-energy, fabricated-hardware, or PAL-conformance claim."
