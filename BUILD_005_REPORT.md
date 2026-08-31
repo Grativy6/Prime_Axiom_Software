@@ -287,6 +287,24 @@ evidence preservation. Even a successful verifier cannot fill the other eight
 unmet gates or retroactively turn this report into a terminal optimization
 claim.
 
+### Completed verification receipt
+
+The external verifier completed on the committed result set with:
+
+- 386/386 repository tests passed, zero failed, zero skipped;
+- 1,066,724 deterministic campaign checks and zero failures;
+- two isolated generations byte-identical to each other and to all nine
+  committed Build 005 result files;
+- inherited Build 000–004 reports, plans, contracts, and result bytes
+  unchanged;
+- committed manifest SHA-256
+  `8AA245E232E97B65685EADDED6426E2FFB1F2DAC23DFE08491A9A1212832A8F2`; and
+- ignored verifier receipt SHA-256
+  `19BBE3C20319C27B23367E4727AFC99501677B15004EC47CC3A9B69A6A87F74E`.
+
+That receipt closes `EXTERNAL_DETERMINISTIC_REPLAY` for these bytes. It records
+`terminalDecisionEarned=false` and leaves the other eight gates open.
+
 ## Bottom line
 
 Build 005 found no prime magic and did not earn a more efficient compute
