@@ -304,6 +304,9 @@ The external verifier completed on the committed result set with:
 
 That receipt closes `EXTERNAL_DETERMINISTIC_REPLAY` for these bytes. It records
 `terminalDecisionEarned=false` and leaves the other eight gates open.
+The manifest includes host identity, so this byte receipt is Windows-scoped;
+the Build 005 CI job intentionally runs on `windows-latest`. Cross-platform
+byte identity and platform-neutral performance remain unverified.
 
 ## Bottom line
 

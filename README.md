@@ -117,7 +117,7 @@ The generated terminal receipt contains 656,810 arithmetic checks with zero fail
 
 ## Reproduce
 
-The Build 005 verifier protects inherited Build 000–004 evidence, requires formatting and a clean Release build, runs the complete test assembly with zero skips, performs two isolated byte-identical generations, and validates the committed manifest. A verifier pass establishes checkout integrity and deterministic semantic replay only; it does not close the other eight scientific and engineering gates or promote the partial decision:
+The Build 005 verifier protects inherited Build 000–004 evidence, requires formatting and a clean Release build, runs the complete test assembly with zero skips, performs two isolated byte-identical generations, and validates the committed manifest. The committed byte receipt is Windows-host-scoped because host identity is explicit; CI therefore runs this verifier on `windows-latest`, and cross-platform byte reproduction remains unclaimed. A verifier pass establishes checkout integrity and deterministic semantic replay only; it does not close the other eight scientific and engineering gates or promote the partial decision:
 
 ```powershell
 & .\scripts\verify-build005.ps1
