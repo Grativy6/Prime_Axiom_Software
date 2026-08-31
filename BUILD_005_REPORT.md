@@ -291,22 +291,28 @@ claim.
 
 The external verifier completed on the committed result set with:
 
-- 386/386 repository tests passed, zero failed, zero skipped;
+- 388/388 repository tests passed, zero failed, zero skipped;
 - 1,066,724 deterministic campaign checks and zero failures;
 - two isolated generations byte-identical to each other and to all nine
   committed Build 005 result files;
 - inherited Build 000–004 reports, plans, contracts, and result bytes
   unchanged;
 - committed manifest SHA-256
-  `8AA245E232E97B65685EADDED6426E2FFB1F2DAC23DFE08491A9A1212832A8F2`; and
+  `A7F27B282E956B4D0D93BA6800C6728FA50DB0A437A4A17BCCE6FBD887B28172`; and
 - ignored verifier receipt SHA-256
-  `19BBE3C20319C27B23367E4727AFC99501677B15004EC47CC3A9B69A6A87F74E`.
+  `FA0A151AC186D9B26501CB5ECCB2238DB8C5F7FD46AF346CD66670B35B61609B`.
 
 That receipt closes `EXTERNAL_DETERMINISTIC_REPLAY` for these bytes. It records
 `terminalDecisionEarned=false` and leaves the other eight gates open.
-The manifest includes host identity, so this byte receipt is Windows-scoped;
-the Build 005 CI job intentionally runs on `windows-latest`. Cross-platform
-byte identity and platform-neutral performance remain unverified.
+Manifest v2 records the stable `net8.0`, SDK-policy, and managed-semantic-model
+contracts, not an installed runtime patch or OS identity. Actual SDK, runtime
+inventory, OS, and architecture are preserved in the ignored external
+verification receipt. Two verifier-owned generator-process sidecars also
+certify that both replays selected `.NET 8.0.29` on this host; the verifier
+requires those sidecars to be byte-identical and to match the installed
+runtime inventory. This removes the known cross-Windows runtime-patch byte
+variance from the deterministic corpus; cross-platform byte identity remains
+unverified.
 
 ## Bottom line
 

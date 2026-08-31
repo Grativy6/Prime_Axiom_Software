@@ -312,7 +312,7 @@ function Assert-Manifest {
     Assert-GeneratedInventory $Directory
     $manifestPath = Join-Path $Directory 'manifest.json'
     $manifest = Get-Content -LiteralPath $manifestPath -Raw | ConvertFrom-Json
-    if ($manifest.schema -cne 'prime-axiom-build005-manifest-v1' -or
+    if ($manifest.schema -cne 'prime-axiom-build005-manifest-v2' -or
         $manifest.protocolId -cne $protocolId -or
         $manifest.frozenPlanSha256 -cne $planHash -or
         $manifest.baselineCommit -cne $baselineCommit -or
@@ -327,8 +327,10 @@ function Assert-Manifest {
         $manifest.selfExcluding -ne $true -or
         [long]$manifest.checks -ne $expectedChecks -or
         [long]$manifest.failures -ne 0 -or
-        [string]::IsNullOrWhiteSpace([string]$manifest.runtime) -or
-        [string]::IsNullOrWhiteSpace([string]$manifest.platform) -or
+        $manifest.runtimeContract -cne 'net8.0' -or
+        $manifest.sdkPolicy -cne '8.0.423 with rollForward=latestPatch' -or
+        $manifest.platformContract -cne 'MANAGED_SEMANTIC_MODEL__CROSS_PLATFORM_REPLAY_NOT_YET_VERIFIED' -or
+        $manifest.environmentProvenance -cne 'EXTERNAL_VERIFIER_RECEIPT_ONLY' -or
         $manifest.claimCeiling -cne $claimCeiling) {
         throw "Build 005 manifest identity, status, or claim boundary differs in $Directory."
     }
@@ -357,6 +359,63 @@ function Assert-Manifest {
         }
     }
     return $manifest
+}
+
+function Assert-GeneratorEnvironmentReceipt {
+    param([Parameter(Mandatory)][string]$Path)
+
+    $item = Get-Item -LiteralPath $Path -Force
+    if ($item.PSIsContainer -or
+        ($item.Attributes -band [System.IO.FileAttributes]::ReparsePoint) -ne 0) {
+        throw "Build 005 generator environment is not a regular file: $Path"
+    }
+    $bytes = [System.IO.File]::ReadAllBytes($Path)
+    if (($bytes.Length -ge 3 -and
+            $bytes[0] -eq 0xEF -and $bytes[1] -eq 0xBB -and $bytes[2] -eq 0xBF) -or
+        [System.IO.File]::ReadAllText($Path).Contains(
+            "`r`n",
+            [System.StringComparison]::Ordinal)) {
+        throw "Build 005 generator environment is not LF-normalized UTF-8 without BOM: $Path"
+    }
+
+    $receipt = Get-Content -LiteralPath $Path -Raw | ConvertFrom-Json
+    Assert-ExactStringSet `
+        -Actual @($receipt.PSObject.Properties.Name) `
+        -Expected @(
+            'schema',
+            'protocolId',
+            'runtimeVersion',
+            'frameworkDescription',
+            'osDescription',
+            'osArchitecture',
+            'processArchitecture',
+            'platform'
+        ) `
+        -Label "Build 005 generator-environment fields in $Path"
+    if ($receipt.schema -cne 'prime-axiom-build005-generator-environment-v1' -or
+        $receipt.protocolId -cne $protocolId -or
+        [string]::IsNullOrWhiteSpace([string]$receipt.runtimeVersion) -or
+        [string]::IsNullOrWhiteSpace([string]$receipt.frameworkDescription) -or
+        [string]::IsNullOrWhiteSpace([string]$receipt.osDescription) -or
+        [string]::IsNullOrWhiteSpace([string]$receipt.osArchitecture) -or
+        [string]::IsNullOrWhiteSpace([string]$receipt.processArchitecture) -or
+        [string]::IsNullOrWhiteSpace([string]$receipt.platform)) {
+        throw "Build 005 generator environment is incomplete or has the wrong identity: $Path"
+    }
+    try {
+        $selectedRuntime = [System.Version]::Parse([string]$receipt.runtimeVersion)
+    }
+    catch {
+        throw "Build 005 generator runtime version is invalid in ${Path}: $($receipt.runtimeVersion)"
+    }
+    if ($selectedRuntime.Major -ne 8 -or
+        -not ([string]$receipt.frameworkDescription).Contains(
+            [string]$receipt.runtimeVersion,
+            [System.StringComparison]::Ordinal)) {
+        throw "Build 005 generator did not execute under the declared net8.0 runtime contract: $Path"
+    }
+
+    return $receipt
 }
 
 function Assert-Receipts {
@@ -676,6 +735,12 @@ try {
         $planHash) {
         throw 'The Build 005 frozen plan hash differs.'
     }
+    $sdkPolicy = Get-Content -LiteralPath 'global.json' -Raw | ConvertFrom-Json
+    if ($sdkPolicy.sdk.version -cne '8.0.423' -or
+        $sdkPolicy.sdk.rollForward -cne 'latestPatch' -or
+        $sdkPolicy.sdk.allowPrerelease -ne $false) {
+        throw 'The pinned .NET SDK policy differs from the Build 005 manifest contract.'
+    }
 
     dotnet restore PrimeAxiom.sln --locked-mode
     if ($LASTEXITCODE -ne 0) { throw 'Build 005 locked restore failed.' }
@@ -706,13 +771,20 @@ try {
             [System.StringComparison]::Ordinal)) {
         throw "Unsafe Build 005 temporary root: $temporaryRoot"
     }
+    if (Test-Path -LiteralPath $temporaryRoot) {
+        throw "Build 005 temporary root is not fresh: $temporaryRoot"
+    }
     Assert-NoReparsePointTraversal $temporaryRoot
     $testDirectory = Join-Path $temporaryRoot 'tests'
     $replayA = Join-Path $temporaryRoot 'replay-a'
     $replayB = Join-Path $temporaryRoot 'replay-b'
+    $generatorEnvironmentAPath = Join-Path $temporaryRoot 'replay-a-generator-environment.json'
+    $generatorEnvironmentBPath = Join-Path $temporaryRoot 'replay-b-generator-environment.json'
     foreach ($directory in @($temporaryRoot, $testDirectory, $replayA, $replayB)) {
         New-Item -ItemType Directory -Path $directory -Force | Out-Null
     }
+    Assert-NoReparsePointTraversal $generatorEnvironmentAPath
+    Assert-NoReparsePointTraversal $generatorEnvironmentBPath
 
     $trxPath = Join-Path $testDirectory 'test-results.trx'
     dotnet test PrimeAxiom.sln --configuration Release --no-build --no-restore `
@@ -740,11 +812,24 @@ try {
     }
 
     dotnet run --project src/PrimeAxiom.Cli --configuration Release --no-build -- `
-        experiment-build005 --output $replayA
+        experiment-build005 --output $replayA `
+        --environment-receipt $generatorEnvironmentAPath
     if ($LASTEXITCODE -ne 0) { throw 'Build 005 replay A failed.' }
     dotnet run --project src/PrimeAxiom.Cli --configuration Release --no-build -- `
-        experiment-build005 --output $replayB
+        experiment-build005 --output $replayB `
+        --environment-receipt $generatorEnvironmentBPath
     if ($LASTEXITCODE -ne 0) { throw 'Build 005 replay B failed.' }
+    $generatorEnvironmentA = Assert-GeneratorEnvironmentReceipt $generatorEnvironmentAPath
+    $generatorEnvironmentB = Assert-GeneratorEnvironmentReceipt $generatorEnvironmentBPath
+    $generatorEnvironmentAHash = (Get-FileHash `
+            -LiteralPath $generatorEnvironmentAPath `
+            -Algorithm SHA256).Hash
+    $generatorEnvironmentBHash = (Get-FileHash `
+            -LiteralPath $generatorEnvironmentBPath `
+            -Algorithm SHA256).Hash
+    if ($generatorEnvironmentAHash -cne $generatorEnvironmentBHash) {
+        throw 'Build 005 replay generator processes reported different execution environments.'
+    }
 
     $committed = Resolve-RepositoryScopedPath 'results/build005'
     $manifestA = $null
@@ -777,6 +862,26 @@ try {
     $dotnetSdkVersion = (& dotnet --version).Trim()
     if ($LASTEXITCODE -ne 0 -or [string]::IsNullOrWhiteSpace($dotnetSdkVersion)) {
         throw 'Could not record the active .NET SDK version.'
+    }
+    $dotnetRuntimeInventory = @(& dotnet --list-runtimes)
+    if ($LASTEXITCODE -ne 0 -or $dotnetRuntimeInventory.Count -eq 0) {
+        throw 'Could not record the installed .NET runtime inventory.'
+    }
+    $runtimeConfigPath = Join-Path $repositoryRoot 'src/PrimeAxiom.Cli/bin/Release/net8.0/PrimeAxiom.Cli.runtimeconfig.json'
+    $runtimeConfig = Get-Content -LiteralPath $runtimeConfigPath -Raw | ConvertFrom-Json
+    if ($runtimeConfig.runtimeOptions.tfm -cne 'net8.0' -or
+        $runtimeConfig.runtimeOptions.framework.name -cne 'Microsoft.NETCore.App' -or
+        [string]::IsNullOrWhiteSpace([string]$runtimeConfig.runtimeOptions.framework.version)) {
+        throw 'The built CLI runtime contract differs from the Build 005 manifest contract.'
+    }
+    $selectedRuntimeInventoryPrefix =
+        "Microsoft.NETCore.App $([string]$generatorEnvironmentA.runtimeVersion) "
+    if (@($dotnetRuntimeInventory | Where-Object {
+                $_.StartsWith(
+                    $selectedRuntimeInventoryPrefix,
+                    [System.StringComparison]::Ordinal)
+            }).Count -ne 1) {
+        throw 'The Build 005 generator-selected runtime is absent or ambiguous in the installed runtime inventory.'
     }
     $verification = [ordered]@{
         schema = 'prime-axiom-build005-verification-v1'
@@ -817,11 +922,25 @@ try {
                 -Algorithm SHA256).Hash
         hostSoftware = [ordered]@{
             dotnetSdkVersion = $dotnetSdkVersion
+            dotnetRuntimeInventory = @($dotnetRuntimeInventory)
+            cliTargetFramework = [string]$runtimeConfig.runtimeOptions.tfm
+            cliRuntimeFramework = [string]$runtimeConfig.runtimeOptions.framework.name
+            cliRequestedRuntimeVersion = [string]$runtimeConfig.runtimeOptions.framework.version
             verifierFrameworkDescription = [System.Runtime.InteropServices.RuntimeInformation]::FrameworkDescription
             osDescription = [System.Runtime.InteropServices.RuntimeInformation]::OSDescription
             osArchitecture = [System.Runtime.InteropServices.RuntimeInformation]::OSArchitecture.ToString()
             processArchitecture = [System.Runtime.InteropServices.RuntimeInformation]::ProcessArchitecture.ToString()
             powershellVersion = $PSVersionTable.PSVersion.ToString()
+            generatorProcess = [ordered]@{
+                runtimeVersion = [string]$generatorEnvironmentA.runtimeVersion
+                frameworkDescription = [string]$generatorEnvironmentA.frameworkDescription
+                osDescription = [string]$generatorEnvironmentA.osDescription
+                osArchitecture = [string]$generatorEnvironmentA.osArchitecture
+                processArchitecture = [string]$generatorEnvironmentA.processArchitecture
+                platform = [string]$generatorEnvironmentA.platform
+                replayEnvironmentReceiptsByteIdentical = $true
+                replayEnvironmentReceiptSha256 = $generatorEnvironmentAHash
+            }
         }
         hardwareEvidence = 'EXPLORATORY_COMPONENT_INVENTORY_ONLY__NOT_DECISION_ELIGIBLE_OR_PHYSICAL'
         claimCeiling = 'PASS verifies checkout integrity, tests, and deterministic partial receipts only; no Build 005 terminal optimization decision is earned.'

@@ -435,7 +435,7 @@ internal static class Build005ExperimentRunner
             .ToArray();
         Build005Protocol.WriteJson(Path.Combine(outputDirectory, "manifest.json"), new
         {
-            Schema = "prime-axiom-build005-manifest-v1",
+            Schema = "prime-axiom-build005-manifest-v2",
             Build005Protocol.ProtocolId,
             Build005Protocol.FrozenPlanSha256,
             Build005Protocol.BaselineCommit,
@@ -448,8 +448,10 @@ internal static class Build005ExperimentRunner
             UnmetGates = campaign.Decision.UnmetGates,
             campaign.Checks,
             campaign.Failures,
-            Runtime = Environment.Version.ToString(),
-            Platform = Environment.OSVersion.Platform.ToString(),
+            RuntimeContract = "net8.0",
+            SdkPolicy = "8.0.423 with rollForward=latestPatch",
+            PlatformContract = "MANAGED_SEMANTIC_MODEL__CROSS_PLATFORM_REPLAY_NOT_YET_VERIFIED",
+            EnvironmentProvenance = "EXTERNAL_VERIFIER_RECEIPT_ONLY",
             CanonicalRegenerationCommand = "dotnet run --project src/PrimeAxiom.Cli --configuration Release -- experiment-build005 --output results/build005",
             GenerationContext = "OUTPUT_PATH_EXCLUDED_FOR_CROSS_DIRECTORY_BYTE_REPLAY",
             SelfExcluding = true,
@@ -537,7 +539,9 @@ internal static class Build005ExperimentRunner
             using var document = JsonDocument.Parse(File.ReadAllBytes(manifestPath));
             var root = document.RootElement;
             if (!root.TryGetProperty("schema", out var schema) ||
-                schema.GetString() != "prime-axiom-build005-manifest-v1" ||
+                schema.GetString() is not (
+                    "prime-axiom-build005-manifest-v1" or
+                    "prime-axiom-build005-manifest-v2") ||
                 !root.TryGetProperty("protocolId", out var protocol) ||
                 protocol.GetString() != Build005Protocol.ProtocolId ||
                 !root.TryGetProperty("frozenPlanSha256", out var frozenPlan) ||

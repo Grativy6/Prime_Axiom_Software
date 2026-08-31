@@ -1,3 +1,4 @@
+using System.Runtime.InteropServices;
 using System.Text.Json;
 using PrimeAxiom.Cli;
 
@@ -129,6 +130,76 @@ public sealed class Build005ExperimentTests
     }
 
     [Fact]
+    public void RunnerMigratesIntactLegacyV1ManifestToHostNeutralV2()
+    {
+        var repositoryRoot = FindRepositoryRoot();
+        var outputDirectory = CreateTemporaryDirectory();
+        try
+        {
+            Build005ExperimentRunner.Run(repositoryRoot, outputDirectory);
+            var manifestPath = Path.Combine(outputDirectory, "manifest.json");
+            var legacyManifest = File.ReadAllText(manifestPath).Replace(
+                "prime-axiom-build005-manifest-v2",
+                "prime-axiom-build005-manifest-v1",
+                StringComparison.Ordinal);
+            File.WriteAllText(manifestPath, legacyManifest);
+
+            var receipt = Build005ExperimentRunner.Run(repositoryRoot, outputDirectory);
+
+            AssertManifest(outputDirectory, receipt);
+        }
+        finally
+        {
+            DeleteTemporaryDirectory(outputDirectory);
+        }
+    }
+
+    [Fact]
+    public void GeneratorEnvironmentSidecarReportsTheExecutingProcessAndRefusesOverwrite()
+    {
+        var temporaryDirectory = CreateTemporaryDirectory();
+        var path = Path.Combine(temporaryDirectory, "generator-environment.json");
+        try
+        {
+            Build005GeneratorEnvironment.WriteNew(path);
+
+            var bytes = File.ReadAllBytes(path);
+            Assert.False(
+                bytes.Length >= 3 &&
+                bytes[0] == 0xEF &&
+                bytes[1] == 0xBB &&
+                bytes[2] == 0xBF);
+            Assert.DoesNotContain("\r\n", File.ReadAllText(path), StringComparison.Ordinal);
+            using var document = JsonDocument.Parse(File.ReadAllBytes(path));
+            var root = document.RootElement;
+            Assert.Equal(
+                "prime-axiom-build005-generator-environment-v1",
+                root.GetProperty("schema").GetString());
+            Assert.Equal(Build005Protocol.ProtocolId, root.GetProperty("protocolId").GetString());
+            Assert.Equal(Environment.Version.ToString(), root.GetProperty("runtimeVersion").GetString());
+            Assert.Equal(
+                RuntimeInformation.FrameworkDescription,
+                root.GetProperty("frameworkDescription").GetString());
+            Assert.Equal(RuntimeInformation.OSDescription, root.GetProperty("osDescription").GetString());
+            Assert.Equal(
+                RuntimeInformation.OSArchitecture.ToString(),
+                root.GetProperty("osArchitecture").GetString());
+            Assert.Equal(
+                RuntimeInformation.ProcessArchitecture.ToString(),
+                root.GetProperty("processArchitecture").GetString());
+            Assert.Equal(
+                Environment.OSVersion.Platform.ToString(),
+                root.GetProperty("platform").GetString());
+            Assert.Throws<InvalidOperationException>(() =>
+                Build005GeneratorEnvironment.WriteNew(path));
+        }
+        finally
+        {
+            DeleteTemporaryDirectory(temporaryDirectory);
+        }
+    }
+
+    [Fact]
     public void RunnerPreservesAndRejectsUnownedExternalFile()
     {
         var repositoryRoot = FindRepositoryRoot();
@@ -214,7 +285,7 @@ public sealed class Build005ExperimentTests
             File.ReadAllBytes(Path.Combine(outputDirectory, "manifest.json")));
         var root = document.RootElement;
 
-        Assert.Equal("prime-axiom-build005-manifest-v1", root.GetProperty("schema").GetString());
+        Assert.Equal("prime-axiom-build005-manifest-v2", root.GetProperty("schema").GetString());
         Assert.Equal(Build005Protocol.ProtocolId, root.GetProperty("protocolId").GetString());
         Assert.Equal(Build005Protocol.FrozenPlanSha256, root.GetProperty("frozenPlanSha256").GetString());
         Assert.Equal(Build005Protocol.PartialStatus, root.GetProperty("generatedStatus").GetString());
@@ -222,6 +293,18 @@ public sealed class Build005ExperimentTests
         Assert.False(root.GetProperty("decisionAxesEarned").GetBoolean());
         Assert.Equal(receipt.CheckCount, root.GetProperty("checks").GetInt64());
         Assert.Equal(0, root.GetProperty("failures").GetInt64());
+        Assert.Equal("net8.0", root.GetProperty("runtimeContract").GetString());
+        Assert.Equal(
+            "8.0.423 with rollForward=latestPatch",
+            root.GetProperty("sdkPolicy").GetString());
+        Assert.Equal(
+            "MANAGED_SEMANTIC_MODEL__CROSS_PLATFORM_REPLAY_NOT_YET_VERIFIED",
+            root.GetProperty("platformContract").GetString());
+        Assert.Equal(
+            "EXTERNAL_VERIFIER_RECEIPT_ONLY",
+            root.GetProperty("environmentProvenance").GetString());
+        Assert.False(root.TryGetProperty("runtime", out _));
+        Assert.False(root.TryGetProperty("platform", out _));
         Assert.True(root.GetProperty("selfExcluding").GetBoolean());
         Assert.Equal(
             "dotnet run --project src/PrimeAxiom.Cli --configuration Release -- experiment-build005 --output results/build005",

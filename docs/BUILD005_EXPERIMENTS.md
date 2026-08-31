@@ -135,7 +135,7 @@ contains eight manifest-addressed payloads plus the self-excluding manifest.
 | `protocol_coverage.json` | 10 explicit evidence gates: 1 satisfied, 9 unmet |
 | `attribution.json` | nondecision axes, exploratory pattern, and claim ceiling |
 | `README.md` | generated human-readable summary |
-| `manifest.json` | self-excluding SHA-256 inventory of the eight payloads |
+| `manifest.json` | v2 self-excluding SHA-256 inventory of the eight payloads, with stable runtime/platform contracts and external-only environment provenance |
 
 The `163,360` independent correctness checks inside the total comprise:
 
@@ -341,8 +341,13 @@ dotnet run --project src/PrimeAxiom.Cli --configuration Release -- experiment-bu
 ```
 
 Run the external verifier, which protects inherited Build 000–004 evidence,
-requires a zero-skip full test pass, performs two isolated generations,
-compares inventories and bytes, and validates the manifest:
+validates the pinned SDK policy, requires a zero-skip full test pass, performs
+two isolated generations, compares all nine inventories and bytes, and
+validates the manifest. Installed runtime, OS, and architecture provenance is
+recorded in the verifier receipt rather than the deterministic corpus. Each
+generator invocation emits a verifier-owned environment sidecar; the verifier
+requires exact A/B agreement and confirms the selected runtime appears exactly
+once in the installed runtime inventory:
 
 ```powershell
 & .\scripts\verify-build005.ps1
