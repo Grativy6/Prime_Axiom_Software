@@ -207,22 +207,15 @@ internal static class Build005Workloads
             Load(1, 10),
             Load(2, 14),
             Load(3, 15),
+            Valuation(0, 3),
+            Valuation(1, 3),
+            Valuation(2, 3),
+            Valuation(3, 3),
         };
-        foreach (var slot in Enumerable.Range(0, 4))
-        {
-            foreach (var prime in new[] { 2, 3, 5, 7 })
-            {
-                events.Add(Valuation(slot, prime));
-            }
-        }
-
         events.Add(Multiply(0, 0, 1));
         events.Add(Multiply(2, 2, 3));
         events.Add(Multiply(0, 0, 2));
-        foreach (var prime in new[] { 2, 3, 5, 7 })
-        {
-            events.Add(Valuation(0, prime));
-        }
+        events.Add(Valuation(0, 3));
 
         return Trace(
             "MULTIPLICATIVE_DAG",

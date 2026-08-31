@@ -4,6 +4,9 @@ namespace PrimeAxiom.Tests;
 
 public sealed class Build005ValuationTests
 {
+    private static readonly int[] FrozenCompositeDivisors = [4, 6, 9, 10, 15, 21, 25, 27, 33, 35];
+    private static readonly int[] SmallCompositeDivisors = [6, 9];
+
     [Theory]
     [InlineData(8, 255UL)]
     [InlineData(16, 65_535UL)]
@@ -570,6 +573,57 @@ public sealed class Build005ValuationTests
         Assert.Null(uninitialized.Value);
         Assert.Equal(ValuationFailure.InvalidSlot, invalidSlot.Failure);
         Assert.Equal(ValuationFailure.InvalidThreshold, invalidThreshold.Failure);
+    }
+
+    [Fact]
+    public void CompositeControlUsesTheSameFrontierCacheButNeverPrimePropagation()
+    {
+        var service = DemandValuationService.CreateCompositeControl(
+            8,
+            ValuationCachePolicy.BinPrimeFrontierPropK,
+            4,
+            FrozenCompositeDivisors);
+
+        Assert.False(service.MultiplicativePropagationEnabled);
+        Assert.Equal(FrozenCompositeDivisors, service.DivisorCatalogue);
+        Assert.True(service.Load(0, 2).Succeeded);
+        Assert.True(service.Load(1, 3).Succeeded);
+        Assert.Equal(0, AssertSuccess(service.Valuation(0, 6)).Exponent);
+        Assert.Equal(0, AssertSuccess(service.Valuation(1, 6)).Exponent);
+
+        var beforeMultiply = service.Metrics;
+        Assert.True(service.Multiply(2, 0, 1).Succeeded);
+        Assert.Equal(
+            beforeMultiply.TerminalCertificatesPropagated,
+            service.Metrics.TerminalCertificatesPropagated);
+        Assert.DoesNotContain(
+            service.SnapshotCache(),
+            line => line.Valid && line.Slot == 2 && line.PrimeIndex == 1);
+
+        var answer = AssertSuccess(service.Valuation(2, 6));
+        Assert.Equal(1, answer.Exponent);
+        Assert.Equal(1UL, answer.Residual);
+    }
+
+    [Fact]
+    public void CompositeContentControlReusesOnlyTheSameMagnitudeAndDivisor()
+    {
+        var service = DemandValuationService.CreateCompositeControl(
+            16,
+            ValuationCachePolicy.BinContentAnswerLruK,
+            1,
+            SmallCompositeDivisors);
+        Assert.True(service.Load(0, 216).Succeeded);
+
+        var first = AssertSuccess(service.Valuation(0, 6));
+        var beforeHit = service.Metrics;
+        var second = AssertSuccess(service.Valuation(0, 6));
+        Assert.Equal(first, second);
+        Assert.Equal(beforeHit.DivModCalls, service.Metrics.DivModCalls);
+        Assert.Equal(beforeHit.CacheHits + 1, service.Metrics.CacheHits);
+
+        _ = AssertSuccess(service.Valuation(0, 9));
+        Assert.True(service.Metrics.CacheEvictions > 0);
     }
 
     private static DemandValuationService DirectService(int width) =>

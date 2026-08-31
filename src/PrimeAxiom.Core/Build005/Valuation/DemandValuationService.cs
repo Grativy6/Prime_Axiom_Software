@@ -1,3 +1,5 @@
+using System.Collections.ObjectModel;
+
 namespace PrimeAxiom.Core.Build005.Valuation;
 
 /// <summary>
@@ -7,17 +9,39 @@ namespace PrimeAxiom.Core.Build005.Valuation;
 public sealed class DemandValuationService
 {
     public const int SlotCount = 4;
+    private const int MaximumCatalogueEntries = 16;
 
     private readonly SlotState[] _slots =
         Enumerable.Range(0, SlotCount).Select(_ => new SlotState()).ToArray();
     private readonly CacheLine[] _cache;
     private readonly MetricCounter _metrics = new();
+    private readonly int[] _divisors;
+    private readonly ReadOnlyCollection<int> _readOnlyDivisors;
+    private readonly bool _allowMultiplicativePropagation;
+    private readonly bool _usesPrimeCatalogue;
     private ulong _lastUseTick;
 
     public DemandValuationService(
         int width,
         ValuationCachePolicy policy,
         int cacheCapacity)
+        : this(
+            width,
+            policy,
+            cacheCapacity,
+            Build005PrimeCatalogue.Primes,
+            allowMultiplicativePropagation: true,
+            usesPrimeCatalogue: true)
+    {
+    }
+
+    private DemandValuationService(
+        int width,
+        ValuationCachePolicy policy,
+        int cacheCapacity,
+        IReadOnlyList<int> divisors,
+        bool allowMultiplicativePropagation,
+        bool usesPrimeCatalogue)
     {
         if (width is not (8 or 16 or 32))
         {
@@ -44,7 +68,43 @@ public sealed class DemandValuationService
         Policy = policy;
         CacheCapacity = cacheCapacity;
         MaximumMagnitude = (1UL << width) - 1UL;
+        _divisors = divisors.ToArray();
+        if (_divisors.Length == 0 ||
+            _divisors.Length > MaximumCatalogueEntries ||
+            _divisors.Any(divisor => divisor <= 1) ||
+            _divisors.Distinct().Count() != _divisors.Length)
+        {
+            throw new ArgumentException(
+                "A divisor catalogue must contain one to sixteen distinct values greater than one.",
+                nameof(divisors));
+        }
+
+        _readOnlyDivisors = Array.AsReadOnly(_divisors);
+        _allowMultiplicativePropagation = allowMultiplicativePropagation;
+        _usesPrimeCatalogue = usesPrimeCatalogue;
         _cache = Enumerable.Range(0, cacheCapacity).Select(_ => new CacheLine()).ToArray();
+    }
+
+    /// <summary>
+    /// Constructs the size-matched non-prime control. It uses the exact same
+    /// query, frontier, replacement, invalidation, and generation machinery,
+    /// but multiplicative frontier propagation is disabled because Euclid's
+    /// lemma does not justify it for composite bases.
+    /// </summary>
+    public static DemandValuationService CreateCompositeControl(
+        int width,
+        ValuationCachePolicy policy,
+        int cacheCapacity,
+        IReadOnlyList<int> compositeDivisors)
+    {
+        ArgumentNullException.ThrowIfNull(compositeDivisors);
+        return new DemandValuationService(
+            width,
+            policy,
+            cacheCapacity,
+            compositeDivisors,
+            allowMultiplicativePropagation: false,
+            usesPrimeCatalogue: false);
     }
 
     public int Width { get; }
@@ -54,6 +114,10 @@ public sealed class DemandValuationService
     public ValuationCachePolicy Policy { get; }
 
     public int CacheCapacity { get; }
+
+    public IReadOnlyList<int> DivisorCatalogue => _readOnlyDivisors;
+
+    public bool MultiplicativePropagationEnabled => _allowMultiplicativePropagation;
 
     public ValuationMetrics Metrics => _metrics.Snapshot();
 
@@ -80,6 +144,60 @@ public sealed class DemandValuationService
                     line.Infinite,
                     line.LastUseTick))
             .ToArray();
+
+    /// <summary>
+    /// Replays every currently applicable cache-line equation against the
+    /// authoritative magnitude using this service's configured catalogue.
+    /// Stale versioned lines are not accepted as current evidence.
+    /// </summary>
+    public bool ValidateCacheState(out string detail)
+    {
+        foreach (var line in _cache.Where(line => line.Valid))
+        {
+            if ((uint)line.PrimeIndex >= (uint)_divisors.Length)
+            {
+                detail = "A cache line has an out-of-catalogue divisor index.";
+                return false;
+            }
+
+            ulong magnitude;
+            if (line.ContentKey)
+            {
+                magnitude = line.ContentMagnitude;
+            }
+            else
+            {
+                if ((uint)line.Slot >= SlotCount)
+                {
+                    detail = "A frontier cache line has an invalid slot tag.";
+                    return false;
+                }
+
+                var slot = _slots[line.Slot];
+                if (!slot.Initialized || slot.Generation != line.Generation)
+                {
+                    continue;
+                }
+
+                magnitude = slot.Magnitude;
+            }
+
+            if (!TryValidateEquation(
+                    magnitude,
+                    _divisors[line.PrimeIndex],
+                    line.LowerBound,
+                    line.Residual,
+                    line.Terminal,
+                    line.Infinite,
+                    out detail))
+            {
+                return false;
+            }
+        }
+
+        detail = string.Empty;
+        return true;
+    }
 
     public ValuationOperationResult<ValuationMutationReceipt> Load(int slot, ulong magnitude)
     {
@@ -231,7 +349,9 @@ public sealed class DemandValuationService
 
         var product = leftMagnitude * rightMagnitude;
         var nextGeneration = NextGeneration(destination);
-        var pending = Policy == ValuationCachePolicy.BinPrimeFrontierPropK && CacheCapacity > 0
+        var pending = _allowMultiplicativePropagation &&
+            Policy == ValuationCachePolicy.BinPrimeFrontierPropK &&
+            CacheCapacity > 0
             ? PrepareMultiplyPropagation(destination, nextGeneration, left, right, product)
             : [];
 
@@ -257,7 +377,7 @@ public sealed class DemandValuationService
             return Reject<ValuationMutationReceipt>(before, ValuationFailure.UninitializedSlot, "MUL_BY_PRIME source has not been loaded.");
         }
 
-        if (!Build005PrimeCatalogue.TryGetIndex(prime, out var primeIndex))
+        if (!_usesPrimeCatalogue || !Build005PrimeCatalogue.TryGetIndex(prime, out var primeIndex))
         {
             return Reject<ValuationMutationReceipt>(before, ValuationFailure.InvalidPrime, "MUL_BY_PRIME accepts only the frozen prime catalogue.");
         }
@@ -270,7 +390,9 @@ public sealed class DemandValuationService
 
         var product = sourceMagnitude * (ulong)prime;
         var nextGeneration = NextGeneration(destination);
-        var pending = Policy == ValuationCachePolicy.BinPrimeFrontierPropK && CacheCapacity > 0
+        var pending = _allowMultiplicativePropagation &&
+            Policy == ValuationCachePolicy.BinPrimeFrontierPropK &&
+            CacheCapacity > 0
             ? PreparePrimeMultiplyPropagation(
                 destination,
                 nextGeneration,
@@ -361,7 +483,7 @@ public sealed class DemandValuationService
         var lowerBound = frontier.LowerBound;
         var residual = frontier.Residual;
         var terminal = frontier.Terminal;
-        var prime = Build005PrimeCatalogue.GetPrime(frontier.PrimeIndex);
+        var prime = _divisors[frontier.PrimeIndex];
 
         if (prime == 2)
         {
@@ -686,6 +808,8 @@ public sealed class DemandValuationService
             }
             else
             {
+                _metrics.PropagationExponentAdds++;
+                _metrics.PropagationResidualMultiplies++;
                 combined = new FrontierState(
                     destination,
                     generation,
@@ -730,6 +854,7 @@ public sealed class DemandValuationService
             }
             else if (pair.Key == multiplierPrimeIndex)
             {
+                _metrics.PropagationExponentAdds++;
                 transferred = new FrontierState(
                     destination,
                     generation,
@@ -741,12 +866,13 @@ public sealed class DemandValuationService
             }
             else
             {
+                _metrics.PropagationResidualMultiplies++;
                 transferred = new FrontierState(
                     destination,
                     generation,
                     pair.Key,
                     sourceFrontier.LowerBound,
-                    checked(sourceFrontier.Residual * (ulong)Build005PrimeCatalogue.GetPrime(multiplierPrimeIndex)),
+                    checked(sourceFrontier.Residual * (ulong)_divisors[multiplierPrimeIndex]),
                     sourceFrontier.Terminal,
                     Infinite: false);
             }
@@ -930,10 +1056,11 @@ public sealed class DemandValuationService
             return false;
         }
 
-        if (!Build005PrimeCatalogue.TryGetIndex(prime, out primeIndex))
+        primeIndex = Array.IndexOf(_divisors, prime);
+        if (primeIndex < 0)
         {
             failure = ValuationFailure.InvalidPrime;
-            detail = "Queries accept only the frozen prime catalogue.";
+            detail = "Queries accept only the configured frozen divisor catalogue.";
             return false;
         }
 
@@ -970,13 +1097,72 @@ public sealed class DemandValuationService
 
     private static bool IsValidSlot(int slot) => (uint)slot < SlotCount;
 
-    private static void EnsureValidInternalFrontier(FrontierState frontier, ulong magnitude)
+    private void EnsureValidInternalFrontier(FrontierState frontier, ulong magnitude)
     {
-        var publicFrontier = frontier.ToPublic();
-        if (!publicFrontier.Satisfies(magnitude, out var detail))
+        if ((uint)frontier.Slot >= SlotCount ||
+            (uint)frontier.PrimeIndex >= (uint)_divisors.Length ||
+            frontier.LowerBound < 0)
+        {
+            throw new InvalidOperationException("Internal malformed frontier tag or exponent.");
+        }
+
+        if (!TryValidateEquation(
+                magnitude,
+                _divisors[frontier.PrimeIndex],
+                frontier.LowerBound,
+                frontier.Residual,
+                frontier.Terminal,
+                frontier.Infinite,
+                out var detail))
         {
             throw new InvalidOperationException($"Internal malformed frontier: {detail}");
         }
+    }
+
+    private static bool TryValidateEquation(
+        ulong magnitude,
+        int divisor,
+        int lowerBound,
+        ulong residual,
+        bool terminal,
+        bool infinite,
+        out string detail)
+    {
+        if (lowerBound < 0)
+        {
+            detail = "The lower bound is negative.";
+            return false;
+        }
+
+        if (infinite)
+        {
+            var valid = magnitude == 0 && terminal;
+            detail = valid ? string.Empty : "Only zero may carry an infinite terminal valuation.";
+            return valid;
+        }
+
+        if (magnitude == 0 || residual == 0)
+        {
+            detail = "A finite frontier has a zero magnitude or residual.";
+            return false;
+        }
+
+        var quotient = magnitude;
+        var unsignedDivisor = (ulong)divisor;
+        for (var exponent = 0; exponent < lowerBound; exponent++)
+        {
+            if (quotient % unsignedDivisor != 0)
+            {
+                detail = "The exponent exceeds the exact divisible prefix.";
+                return false;
+            }
+
+            quotient /= unsignedDivisor;
+        }
+
+        var validEquation = quotient == residual && (!terminal || residual % unsignedDivisor != 0);
+        detail = validEquation ? string.Empty : "The residual equation or terminal flag is malformed.";
+        return validEquation;
     }
 
     private ValuationMetrics BeginInstruction()
@@ -1135,6 +1321,8 @@ public sealed class DemandValuationService
         public long LowerBoundCertificatesEarned;
         public long TerminalCertificatesPropagated;
         public long LowerBoundCertificatesPropagated;
+        public long PropagationExponentAdds;
+        public long PropagationResidualMultiplies;
 
         public ValuationMetrics Snapshot() =>
             new()
@@ -1169,6 +1357,8 @@ public sealed class DemandValuationService
                 LowerBoundCertificatesEarned = LowerBoundCertificatesEarned,
                 TerminalCertificatesPropagated = TerminalCertificatesPropagated,
                 LowerBoundCertificatesPropagated = LowerBoundCertificatesPropagated,
+                PropagationExponentAdds = PropagationExponentAdds,
+                PropagationResidualMultiplies = PropagationResidualMultiplies,
             };
     }
 }

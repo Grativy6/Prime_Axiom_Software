@@ -236,6 +236,8 @@ public sealed record ValuationMetrics
     public long LowerBoundCertificatesEarned { get; init; }
     public long TerminalCertificatesPropagated { get; init; }
     public long LowerBoundCertificatesPropagated { get; init; }
+    public long PropagationExponentAdds { get; init; }
+    public long PropagationResidualMultiplies { get; init; }
 
     internal static ValuationMetrics Difference(ValuationMetrics after, ValuationMetrics before) =>
         new()
@@ -270,6 +272,8 @@ public sealed record ValuationMetrics
             LowerBoundCertificatesEarned = after.LowerBoundCertificatesEarned - before.LowerBoundCertificatesEarned,
             TerminalCertificatesPropagated = after.TerminalCertificatesPropagated - before.TerminalCertificatesPropagated,
             LowerBoundCertificatesPropagated = after.LowerBoundCertificatesPropagated - before.LowerBoundCertificatesPropagated,
+            PropagationExponentAdds = after.PropagationExponentAdds - before.PropagationExponentAdds,
+            PropagationResidualMultiplies = after.PropagationResidualMultiplies - before.PropagationResidualMultiplies,
         };
 }
 
