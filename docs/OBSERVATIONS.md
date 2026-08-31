@@ -405,3 +405,50 @@ Build 004 asks whether computation can preserve multiplicative provenance and wh
 5. Which established authenticated accumulator, signature, or zero-knowledge construction belongs beside—not inside—the transparent lineage layer under a concrete threat model?
 6. Can correlation and covariance provenance be made compositional for calibration chains without treating uncertainty labels as independent multiplicative factors?
 7. Does prime-coordinate probability retain a practical advantage in real exact-inference workloads once memory locality, cache behavior, rational-addition cost, and conversion boundaries are measured?
+
+---
+
+# Build 005 observations — `PAH-BUILD005-DEMAND-VALUATION-0001`
+
+Build 005 tests a bounded demand-driven valuation service above authoritative binary magnitude. Its generated and candidate statuses both remain `PARTIAL — FINAL DECISION NOT EARNED`. The implemented corpus exposes exploratory patterns, but no Build 005 candidate is eligible for promotion.
+
+## Established mathematics
+
+1. For nonzero `n` and prime `p`, an exact resumable frontier can retain `n = p^L * R`; a terminal frontier certifies `L = v_p(n)` because `p` no longer divides `R`.
+2. Terminal prime receipts compose across multiplication: if `p` divides neither residual, it cannot divide their product, so exponents add and residuals multiply. The analogous inference is unsound for composite labels; for example, `6` divides `2 * 3` while dividing neither factor.
+3. The `p=2` case is radix-local on ordinary binary machinery and has a competent count-trailing-zero/shift control. It cannot establish a general odd-prime advantage.
+
+## Historical observation and prior art
+
+1. Trailing-zero valuation, invariant-divisor tests, exact factor stripping, factor caches, factored-form arithmetic, producer-known factor propagation, trial-division hardware, and grouped or batched smooth-part extraction are established techniques. Build 005 earns no novelty claim for these ingredients or for their local algebra.
+
+## Engineering observation
+
+1. Prime-specific attribution requires separation from generic answer memoization, resumable checkpointing, constant-divisor specialization, producer-supplied structure, and radix-2 locality. A warm hit alone does not identify which mechanism saved work.
+2. Slot and generation identity are semantic parts of a retained frontier. Mutation, failed arithmetic, aliasing, and generation wrap must reject or flush stale evidence rather than reuse it as a hint.
+3. The declared NAND/DFF results are exact additive inventories for separately constructed catalogue, CTZ, divider, and slot/generation-cache graphs. They omit the policy-matched content cache, propagation combiner, integrated service, per-phase transition ledger, synthesis, and physical implementation, so they are exploratory and nondecision evidence.
+
+## Experimental result
+
+1. The implemented semantic campaign completed 1,066,724 checks with zero failures across 864 rows: 18 families, three widths, and sixteen policies. It also emitted 1,134 exploratory break-even comparisons and 48 static component rows.
+2. Independent correctness contributed 163,360 zero-failure checks: exhaustive W8 valuation and arithmetic plus 10,000 seeded cases at each of W16 and W32.
+3. No qualifying demand or speculative family was earned. The emitted patterns are `EXPLORATORY_GENERIC_REUSE_PATTERN` and `BLIND_SPECULATION_INCURRED_WASTED_WORK`; neither is a frozen terminal classification.
+4. Nine required gates remain unmet: a pre-result trace-digest registry, all output obligations, a phase/transition ledger, integrated propagation hardware, policy-matched content-cache hardware, competent conventional controls, causal prime attribution, the full independent correctness matrix, and external deterministic replay. Therefore `SEARCH_DOES_NOT_REPAY` is no more justified than a positive candidate under this protocol state.
+
+## Conjecture
+
+1. A small demand-only prime frontier may still be useful when multiplicative producers preserve already-earned terminal receipts, but a new experiment must distinguish that provenance benefit from generic cached computation and charge the complete output contract.
+2. Blind small-prime scouting is most plausible when scheduled in otherwise unusable slack, yet unused evaluations and contention remain real costs even when latency is hidden.
+
+## Dead end
+
+1. **Treating exploratory NAND totals as an integrated hardware result.** Additive component inventories do not supply a policy-matched service, switching trace, synthesis result, or physical measurement.
+2. **Promoting an apparent break-even row from incomplete coverage.** Mutable trace factories and missing output/control gates make every current break-even row ineligible for the frozen decision.
+3. **Blind speculation as free optimization.** The implemented speculation policies performed unused search on hostile traces; hidden placement cannot erase that work.
+
+## Open question
+
+1. Under a newly frozen protocol with an independent pre-result trace registry, do any odd-prime terminal transfers cause a strict saving against direct, content-cache, and no-propagation controls at both W16 and W32?
+2. What policy-matched integrated NAND/DFF service and transition ledger results when lookup, propagation, replacement, invalidation, wrap, and output obligations share one graph?
+3. Can competent grouped screening, exact rational reduction, cumulative smooth stripping, and producer-known sparse-factor controls eliminate the exploratory reuse pattern?
+4. Build 006 must answer any reopened question through its own newly frozen protocol and trace registry. It must not edit Build 005 traces, gates, or decision rules after observing these results.
