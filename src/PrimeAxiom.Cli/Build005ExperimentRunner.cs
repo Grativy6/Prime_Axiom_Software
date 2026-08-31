@@ -461,17 +461,24 @@ internal static class Build005ExperimentRunner
     private static void ValidateOutputLocation(string repositoryRoot, string outputDirectory)
     {
         RejectReparsePointTraversal(outputDirectory);
-        if (string.Equals(repositoryRoot, outputDirectory, StringComparison.OrdinalIgnoreCase))
+        var comparison = OperatingSystem.IsWindows()
+            ? StringComparison.OrdinalIgnoreCase
+            : StringComparison.Ordinal;
+        var root = repositoryRoot.TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
+        var output = outputDirectory.TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
+        if (string.Equals(root, output, comparison))
         {
             throw new InvalidOperationException("Build 005 output cannot be the repository root.");
         }
 
-        var relative = Path.GetRelativePath(repositoryRoot, outputDirectory);
-        var isOutsideRepository = string.Equals(relative, "..", StringComparison.Ordinal) ||
-            relative.StartsWith($"..{Path.DirectorySeparatorChar}", StringComparison.Ordinal) ||
-            relative.StartsWith($"..{Path.AltDirectorySeparatorChar}", StringComparison.Ordinal);
-        if (!isOutsideRepository &&
-            !string.Equals(relative, Path.Combine("results", "build005"), StringComparison.OrdinalIgnoreCase))
+        var rootPrefix = root + Path.DirectorySeparatorChar;
+        if (!output.StartsWith(rootPrefix, comparison))
+        {
+            return;
+        }
+
+        var committedResults = Path.Combine(root, "results", "build005");
+        if (!string.Equals(output, committedResults, comparison))
         {
             throw new InvalidOperationException(
                 "Inside the repository, Build 005 owns only results/build005. Use an external temporary directory for replay.");
