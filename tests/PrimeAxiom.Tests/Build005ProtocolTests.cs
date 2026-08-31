@@ -4,6 +4,10 @@ namespace PrimeAxiom.Tests;
 
 public sealed class Build005ProtocolTests
 {
+    private static readonly int[] ExpectedPrimeCatalogue = [2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31];
+    private static readonly int[] ExpectedCompositeControls = [4, 6, 9, 10, 15, 21, 25, 27, 33, 35];
+    private static readonly string[] ExpectedSourceRegimes = ["COLD_MAG", "PRODUCER_GENERATED"];
+
     private static readonly string[] ExpectedFamilies =
     [
         "STATIC_REUSE",
@@ -38,8 +42,8 @@ public sealed class Build005ProtocolTests
     [Fact]
     public void FrozenCataloguesAndSeedsAreStable()
     {
-        Assert.Equal(new[] { 2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31 }, Build005Protocol.PrimeCatalog);
-        Assert.Equal(new[] { 4, 6, 9, 10, 15, 21, 25, 27, 33, 35 }, Build005Protocol.CompositeControls);
+        Assert.Equal(ExpectedPrimeCatalogue, Build005Protocol.PrimeCatalog);
+        Assert.Equal(ExpectedCompositeControls, Build005Protocol.CompositeControls);
         Assert.Equal(Build005Protocol.DeriveSeed(16, "STATIC_REUSE"), Build005Protocol.DeriveSeed(16, "STATIC_REUSE"));
         Assert.NotEqual(Build005Protocol.DeriveSeed(16, "STATIC_REUSE"), Build005Protocol.DeriveSeed(32, "STATIC_REUSE"));
         Assert.NotEqual(Build005Protocol.DeriveSeed(16, "STATIC_REUSE"), Build005Protocol.DeriveSeed(16, "PHASE_SHIFT"));
@@ -67,14 +71,14 @@ public sealed class Build005ProtocolTests
         {
             Assert.Equal(width, trace.Width);
             Assert.NotEmpty(trace.Events);
-            Assert.Contains(trace.SourceRegime, new[] { "COLD_MAG", "PRODUCER_GENERATED" });
+            Assert.Contains(trace.SourceRegime, ExpectedSourceRegimes);
             Assert.Equal("MAGNITUDE_FINAL", trace.OutputObligation);
             foreach (var item in trace.Events)
             {
                 Assert.InRange(item.Destination, 0, 3);
                 Assert.InRange(item.Left, 0, 3);
                 Assert.InRange(item.Right, 0, 3);
-                Assert.InRange(item.Magnitude, 0, maximum);
+                Assert.InRange(item.Magnitude, 0UL, maximum);
                 if (item.Kind is Build005EventKind.TestPower or
                     Build005EventKind.Valuation or
                     Build005EventKind.StripAll or

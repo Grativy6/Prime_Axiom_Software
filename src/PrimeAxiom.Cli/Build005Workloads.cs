@@ -234,8 +234,9 @@ internal static class Build005Workloads
 
     private static Build005Trace ProducerFactored(int width)
     {
+        int[] primes = [2, 3, 5, 7, 11];
         var events = new List<Build005TraceEvent> { Load(0, 1) };
-        foreach (var prime in new[] { 2, 3, 5, 7, 11 })
+        foreach (var prime in primes)
         {
             events.Add(new Build005TraceEvent(
                 Build005EventKind.ProducerPrimeFact,
@@ -244,7 +245,7 @@ internal static class Build005Workloads
                 Divisor: prime));
         }
 
-        events.AddRange(new[] { 2, 3, 5, 7, 11 }.Select(prime => Valuation(0, prime)));
+        events.AddRange(primes.Select(prime => Valuation(0, prime)));
         return Trace(
             "PRODUCER_FACTORED",
             "known-prime-constructor",
