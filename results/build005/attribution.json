@@ -1,0 +1,29 @@
+{
+  "generatedStatus": "PARTIAL \u2014 FINAL DECISION NOT EARNED",
+  "candidateTerminalLabel": "PARTIAL \u2014 FINAL DECISION NOT EARNED",
+  "decisionAxesEarned": false,
+  "searchPolicy": "NOT_EARNED",
+  "attribution": "NOT_ESTABLISHED",
+  "evidenceBoundary": "SEMANTIC",
+  "exploratoryObservedPattern": "EXPLORATORY_GENERIC_REUSE_PATTERN",
+  "exploratorySearchObservation": "BLIND_SPECULATION_INCURRED_WASTED_WORK",
+  "demandPrimeCandidate": false,
+  "speculativePrimeCandidate": false,
+  "genericCacheAdvantage": false,
+  "producerOnlyAdvantage": false,
+  "radixTwoOnly": false,
+  "qualifyingDemandFamilies": [],
+  "qualifyingSpeculativeFamilies": [],
+  "unmetGates": [
+    "PRE_RESULT_TRACE_DIGEST_REGISTRY",
+    "ALL_OUTPUT_OBLIGATIONS",
+    "PHASE_AND_TRANSITION_LEDGER",
+    "INTEGRATED_PROPAGATION_HARDWARE",
+    "POLICY_MATCHED_CONTENT_CACHE_HARDWARE",
+    "COMPETENT_CONVENTIONAL_CONTROLS",
+    "CAUSAL_PRIME_ATTRIBUTION",
+    "FULL_INDEPENDENT_CORRECTNESS_MATRIX",
+    "EXTERNAL_DETERMINISTIC_REPLAY"
+  ],
+  "claimCeiling": "Bounded exact semantic, host-software, and declared NAND/DFF evidence under PAH-BUILD005-DEMAND-VALUATION-0001 only; no universal arithmetic, novelty, FPGA/ASIC PPA, physical-energy, fabricated-hardware, or PAL-conformance claim."
+}
