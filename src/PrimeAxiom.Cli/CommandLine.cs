@@ -32,6 +32,7 @@ internal static class CommandLine
             "experiment-build002" => RunBuild002Experiment(args[1..]),
             "experiment-build003" => RunBuild003Experiment(args[1..]),
             "experiment-build004" => RunBuild004Experiment(args[1..]),
+            "experiment-build005" => RunBuild005Experiment(args[1..]),
             "prime-receipt" => RunPrimeReceipt(args[1..]),
             "compare-arithmetic" => RunArithmeticComparison(args[1..]),
             "binomial-receipt" => RunBinomialReceipt(args[1..]),
@@ -289,6 +290,82 @@ internal static class CommandLine
             Console.Error.WriteLine(exception.Message);
             return 2;
         }
+    }
+
+    private static int RunBuild005Experiment(string[] args)
+    {
+        var output = "results/build005";
+        string? environmentReceipt = null;
+        for (var index = 0; index < args.Length; index++)
+        {
+            switch (args[index])
+            {
+                case "--output" when index + 1 < args.Length:
+                    output = args[++index];
+                    break;
+                case "--environment-receipt" when index + 1 < args.Length:
+                    environmentReceipt = args[++index];
+                    break;
+                default:
+                    Console.Error.WriteLine($"Unknown Build 005 experiment option: {args[index]}");
+                    return 2;
+            }
+        }
+
+        try
+        {
+            var fullOutput = Path.GetFullPath(output);
+            var fullEnvironmentReceipt = environmentReceipt is null
+                ? null
+                : Path.GetFullPath(environmentReceipt);
+            if (fullEnvironmentReceipt is not null &&
+                IsPathInsideDirectory(fullEnvironmentReceipt, fullOutput))
+            {
+                throw new InvalidOperationException(
+                    "The verifier-owned generator-environment receipt must stay outside the deterministic Build 005 result directory.");
+            }
+
+            var receipt = Build005ExperimentRunner.Run(
+                Directory.GetCurrentDirectory(),
+                fullOutput);
+            if (fullEnvironmentReceipt is not null)
+            {
+                Build005GeneratorEnvironment.WriteNew(fullEnvironmentReceipt);
+            }
+            Console.WriteLine($"Wrote Build 005 evidence to {receipt.OutputDirectory}");
+            Console.WriteLine(
+                $"Checks: {receipt.CheckCount.ToString(CultureInfo.InvariantCulture)}; " +
+                $"failures: {receipt.FailureCount.ToString(CultureInfo.InvariantCulture)}; " +
+                $"generated status: {receipt.GeneratedStatus}; " +
+                $"candidate after external verification: {receipt.CandidateTerminalLabel}");
+            Console.WriteLine($"search policy: {receipt.SearchPolicy}");
+            Console.WriteLine($"attribution: {receipt.Attribution}");
+            Console.WriteLine($"boundary: {receipt.EvidenceBoundary}");
+            return receipt.FailureCount == 0 &&
+                string.Equals(
+                    receipt.GeneratedStatus,
+                    Build005Protocol.PartialStatus,
+                    StringComparison.Ordinal)
+                ? 0
+                : 1;
+        }
+        catch (InvalidOperationException exception)
+        {
+            Console.Error.WriteLine(exception.Message);
+            return 2;
+        }
+    }
+
+    private static bool IsPathInsideDirectory(string path, string directory)
+    {
+        var comparison = OperatingSystem.IsWindows()
+            ? StringComparison.OrdinalIgnoreCase
+            : StringComparison.Ordinal;
+        var normalizedDirectory = directory.TrimEnd(
+            Path.DirectorySeparatorChar,
+            Path.AltDirectorySeparatorChar);
+        return string.Equals(path, normalizedDirectory, comparison) ||
+            path.StartsWith(normalizedDirectory + Path.DirectorySeparatorChar, comparison);
     }
 
     private static int RunBinomialReceipt(string[] args)
@@ -629,6 +706,7 @@ internal static class CommandLine
         Console.WriteLine("  experiment-build002 [--output DIRECTORY] [--hdl-verification-summary FILE] [--hdl-synthesis-metrics FILE] [--hdl-toolchain FILE]");
         Console.WriteLine("  experiment-build003 [--output DIRECTORY]");
         Console.WriteLine("  experiment-build004 [--output DIRECTORY]");
+        Console.WriteLine("  experiment-build005 [--output DIRECTORY] [--environment-receipt FILE]");
         Console.WriteLine("  prime-receipt INTEGER [--max-odd-candidates N] [--format text|json]");
         Console.WriteLine("  compare-arithmetic add A B [--max-odd-candidates N] [--format text|json]");
         Console.WriteLine("  compare-arithmetic multiply A B [C ...] [--max-odd-candidates N] [--format text|json]");

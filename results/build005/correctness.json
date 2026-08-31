@@ -1,0 +1,25 @@
+{
+  "schema": "prime-axiom-build005-correctness-v1",
+  "protocolId": "PAH-BUILD005-DEMAND-VALUATION-0001",
+  "masterSeed": "5041485742303035",
+  "implementedStatus": "IMPLEMENTED_TRACE_PASS",
+  "frozenDecisionStatus": "PARTIAL \u2014 FINAL DECISION NOT EARNED",
+  "checks": 1066724,
+  "failures": 0,
+  "independent": {
+    "checks": 163360,
+    "failures": 0,
+    "checkGroups": {
+      "W8_VALUATION": 12288,
+      "W8_ARITHMETIC": 131072,
+      "W16_SEEDED": 10000,
+      "W32_SEEDED": 10000
+    },
+    "failureDetails": []
+  },
+  "workloadChecks": 903364,
+  "workloadFailures": 0,
+  "campaignHasNoSkipMechanism": true,
+  "testAssemblySkippedCount": "ESTABLISHED_ONLY_BY_EXTERNAL_TRX_VERIFIER",
+  "claimCeiling": "Bounded exact semantic, host-software, and declared NAND/DFF evidence under PAH-BUILD005-DEMAND-VALUATION-0001 only; no universal arithmetic, novelty, FPGA/ASIC PPA, physical-energy, fabricated-hardware, or PAL-conformance claim."
+}

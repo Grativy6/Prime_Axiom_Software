@@ -2,6 +2,17 @@
 
 Prime Axiom Software experimentally asks which structures become representation-local when conventional magnitude arithmetic is no longer the only abstraction immediately above binary state.
 
+Build 005 tests the concrete optimization hunch: keep ordinary binary magnitude, add a tiny demand-driven valuation service, and compare direct recomputation, generic memoization, generic resumable checkpoints, prime-only receipt propagation, and blind small-prime scouting. Its current status is deliberately **`PARTIAL — FINAL DECISION NOT EARNED`**. The implemented semantic matrix completed 1,066,724 checks with zero failures across 864 workload rows. The generated receipts keep nine gates open; the external verifier passed 388/388 tests with zero skips and closed replay/integrity only, leaving eight scientific and engineering gates open. None of the 1,134 modeled break-even comparisons is decision-eligible.
+
+The exploratory result is sharper than “primes help” or “primes do not help.” Reusing retained valuation work can save repeated DIVMOD operations, but most observed savings are explained by generic caching and checkpointing. Blind scouting incurred substantial unused work. Prime-only multiplication propagation produced one local W8 saving, then saved no DIVMOD calls at the W16/W32 decision widths. The next justified experiment is therefore causal: compare an already-earned multiplicative receipt with the same receipt deliberately discarded, while charging validation, transport, mutation, and output costs.
+
+```powershell
+dotnet run --project src/PrimeAxiom.Cli --configuration Release -- experiment-build005 --output results/build005
+& .\scripts\verify-build005.ps1
+```
+
+See the [Build 005 report](BUILD_005_REPORT.md), [experiment ledger](docs/BUILD005_EXPERIMENTS.md), and [generated partial evidence](results/build005/README.md).
+
 Build 004 follows the useful part of prime structure into provenance. Its bounded candidate status, earned for a checkout only when the external verifier passes, is **`BOUNDED_EXACT_LINEAGE_TOOLKIT_VALIDATED`**. The committed generator output deliberately remains **`PARTIAL — FINAL DECISION NOT EARNED`** until that replay:
 
 ```text
@@ -72,6 +83,13 @@ The generated terminal receipt contains 656,810 arithmetic checks with zero fail
 
 ## Evidence map
 
+- [Build 005 report](BUILD_005_REPORT.md)
+- [Frozen Build 005 protocol](research/build005_experiment_plan.md)
+- [Build 005 experiment ledger](docs/BUILD005_EXPERIMENTS.md)
+- [Build 005 architecture](docs/BUILD005_ARCHITECTURE.md)
+- [Build 005 prior art](docs/PRIOR_ART_BUILD005.md)
+- [Generated Build 005 evidence](results/build005/README.md)
+- [Build 005 manifest](results/build005/manifest.json)
 - [Build 004 final report](BUILD_004_REPORT.md)
 - [Frozen Build 004 protocol](research/build004_experiment_plan.md)
 - [Provenance architecture](docs/PROVENANCE_ARCHITECTURE.md)
@@ -98,6 +116,12 @@ The generated terminal receipt contains 656,810 arithmetic checks with zero fail
 - [Build 000 report](BUILD_000_REPORT.md)
 
 ## Reproduce
+
+The Build 005 verifier protects inherited Build 000–004 evidence, validates the pinned SDK policy, requires formatting and a clean Release build, runs the complete test assembly with zero skips, performs two isolated byte-identical generations, and validates the committed manifest. Manifest v2 records stable runtime/platform contracts rather than the installed runtime patch. Each generator process writes a verifier-owned sidecar outside the deterministic corpus; the verifier requires the two sidecars to match the installed runtime inventory and each other, then records the selected runtime/framework plus OS and architecture in its receipt. The committed semantic bytes are therefore no longer tied to one Windows runtime patch. Cross-platform byte reproduction remains unverified. A verifier pass establishes checkout integrity and deterministic semantic replay only; it does not close the other eight scientific and engineering gates or promote the partial decision:
+
+```powershell
+& .\scripts\verify-build005.ps1
+```
 
 The Build 004 verifier protects every inherited Build 000-003 report, plan, and result tree; requires formatting, a clean Release build, a complete zero-skip test run, exact registered campaign counts, two isolated byte-identical generations, committed manifest integrity, and the declared audio/cost/security boundaries:
 

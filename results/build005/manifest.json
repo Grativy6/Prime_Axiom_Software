@@ -1,0 +1,75 @@
+{
+  "schema": "prime-axiom-build005-manifest-v2",
+  "protocolId": "PAH-BUILD005-DEMAND-VALUATION-0001",
+  "frozenPlanSha256": "8B76649A4D4E7E60B756BCFB5FDA7954385A10A9E6DDD520C97123B845CE9031",
+  "baselineCommit": "1fff29e2f1e454921aa51cb4a91bd5b41821ebcc",
+  "freezeCommit": "3ffb86b",
+  "generatedStatus": "PARTIAL \u2014 FINAL DECISION NOT EARNED",
+  "candidateTerminalLabel": "PARTIAL \u2014 FINAL DECISION NOT EARNED",
+  "decisionAxesEarned": false,
+  "implementedTraceCoverageComplete": true,
+  "completeFrozenCoverage": false,
+  "unmetGates": [
+    "PRE_RESULT_TRACE_DIGEST_REGISTRY",
+    "ALL_OUTPUT_OBLIGATIONS",
+    "PHASE_AND_TRANSITION_LEDGER",
+    "INTEGRATED_PROPAGATION_HARDWARE",
+    "POLICY_MATCHED_CONTENT_CACHE_HARDWARE",
+    "COMPETENT_CONVENTIONAL_CONTROLS",
+    "CAUSAL_PRIME_ATTRIBUTION",
+    "FULL_INDEPENDENT_CORRECTNESS_MATRIX",
+    "EXTERNAL_DETERMINISTIC_REPLAY"
+  ],
+  "checks": 1066724,
+  "failures": 0,
+  "runtimeContract": "net8.0",
+  "sdkPolicy": "8.0.423 with rollForward=latestPatch",
+  "platformContract": "MANAGED_SEMANTIC_MODEL__CROSS_PLATFORM_REPLAY_NOT_YET_VERIFIED",
+  "environmentProvenance": "EXTERNAL_VERIFIER_RECEIPT_ONLY",
+  "canonicalRegenerationCommand": "dotnet run --project src/PrimeAxiom.Cli --configuration Release -- experiment-build005 --output results/build005",
+  "generationContext": "OUTPUT_PATH_EXCLUDED_FOR_CROSS_DIRECTORY_BYTE_REPLAY",
+  "selfExcluding": true,
+  "entries": [
+    {
+      "path": "README.md",
+      "bytes": 4919,
+      "sha256": "620B5A2A572BB632AD58FC06F6D2DA321988E7994AA6A46C80BF0C4656ED4FC1"
+    },
+    {
+      "path": "attribution.json",
+      "bytes": 1268,
+      "sha256": "24A1AC758BD7DB29E8DB7086FCF45D233527E1880F0578288FA167C19A847121"
+    },
+    {
+      "path": "break_even.csv",
+      "bytes": 174471,
+      "sha256": "7EE878EEF9ACB04554FF5F243FD38643EEC071EDDF7FCBAC2CDC7BD243A9CD86"
+    },
+    {
+      "path": "correctness.json",
+      "bytes": 949,
+      "sha256": "A28B9F2D0C69F87884F4ABA1CEFDCF80804BEA4D9CF9E7A3E58E728734A06E97"
+    },
+    {
+      "path": "protocol_coverage.json",
+      "bytes": 11585,
+      "sha256": "BFC2B4CD4849CEB766BE6554178F66DA300071FD5CF14D447EF9B8E6B98C19F4"
+    },
+    {
+      "path": "static_costs.csv",
+      "bytes": 5412,
+      "sha256": "A6DBDDF5FA05BA39C92AABE4FBBE5CE89479F369F05D7A0CE87B24719E4B9CB0"
+    },
+    {
+      "path": "trace_inventory.json",
+      "bytes": 23593,
+      "sha256": "BE3FE408F52D33BB97250CFD60505F4A59E2BF0BF0F40E7E68D772819A5CB45E"
+    },
+    {
+      "path": "workload_matrix.csv",
+      "bytes": 628122,
+      "sha256": "51D3144F370B10F7D67C2E997FC098387B774D0566D50BAC4DB4A09876E0342C"
+    }
+  ],
+  "claimCeiling": "Bounded exact semantic, host-software, and declared NAND/DFF evidence under PAH-BUILD005-DEMAND-VALUATION-0001 only; no universal arithmetic, novelty, FPGA/ASIC PPA, physical-energy, fabricated-hardware, or PAL-conformance claim."
+}

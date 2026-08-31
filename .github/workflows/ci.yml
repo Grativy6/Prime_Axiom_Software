@@ -116,6 +116,35 @@ jobs:
           include-hidden-files: true
           if-no-files-found: error
 
+  build005:
+    runs-on: windows-latest
+    timeout-minutes: 20
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Install pinned .NET SDK
+        uses: actions/setup-dotnet@v6
+        with:
+          global-json-file: global.json
+          cache: true
+          cache-dependency-path: '**/packages.lock.json'
+
+      - name: Verify Build 005 partial demand-valuation evidence
+        shell: pwsh
+        run: >-
+          & ./scripts/verify-build005.ps1
+          -OutputDirectory artifacts/build005-ci
+
+      - name: Upload Build 005 verification receipt
+        uses: actions/upload-artifact@v6
+        with:
+          name: build005-Windows-receipt
+          path: artifacts/build005-ci
+          if-no-files-found: error
+
   build002:
     strategy:
       fail-fast: false
