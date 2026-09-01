@@ -1,0 +1,11 @@
+cff-version: 1.2.0
+message: "If Prime Axiom Software informed your work, please cite the software and identify the exact build or commit used."
+title: "Prime Axiom Software"
+type: software
+authors:
+  - family-names: "Pang"
+    given-names: "Christopher D."
+repository-code: "https://github.com/Grativy6/Prime_Axiom_Software"
+license: "CC-BY-4.0"
+version: "Build 005"
+date-released: "2026-08-31"
