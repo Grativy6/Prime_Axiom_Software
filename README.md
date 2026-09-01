@@ -153,3 +153,7 @@ dotnet test PrimeAxiom.sln --configuration Release
 ```
 
 Raw HDL logs and netlists stay under ignored `.artifacts/` directories; validated, path-sanitized summaries are committed under `results/build002/`.
+
+## License and citation
+
+Unless otherwise noted, the original contents of this repository are licensed under [CC BY 4.0](LICENSE). See [NOTICE](NOTICE) for scope and attribution, [AUTHORS.md](AUTHORS.md) for authorship, and [CITATION.cff](CITATION.cff) for citation metadata.
